@@ -9,67 +9,63 @@ import {
   TrendingUp, 
   Database, 
   ShieldCheck,
-  Menu,
-  X,
   Globe,
   Mail,
   Users2
 } from 'lucide-react';
 import Link from 'next/link';
 import { ElementType } from 'react';
-import Navbar from '@/components/Navbar';
-
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: ElementType, title: string, description: string }) => (
   <motion.div 
     whileHover={{ borderColor: 'var(--color-primary)' }}
-    className="p-8 bg-white border border-outline-variant rounded-xl flex flex-col gap-4 transition-colors"
+    className="p-8 bg-white dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-xl flex flex-col gap-4 transition-colors"
   >
-    <div className="w-12 h-12 bg-primary/5 flex items-center justify-center rounded-lg">
+    <div className="w-12 h-12 bg-primary/5 dark:bg-primary/10 flex items-center justify-center rounded-lg">
       <Icon className="text-primary" size={24} />
     </div>
-    <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-    <p className="text-slate-500 text-sm leading-relaxed">{description}</p>
+    <h3 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{title}</h3>
+    <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{description}</p>
   </motion.div>
 );
 
 const PricingCard = ({ title, price, features, highlighted = false }: { title: string, price: string, features: string[], highlighted?: boolean }) => (
-  <div className={`p-10 bg-white rounded-xl flex flex-col gap-8 relative border-2 ${highlighted ? 'border-primary shadow-xl shadow-primary/5' : 'border-outline-variant'}`}>
+  <div className={`p-10 bg-white dark:bg-slate-900 rounded-xl flex flex-col gap-8 relative border-2 ${highlighted ? 'border-primary shadow-xl shadow-primary/5' : 'border-outline-variant dark:border-slate-800'}`}>
     {highlighted && (
       <span className="absolute top-0 right-8 -translate-y-1/2 bg-primary text-white text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full">
         Most Popular
       </span>
     )}
     <div>
-      <h3 className="text-xl font-bold mb-1">{title}</h3>
-      <p className="text-slate-500 text-sm">For {title === 'Starter' ? 'small projects' : title === 'Pro' ? 'growing teams' : 'large scale'}.</p>
+      <h3 className="text-xl font-bold mb-1 text-slate-900 dark:text-white">{title}</h3>
+      <p className="text-slate-500 dark:text-slate-400 text-sm">For {title === 'Starter' ? 'small projects' : title === 'Pro' ? 'growing teams' : 'large scale'}.</p>
     </div>
     <div className="flex items-baseline gap-1">
-      <span className="text-4xl font-bold tracking-tight">{price}</span>
+      <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{price}</span>
       {price !== 'Custom' && <span className="text-slate-400 text-sm">/mo</span>}
     </div>
     <ul className="flex flex-col gap-4 flex-grow">
       {features.map((feature, i) => (
-        <li key={i} className="flex items-center gap-3 text-sm text-slate-600">
+        <li key={i} className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
           <CheckCircle2 size={18} className={highlighted ? 'text-primary' : 'text-secondary'} />
           {feature}
         </li>
       ))}
     </ul>
-    <button className={`w-full py-3.5 rounded-lg font-medium transition-all active:scale-95 border ${highlighted ? 'bg-primary text-white border-primary hover:bg-primary-light' : 'bg-transparent text-slate-800 border-outline-variant hover:bg-slate-50'}`}>
+    <button className={`w-full py-3.5 rounded-lg font-medium transition-all active:scale-95 border ${highlighted ? 'bg-primary text-white border-primary hover:bg-primary-light' : 'bg-transparent text-slate-800 dark:text-slate-200 border-outline-variant dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
       {title === 'Enterprise' ? 'Contact sales' : 'Start for free'}
     </button>
   </div>
 );
 
 const TestimonialCard = ({ quote, author, role, avatar }: { quote: string, author: string, role: string, avatar: string }) => (
-  <div className="p-8 bg-white border border-outline-variant rounded-xl flex flex-col gap-6">
-    <p className="text-lg leading-relaxed italic text-slate-700">&quot;{quote}&quot;</p>
-    <div className="flex items-center gap-4 pt-6 border-t border-outline-variant">
+  <div className="p-8 bg-white dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-xl flex flex-col gap-6">
+    <p className="text-lg leading-relaxed italic text-slate-700 dark:text-slate-300">&quot;{quote}&quot;</p>
+    <div className="flex items-center gap-4 pt-6 border-t border-outline-variant dark:border-slate-800">
       <img src={avatar} alt={author} className="w-10 h-10 rounded-full object-cover grayscale" />
       <div>
-        <p className="text-sm font-bold text-slate-900">{author}</p>
-        <p className="text-xs text-slate-500">{role}</p>
+        <p className="text-sm font-bold text-slate-900 dark:text-white">{author}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{role}</p>
       </div>
     </div>
   </div>
@@ -85,7 +81,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen overflow-x-hidden">
-      <Navbar />
 
       <main>
         {/* Hero Section */}
@@ -99,17 +94,17 @@ export default function App() {
             <span className="inline-flex items-center rounded-full bg-secondary-light/30 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-secondary">
               Now in public beta
             </span>
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-slate-900 leading-[1.1]">
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
               Ship projects faster.<br />Your whole team, one workspace.
             </h1>
-            <p className="text-xl text-slate-500 max-w-lg leading-relaxed">
+            <p className="text-xl text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed">
               A high-performance project management tool built for modern teams. Stop juggling tabs and start building.
             </p>
             <div className="flex flex-wrap gap-4 w-full sm:w-auto">
               <button className="bg-primary hover:bg-primary-light text-white font-semibold px-8 py-4 rounded-xl flex items-center justify-center gap-2 group transition-all active:scale-95 shadow-lg shadow-primary/10">
                 Start for free <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="bg-white border border-outline-variant text-slate-700 font-semibold px-8 py-4 rounded-xl hover:bg-slate-50 transition-all active:scale-95">
+              <button className="bg-white dark:bg-slate-900 border border-outline-variant dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-8 py-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
                 See how it works
               </button>
             </div>
@@ -119,7 +114,7 @@ export default function App() {
                   <img 
                     key={i} 
                     src={`https://i.pravatar.cc/100?img=${i + 10}`} 
-                    className="w-10 h-10 rounded-full border-2 border-white object-cover grayscale active:grayscale-0 transition-all cursor-pointer" 
+                    className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-900 object-cover grayscale active:grayscale-0 transition-all cursor-pointer" 
                     alt="User"
                   />
                 ))}
@@ -134,38 +129,38 @@ export default function App() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            <div className="bg-white border border-outline-variant rounded-2xl overflow-hidden shadow-2xl shadow-slate-200/50">
-              <div className="bg-slate-50 px-4 py-3 flex items-center gap-3 border-b border-outline-variant">
+            <div className="bg-white dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/40">
+              <div className="bg-slate-50 dark:bg-slate-950 px-4 py-3 flex items-center gap-3 border-b border-outline-variant dark:border-slate-800">
                 <div className="flex gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
                 </div>
-                <div className="bg-white border border-outline-variant px-3 py-1 rounded text-[10px] text-slate-400 font-medium flex items-center gap-2 flex-grow max-w-xs">
-                  <ShieldCheck size={12} className="text-slate-300" /> app.forge.pm/workspace
+                <div className="bg-white dark:bg-slate-900 border border-outline-variant dark:border-slate-700 px-3 py-1 rounded text-[10px] text-slate-400 font-medium flex items-center gap-2 flex-grow max-w-xs">
+                  <ShieldCheck size={12} className="text-slate-300 dark:text-slate-600" /> app.forge.pm/workspace
                 </div>
               </div>
               <div className="p-8 grid grid-cols-3 gap-6 min-h-[400px]">
                 {['To Do', 'In Progress', 'Done'].map((col) => (
                   <div key={col} className="flex flex-col gap-4">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{col}</span>
-                    <div className={`p-4 rounded-lg border flex flex-col gap-3 ${col === 'In Progress' ? 'border-primary bg-primary/[0.02]' : 'border-outline-variant'}`}>
-                      <div className={`h-2 rounded w-3/4 ${col === 'In Progress' ? 'bg-primary/20' : 'bg-slate-100'}`} />
-                      <div className={`h-2 rounded w-1/2 ${col === 'In Progress' ? 'bg-primary/10' : 'bg-slate-50'}`} />
+                    <div className={`p-4 rounded-lg border flex flex-col gap-3 ${col === 'In Progress' ? 'border-primary bg-primary/[0.02] dark:bg-primary/5' : 'border-outline-variant dark:border-slate-700'}`}>
+                      <div className={`h-2 rounded w-3/4 ${col === 'In Progress' ? 'bg-primary/20' : 'bg-slate-100 dark:bg-slate-800'}`} />
+                      <div className={`h-2 rounded w-1/2 ${col === 'In Progress' ? 'bg-primary/10' : 'bg-slate-50 dark:bg-slate-700'}`} />
                       <div className="flex justify-between items-center mt-2">
                         <div className="flex -space-x-1.5">
-                           <div className="w-5 h-5 rounded-full bg-slate-200 border border-white" />
-                           {col === 'In Progress' && <div className="w-5 h-5 rounded-full bg-primary/20 border border-white" />}
+                           <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 border border-white dark:border-slate-900" />
+                           {col === 'In Progress' && <div className="w-5 h-5 rounded-full bg-primary/20 border border-white dark:border-slate-900" />}
                         </div>
-                        <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter ${col === 'In Progress' ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500'}`}>
+                        <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-tighter ${col === 'In Progress' ? 'bg-primary text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
                           {col === 'In Progress' ? 'Sprint 1' : 'High'}
                         </span>
                       </div>
                     </div>
                     {col === 'To Do' && (
-                       <div className="p-4 rounded-lg border border-outline-variant flex flex-col gap-3 opacity-60">
-                        <div className="h-2 rounded w-full bg-slate-100" />
-                        <div className="h-2 rounded w-2/3 bg-slate-50" />
+                       <div className="p-4 rounded-lg border border-outline-variant dark:border-slate-700 flex flex-col gap-3 opacity-60">
+                        <div className="h-2 rounded w-full bg-slate-100 dark:bg-slate-800" />
+                        <div className="h-2 rounded w-2/3 bg-slate-50 dark:bg-slate-700" />
                       </div>
                     )}
                   </div>
@@ -175,62 +170,38 @@ export default function App() {
           </motion.div>
         </section>
 
-        {/* Logo Bar */}
-        <section className="border-y border-outline-variant bg-white/30 py-10">
+
+        <section className="border-y border-outline-variant dark:border-slate-800 bg-white/30 dark:bg-slate-900/30 py-10">
           <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-10">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 whitespace-nowrap">Trusted by teams at</span>
             <div className="flex flex-wrap justify-center lg:justify-between items-center gap-12 lg:flex-grow opacity-30 grayscale contrast-125">
               {['STARK', 'LUMEN', 'ACME', 'GLOBEX', 'OCP', 'SOYLENT'].map(logo => (
-                <span key={logo} className="text-2xl font-black tracking-tighter">{logo}</span>
+                <span key={logo} className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">{logo}</span>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
+        
         <section id="product" className="max-w-7xl mx-auto px-6 py-32">
           <motion.div {...fadeInUp} className="text-center mb-20">
-            <h2 className="text-4xl font-bold tracking-tight mb-4">Everything you need to ship.</h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold tracking-tight mb-4 text-slate-900 dark:text-white">Everything you need to ship.</h2>
+            <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
               No fluff. Just the essentials, refined for maximum performance.
             </p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard 
-              icon={Layout} 
-              title="Multi-tenant Flow" 
-              description="Switch seamlessly between organizations and projects without ever losing context." 
-            />
-            <FeatureCard 
-              icon={Users} 
-              title="Real-time Sync" 
-              description="Every change is broadcast instantly. Collaborative editing as fast as your thoughts." 
-            />
-            <FeatureCard 
-              icon={Terminal} 
-              title="Keyboard First" 
-              description="A command palette for everything. Never touch your mouse unless you want to." 
-            />
-            <FeatureCard 
-              icon={TrendingUp} 
-              title="Advanced Analytics" 
-              description="Velocity tracking, burndown charts, and cycle time metrics out of the box." 
-            />
-            <FeatureCard 
-              icon={Database} 
-              title="API Access" 
-              description="Robust GraphQL and REST APIs to connect Forge with your existing stack." 
-            />
-            <FeatureCard 
-              icon={ShieldCheck} 
-              title="Enterprise Security" 
-              description="SSO, audit logs, and granular permissions for peace of mind at any scale." 
-            />
+            <FeatureCard icon={Layout} title="Multi-tenant Flow" description="Switch seamlessly between organizations and projects without ever losing context." />
+            <FeatureCard icon={Users} title="Real-time Sync" description="Every change is broadcast instantly. Collaborative editing as fast as your thoughts." />
+            <FeatureCard icon={Terminal} title="Keyboard First" description="A command palette for everything. Never touch your mouse unless you want to." />
+            <FeatureCard icon={TrendingUp} title="Advanced Analytics" description="Velocity tracking, burndown charts, and cycle time metrics out of the box." />
+            <FeatureCard icon={Database} title="API Access" description="Robust GraphQL and REST APIs to connect Forge with your existing stack." />
+            <FeatureCard icon={ShieldCheck} title="Enterprise Security" description="SSO, audit logs, and granular permissions for peace of mind at any scale." />
           </div>
         </section>
 
-        {/* Showcase Sections */}
-        <section className="bg-slate-50/50 border-y border-outline-variant">
+        
+        <section className="bg-slate-50/50 dark:bg-slate-950/50 border-y border-outline-variant dark:border-slate-800">
           <div className="max-w-7xl mx-auto px-6 py-32 flex flex-col gap-32">
             {[
               {
@@ -261,14 +232,14 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${block.reverse ? 'lg:flex-row-reverse' : ''}`}
+                className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center`}
               >
                 <div className={`flex flex-col gap-6 ${block.reverse ? 'lg:order-2' : ''}`}>
                   <span className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase">{block.tag}</span>
-                  <h2 className="text-4xl font-bold tracking-tight">{block.title}</h2>
-                  <p className="text-lg text-slate-500 leading-relaxed">{block.desc}</p>
+                  <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{block.title}</h2>
+                  <p className="text-lg text-slate-500 dark:text-slate-400 leading-relaxed">{block.desc}</p>
                 </div>
-                <div className={`border border-outline-variant rounded-2xl bg-white p-3 shadow-xl shadow-slate-200/40 ${block.reverse ? 'lg:order-1' : ''}`}>
+                <div className={`border border-outline-variant dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 p-3 shadow-xl shadow-slate-200/40 dark:shadow-black/30 ${block.reverse ? 'lg:order-1' : ''}`}>
                   <img src={block.img} alt={block.title} className="rounded-xl w-full h-auto aspect-video object-cover" />
                 </div>
               </motion.div>
@@ -276,57 +247,29 @@ export default function App() {
           </div>
         </section>
 
-        {/* Pricing Section */}
+        
         <section id="pricing" className="max-w-7xl mx-auto px-6 py-32">
           <motion.div {...fadeInUp} className="text-center mb-20">
-            <h2 className="text-4xl font-bold tracking-tight mb-4">Pricing for builders.</h2>
-            <p className="text-lg text-slate-500">Simple, transparent pricing that scales with you.</p>
+            <h2 className="text-4xl font-bold tracking-tight mb-4 text-slate-900 dark:text-white">Pricing for builders.</h2>
+            <p className="text-lg text-slate-500 dark:text-slate-400">Simple, transparent pricing that scales with you.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <PricingCard 
-              title="Starter" 
-              price="$0" 
-              features={['Up to 3 members', '2 projects', 'Community support']} 
-            />
-            <PricingCard 
-              title="Pro" 
-              price="$19" 
-              features={['Unlimited members', 'Unlimited projects', 'Advanced analytics', 'Priority support']} 
-              highlighted={true}
-            />
-            <PricingCard 
-              title="Enterprise" 
-              price="Custom" 
-              features={['SSO & Audit logs', 'Dedicated success manager', 'Custom integrations']} 
-            />
+            <PricingCard title="Starter" price="$0" features={['Up to 3 members', '2 projects', 'Community support']} />
+            <PricingCard title="Pro" price="$19" features={['Unlimited members', 'Unlimited projects', 'Advanced analytics', 'Priority support']} highlighted={true} />
+            <PricingCard title="Enterprise" price="Custom" features={['SSO & Audit logs', 'Dedicated success manager', 'Custom integrations']} />
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="max-w-7xl mx-auto px-6 py-32 border-t border-outline-variant">
+        
+        <section className="max-w-7xl mx-auto px-6 py-32 border-t border-outline-variant dark:border-slate-800">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <TestimonialCard 
-              quote="Forge changed the way we build. The speed of the interface is unmatched."
-              author="David Chen"
-              role="CTO at Lumen"
-              avatar="https://i.pravatar.cc/100?img=11"
-            />
-            <TestimonialCard 
-              quote="Finally, a tool that respects our workflow instead of forcing a new one."
-              author="Sarah Jenkins"
-              role="Design Lead at Acme"
-              avatar="https://i.pravatar.cc/100?img=32"
-            />
-            <TestimonialCard 
-              quote="Keyboard shortcuts alone saved us hours every week. It's built for power users."
-              author="Marcus Thorne"
-              role="Engineer at Stark"
-              avatar="https://i.pravatar.cc/100?img=53"
-            />
+            <TestimonialCard quote="Forge changed the way we build. The speed of the interface is unmatched." author="David Chen" role="CTO at Lumen" avatar="https://i.pravatar.cc/100?img=11" />
+            <TestimonialCard quote="Finally, a tool that respects our workflow instead of forcing a new one." author="Sarah Jenkins" role="Design Lead at Acme" avatar="https://i.pravatar.cc/100?img=32" />
+            <TestimonialCard quote="Keyboard shortcuts alone saved us hours every week. It's built for power users." author="Marcus Thorne" role="Engineer at Stark" avatar="https://i.pravatar.cc/100?img=53" />
           </div>
         </section>
 
-        {/* CTA Section */}
+       
         <section className="max-w-7xl mx-auto px-6 py-32">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -346,12 +289,12 @@ export default function App() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-outline-variant bg-white pt-20 pb-10">
+      
+      <footer className="border-t border-outline-variant dark:border-slate-800 bg-white dark:bg-slate-950 pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
           <div className="col-span-2 md:col-span-1 flex flex-col gap-6">
             <Link href="/" className="text-2xl font-bold text-primary tracking-tight">Forge</Link>
-            <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
               The high-performance project management tool for builders.
             </p>
           </div>
@@ -361,21 +304,21 @@ export default function App() {
             { title: 'Company', links: ['About Us', 'Contact', 'Privacy Policy', 'Terms of Service'] }
           ].map((col) => (
             <div key={col.title} className="flex flex-col gap-6">
-              <h4 className="text-sm font-bold text-slate-900">{col.title}</h4>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">{col.title}</h4>
               <ul className="flex flex-col gap-4">
                 {col.links.map(link => (
-                  <li key={link}><Link href="#" className="text-sm text-slate-500 hover:text-primary transition-colors">{link}</Link></li>
+                  <li key={link}><Link href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors">{link}</Link></li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <div className="max-w-7xl mx-auto px-6 border-t border-outline-variant pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="max-w-7xl mx-auto px-6 border-t border-outline-variant dark:border-slate-800 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-xs text-slate-400">© 2024 Forge PM. All rights reserved. Built for builders.</p>
           <div className="flex items-center gap-6 text-slate-400">
-            <Link href="#" className="hover:text-primary transition-colors"><Globe size={18} /></Link>
-            <Link href="#" className="hover:text-primary transition-colors"><Mail size={18} /></Link>
-            <Link href="#" className="hover:text-primary transition-colors"><Users2 size={18} /></Link>
+            <Link href="#" className="hover:text-primary dark:hover:text-white transition-colors"><Globe size={18} /></Link>
+            <Link href="#" className="hover:text-primary dark:hover:text-white transition-colors"><Mail size={18} /></Link>
+            <Link href="#" className="hover:text-primary dark:hover:text-white transition-colors"><Users2 size={18} /></Link>
           </div>
         </div>
       </footer>
