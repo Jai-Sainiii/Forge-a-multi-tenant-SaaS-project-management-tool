@@ -1,26 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary: #251b72;
+  --color-primary-light: #3c3489;
+  --color-secondary: #006a61;
+  --color-secondary-light: #86f2e4;
+  --color-surface: #fcf8fb;
+  --color-outline: #787582;
+  --color-outline-variant: #c8c4d3;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    @apply font-sans bg-surface text-[#1c1b1d] antialiased;
+    background-image: radial-gradient(#787582 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 0 0;
+    position: relative;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#787582 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.markdown-body {
+  @apply text-sm leading-relaxed;
 }
