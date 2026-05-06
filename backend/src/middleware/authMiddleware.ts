@@ -2,6 +2,9 @@ import { type Request, type Response, type NextFunction } from "express";
 import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv"
+
+dotenv.config();
 
 export const signup = async (req: Request, res: Response) => {
     try {
@@ -20,10 +23,15 @@ export const signup = async (req: Request, res: Response) => {
         const hashedpassword: string = await bcrypt.hash(password, 10);
         
         const newUser = await prisma.user.create({data: {name, email, password: hashedpassword}});
+        const JWT_SECRET = process.env.JWT_SECRET;
+
+        if(!JWT_SECRET){
+            return res.status(500).json({message: "JWT_SECRET is not defined"});
+        }
         
         const token: string = jwt.sign(
             { id: newUser.id, email: newUser.email }, 
-            "secret-jwt-key", 
+            JWT_SECRET, 
             { expiresIn: "1h" }
         );
 
@@ -35,7 +43,7 @@ export const signup = async (req: Request, res: Response) => {
             maxAge: 60 * 60 * 1000,
         });
 
-        res.json({message: "Signup Successfull", token});
+        res.json({message: "Signup Successfull", user: {name: newUser.name, email: newUser.email}});
 
     } catch (error) {
         console.error("Signup error:", error);
@@ -63,9 +71,15 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Invalid password" });
         }
 
+        const JWT_SECRET = process.env.JWT_SECRET;
+
+        if(!JWT_SECRET){
+            return res.status(500).json({message: "JWT_SECRET is not defined"});
+        }
+
         const token: string = jwt.sign(
             { id: user.id, email: user.email },
-            "secret-jwt-key",
+            JWT_SECRET,
             { expiresIn: "1h" }
         );
 
@@ -77,7 +91,7 @@ export const login = async (req: Request, res: Response) => {
             maxAge: 60 * 60 * 1000,
         });
 
-        res.json({ message: "Login Successfull", token });
+        res.json({ message: "Login Successfull", user: {name: user.name, email: user.email} });
 
     } catch (error) {
         console.error("Login error:", error);
@@ -109,7 +123,13 @@ export const protectedRoute = async (req: Request, res: Response, next: NextFunc
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const decodedToken = jwt.verify(token, "secret-jwt-key");
+        const JWT_SECRET = process.env.JWT_SECRET;
+
+        if(!JWT_SECRET){
+            return res.status(500).json({message: "JWT_SECRET is not defined"});
+        }
+
+        const decodedToken = jwt.verify(token, JWT_SECRET);
 
         req.body.user = decodedToken;
 
