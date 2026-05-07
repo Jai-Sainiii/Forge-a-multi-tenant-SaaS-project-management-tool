@@ -139,3 +139,32 @@ export const protectedRoute = async (req: Request, res: Response, next: NextFunc
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const me = async (req: Request, res: Response) => {
+    try {
+        const token: string | undefined = req.cookies?.token;
+
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const JWT_SECRET = process.env.JWT_SECRET;
+
+        if(!JWT_SECRET){
+            return res.status(500).json({message: "JWT_SECRET is not defined"});
+        }
+
+        const decodedToken: any = jwt.verify(token, JWT_SECRET);
+
+        const user = await prisma.user.findUnique({where: {email: decodedToken.email}});
+
+        if(!user){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        res.json({user: {name: user.name, email: user.email}});
+    } catch (error) {
+        console.error("Me error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}

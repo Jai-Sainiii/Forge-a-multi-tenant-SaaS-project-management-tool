@@ -10,15 +10,16 @@ import { useAuth } from "@/authContext/AuthContext";
 import axios from "axios";
 
 const NAV_LINKS = [
-  { label: "About",   href: "/about" },
+  { label: "About", href: "/about" },
   { label: "Pricing", href: "/pricing" },
 ];
 
 export default function Navbar() {
-  const [isScrolled,       setIsScrolled]       = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [open,             setOpen]             = useState(false);
-  const [mounted,          setMounted]          = useState(false);
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
   const { theme, setTheme } = useTheme();
   const { user } = useAuth()!;
@@ -33,7 +34,9 @@ export default function Navbar() {
   const handleLogout = () => {
     axios
       .post("http://localhost:5000/auth/logout", {}, { withCredentials: true })
-      .then(() => { window.location.href = "/"; })
+      .then(() => {
+        window.location.href = "/";
+      })
       .catch((err) => console.error(err.message));
   };
 
@@ -49,10 +52,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-
-          
           <div className="flex items-center gap-10">
-            {/* Logo */}
             <Link
               href="/"
               className="text-xl font-bold tracking-tight text-primary dark:text-white"
@@ -60,7 +60,6 @@ export default function Navbar() {
               Forge
             </Link>
 
-            
             <div className="hidden md:flex items-center gap-6">
               {NAV_LINKS.map(({ label, href }) => (
                 <Link
@@ -72,7 +71,7 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {user && (
+              {user ? (
                 <Link
                   href="/workspace"
                   className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors"
@@ -80,30 +79,37 @@ export default function Navbar() {
                   <LayoutDashboard size={15} />
                   Workspace
                 </Link>
+              ) : (
+                <span
+                  onClick={() => setOpen(true)}
+                  className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <LayoutDashboard size={15} />
+                  Workspace
+                </span>
               )}
             </div>
           </div>
 
-          
           <div className="flex items-center gap-3">
-
-            
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="Toggle theme"
               className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               {mounted ? (
-                theme === "dark" ? <Sun size={18} /> : <Moon size={18} />
+                theme === "dark" ? (
+                  <Sun size={18} />
+                ) : (
+                  <Moon size={18} />
+                )
               ) : (
                 <div className="w-[18px] h-[18px]" />
               )}
             </button>
 
-           
             {user ? (
               <div className="hidden sm:flex items-center gap-3">
-                
                 <div className="flex items-center gap-2 border border-outline-variant dark:border-slate-700 rounded-full pl-1 pr-3 py-1">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-white">
@@ -115,7 +121,6 @@ export default function Navbar() {
                   </span>
                 </div>
 
-                
                 <button
                   onClick={handleLogout}
                   className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors cursor-pointer"
@@ -124,16 +129,21 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              
               <div className="hidden sm:flex items-center gap-2">
                 <button
-                  onClick={() => setOpen(true)}
+                  onClick={() => {
+                    setOpen(true);
+                    setActiveTab("login");
+                  }}
                   className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 >
                   Log in
                 </button>
                 <button
-                  onClick={() => setOpen(true)}
+                  onClick={() => {
+                    setOpen(true);
+                    setActiveTab("signup");
+                  }}
                   className="bg-primary-light hover:bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer"
                 >
                   Start for free
@@ -141,7 +151,6 @@ export default function Navbar() {
               </div>
             )}
 
-            
             <button
               className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors cursor-pointer"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -152,7 +161,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -174,21 +182,32 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {user && (
+              {user ? (
                 <Link
                   href="/workspace"
-                  onClick={closeMobile}
-                  className="text-base font-medium text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-white transition-colors py-1"
+                  className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors"
                 >
+                  <LayoutDashboard size={15} />
                   Workspace
                 </Link>
+              ) : (
+                <span
+                  onClick={() => setOpen(true)}
+                  className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <LayoutDashboard size={15} />
+                  Workspace
+                </span>
               )}
 
               <div className="h-px bg-outline-variant dark:bg-slate-800 my-1" />
 
               {user ? (
                 <button
-                  onClick={() => { handleLogout(); closeMobile(); }}
+                  onClick={() => {
+                    handleLogout();
+                    closeMobile();
+                  }}
                   className="text-base font-medium text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white py-1 text-left cursor-pointer"
                 >
                   Log out
@@ -196,14 +215,22 @@ export default function Navbar() {
               ) : (
                 <div className="flex flex-col gap-2 pt-1">
                   <button
-                    onClick={() => { setOpen(true); closeMobile(); }}
+                    onClick={() => {
+                      setOpen(true);
+                      closeMobile();
+                      setActiveTab("login");
+                    }}
                     className="text-base font-medium text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-white py-1 text-left cursor-pointer"
                   >
                     Log in
                   </button>
                   <button
-                    onClick={() => { setOpen(true); closeMobile(); }}
-                    className="bg-primary-light text-white text-sm font-medium px-4 py-2.5 rounded-lg w-full cursor-pointer"
+                    onClick={() => {
+                      setOpen(true);
+                      closeMobile();
+                      setActiveTab("signup");
+                    }}
+                    className="bg-primary-light text-white text-sm font-medium px-4 py-2.5 rounded-lg w-fit cursor-pointer"
                   >
                     Start for free
                   </button>
@@ -214,7 +241,12 @@ export default function Navbar() {
         </AnimatePresence>
       </nav>
 
-      <AuthModel isOpen={open} onClose={() => setOpen(false)} />
+      <AuthModel
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     </>
   );
 }

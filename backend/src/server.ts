@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { prismaConnect } from "./config/prismaConnect.js";
 import authRoutes from "./routes/authRoutes.js";
 import checkRoute from "./routes/checkRoute.js";
+import workSpaceRoutes from "./routes/workSpaceRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.use(cors({
 
 app.use("/auth", authRoutes);
 app.use("/check", checkRoute);
+app.use("/workspace", workSpaceRoutes);
 
 prismaConnect();
 

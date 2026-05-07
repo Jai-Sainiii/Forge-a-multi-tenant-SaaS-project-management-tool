@@ -9,11 +9,14 @@ import SignupForm from "./SignupForm";
 export default function AuthModel({
   isOpen,
   onClose,
+  activeTab,
+  setActiveTab,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  activeTab: "login" | "signup";
+  setActiveTab: (tab: "login" | "signup") => void;
 }) {
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
   
   useEffect(() => {
