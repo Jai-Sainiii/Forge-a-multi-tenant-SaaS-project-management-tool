@@ -93,10 +93,10 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
       }}
     >
-      {/* Card header */}
+      
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Avatar */}
+          
           <div
             style={{
               width: 36,
@@ -137,7 +137,7 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
             >
               {workspace.companyname}
             </p>
-            {/* Visibility badge */}
+            
             <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
               {workspace.visibility === "private" ? (
                 <Lock size={10} color="#9A9890" />
@@ -152,7 +152,7 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
         </div>
       </div>
 
-      {/* Description */}
+      
       {workspace.describtion && (
         <p
           style={{
@@ -170,7 +170,7 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
         </p>
       )}
 
-      {/* Footer meta */}
+     
       <div
         style={{
           display: "flex",
@@ -228,7 +228,7 @@ export default function AllWorkspacePage() {
 
   return (
     <>
-      {/* Modal */}
+      
       {isOpen && (
         <CreateWorkspaceModal
           onClose={closeModal}
@@ -236,9 +236,9 @@ export default function AllWorkspacePage() {
         />
       )}
 
-      {/* Page content */}
+      
       <div style={{ padding: "28px 32px", maxWidth: 1100 }}>
-        {/* Page header */}
+        
         <div style={{ marginBottom: 28 }}>
           <h1
             style={{
@@ -257,7 +257,7 @@ export default function AllWorkspacePage() {
           </p>
         </div>
 
-        {/* Error state */}
+       
         {fetchError && (
           <div
             style={{
@@ -294,7 +294,7 @@ export default function AllWorkspacePage() {
           </div>
         )}
 
-        {/* Loading skeletons */}
+        
         {loading && (
           <div
             style={{
@@ -309,7 +309,7 @@ export default function AllWorkspacePage() {
           </div>
         )}
 
-        {/* Empty state */}
+        
         {!loading && !fetchError && workspaces.length === 0 && (
           <div
             style={{
@@ -344,7 +344,7 @@ export default function AllWorkspacePage() {
           </div>
         )}
 
-        {/* Workspace grid */}
+        
         {!loading && !fetchError && workspaces.length > 0 && (
           <div
             style={{

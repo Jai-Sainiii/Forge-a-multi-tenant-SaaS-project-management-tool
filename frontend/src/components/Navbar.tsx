@@ -73,7 +73,7 @@ export default function Navbar() {
 
               {user ? (
                 <Link
-                  href="/workspace"
+                  href="/workspace/all"
                   className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors"
                 >
                   <LayoutDashboard size={15} />
@@ -184,7 +184,7 @@ export default function Navbar() {
 
               {user ? (
                 <Link
-                  href="/workspace"
+                  href="/workspace/all"
                   className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors"
                 >
                   <LayoutDashboard size={15} />

@@ -20,7 +20,7 @@ const WORKSPACE_PROJECTS = [
 ];
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/workspace", badge: null },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/workspace/", badge: null },
   { label: "Projects",  icon: Folder,          href: "/workspace/projects", badge: "12" },
   { label: "Tasks",     icon: CheckSquare,      href: "/workspace/tasks",   badge: "34" },
   { label: "Members",   icon: Users,            href: "/workspace/members", badge: null },

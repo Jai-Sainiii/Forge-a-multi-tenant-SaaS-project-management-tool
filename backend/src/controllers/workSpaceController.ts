@@ -14,7 +14,16 @@ export const createWorkSpace = async (req: Request, res: Response) => {
       },
     });
 
-    res.json({ success: true, workspace });
+    const workspaceMember = await prisma.member.create({
+        data: {
+            workspaceId: workspace.id,
+            userId: user.id,
+            isActive: true,
+            role: "admin",
+        },
+    });
+
+    res.json({ success: true, workspace, workspaceMember });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -42,6 +51,29 @@ export const getWorkSpace = async (req: Request, res: Response) => {
         const workspace = await prisma.workspace.findMany({
             where: {
                 userId: user.id,
+            },
+        });
+        res.json({ success: true, workspace });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+export const joinWorkSpace = async (req: Request, res: Response) => {
+    try {
+        const user = req.body.user;
+        const workspace = await prisma.workspace.update({
+            where: {
+                id: req.body.id,
+            },
+            data: {
+                members: {
+                    connect: {
+                        id: user.id,
+                    },
+                },
             },
         });
         res.json({ success: true, workspace });

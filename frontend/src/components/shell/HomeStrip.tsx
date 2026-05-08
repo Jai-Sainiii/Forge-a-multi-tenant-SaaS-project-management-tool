@@ -3,21 +3,28 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Home, Plus } from "lucide-react";
+import { useState } from "react";
 
-const WORKSPACES = [
-  { id: "shipyard", initial: "S", name: "Shipyard", color: "#6C5CE7" },
-  { id: "acme", initial: "A", name: "Acme Corp", color: "#00B894" },
-  { id: "pixel", initial: "P", name: "Pixel Co", color: "#FDCB6E" },
-];
-
-interface HomeStripProps {
-  activeWorkspace?: string;
+interface workspaces {
+  id: string;
+  title: string;
+  companyname: string;
+  describtion: string;
+  members: [];
+  leftedMembers: [];
+  projects: [];
+  visibility: string;
 }
 
-export default function HomeStrip({
-  activeWorkspace = "shipyard",
-}: HomeStripProps) {
+interface HomeStripProps {
+  workspaces: workspaces[];
+}
+
+export default function HomeStrip({ workspaces: workspaces }: HomeStripProps) {
   const router = useRouter();
+
+  // console.log(activeWorkspace)
+  const [activeWorkspace, setActiveWorkspace] = useState<string>("");
 
   return (
     <aside
@@ -40,32 +47,39 @@ export default function HomeStrip({
 
       {/* Workspace dots */}
       <div className="flex flex-col items-center gap-2 mt-1">
-        {WORKSPACES.map((ws) => {
+        {workspaces.map((ws) => {
           const isActive = ws.id === activeWorkspace;
           return (
             <button
               key={ws.id}
-              title={ws.name}
-              onClick={() => router.push(`/workspace/${ws.id}`)}
+              title={ws.title}
+              onClick={() => {
+                setActiveWorkspace(ws.id);
+                router.push(`/workspace/${ws.id}/dashboard`);
+              }}
               className="transition-transform duration-150 hover:scale-[1.08] focus:outline-none"
               style={{
                 width: 24,
                 height: 24,
                 borderRadius: 6,
-                background: ws.color + "33",
+                background: "#f3f3f3ff",
                 border: isActive
                   ? "2px solid rgba(255,255,255,0.30)"
                   : "2px solid transparent",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: ws.color,
+                color: "432422",
                 fontSize: 10,
                 fontWeight: 700,
                 cursor: "pointer",
               }}
             >
-              {ws.initial}
+              {ws.title
+                .split(" ")
+                .map((n: string) => n[0])
+                .join("")
+                .toUpperCase()}
             </button>
           );
         })}

@@ -21,7 +21,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  workspaces Workspace[]
+  workspaces    Workspace[]
+  memberInfo   Member[]
+  projectInfo   ProjectMember[]
+  taskInfo   taskMember[]
 }
 
 model Workspace {
@@ -30,9 +33,87 @@ model Workspace {
   title       String
   companyname String
   describtion String
+  members     Member[]
+  leftedMembers String[] @default([])
+  projects    Projects[]
+  tasks       task[]
   visibility  String   @default("public") //public , private
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model Projects {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  status      String
+  workspaceId Int
+  projectMembers ProjectMember[]
+  leftedMembers String[] @default([])
+  tasks       task[]
+  positions String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+
+model task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  status      String
+  projectId   Int
+  workspaceId Int
+  taskMembers taskMember[]
+  leftedMembers String[] @default([])
+  priority    String @default("low") //low, medium, high
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project  Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Member {
+  id Int @id @default(autoincrement())
+  userId Int
+  workspaceId Int
+  isActive Boolean @default(true)
+  role String @default("member") //admin, member, viewer, tester
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+
+model ProjectMember {
+  id Int @id @default(autoincrement())
+  userId Int
+  projectId Int
+  position String[]
+  role String @default("member") //admin, member, viewer, tester
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model taskMember {
+  id Int @id @default(autoincrement())
+  userId Int
+  taskId Int
+  role String @default("member") //admin, member, viewer, tester
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }

@@ -1,6 +1,9 @@
 "use client";
+import { use } from "react";
 
 import { useAuth } from "@/authContext/AuthContext";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 
 interface StatCardProps {
@@ -136,9 +139,23 @@ function TaskRow({ title, priority, due, done }: TaskRowProps) {
 }
 
 
-export default function WorkspaceDashboard() {
+export default async function WorkspaceDashboard({ params }: { params: Promise<{ workspaceID: string }> }) {
   const { user } = useAuth()!;
-  const firstName = user?.name?.split(" ")[0] ?? "there";
+  const { workspaceID } = use(params);
+  const [singleWorkspaceData,setSingleWorkspaceData] = useState<any>([]);
+ 
+
+  useEffect(() => {
+    async function getSingleWorkspaceData() {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/workspace/${workspaceID}`,
+        { withCredentials: true },
+      );
+      console.log(response);
+      setSingleWorkspaceData(response.data.workspaceData);
+    }
+    getSingleWorkspaceData();
+  }, []);
 
   return (
     <div style={{ padding: "28px 32px", maxWidth: 1100 }}>
@@ -152,7 +169,7 @@ export default function WorkspaceDashboard() {
           lineHeight: 1.3,
         }}
       >
-        Good morning, {firstName} 👋
+        Good morning, {singleWorkspaceData?.workspace.title} 👋
       </h1>
 
       {/* Stat cards */}
