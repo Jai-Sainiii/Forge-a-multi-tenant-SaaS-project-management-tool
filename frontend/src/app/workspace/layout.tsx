@@ -16,11 +16,12 @@ export default function WorkspaceLayout({
 }) {
   const { user } = useAuth()!;
   const path = usePathname();
-  const [workspaces, setWorkspaces] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
 
   const activeHomepage = () => {
     if (path === "/workspace/all") return null;
-    else return <Sidebar user={user} />;
+    else return <Sidebar user={user} workspaces = {workspaces} />;
   };
 
   useEffect(() => {

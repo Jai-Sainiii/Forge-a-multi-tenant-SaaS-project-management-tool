@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import {
   LayoutDashboard,
   Folder,
@@ -19,30 +19,60 @@ const WORKSPACE_PROJECTS = [
   { name: "API Integration",  color: "#FDCB6E" },
 ];
 
-const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/workspace/", badge: null },
-  { label: "Projects",  icon: Folder,          href: "/workspace/projects", badge: "12" },
-  { label: "Tasks",     icon: CheckSquare,      href: "/workspace/tasks",   badge: "34" },
-  { label: "Members",   icon: Users,            href: "/workspace/members", badge: null },
-  { label: "Activity",  icon: Activity,         href: "/workspace/activity",badge: null },
-];
+
 
 const ACCOUNT_ITEMS = [
   { label: "Settings", icon: Settings, href: "/workspace/settings" },
 ];
 
-interface SidebarProps {
-  user: { name: string; email: string } | null;
+interface Workspaces {
+  id: string;
+  title: string;
+  companyname: string;
+  describtion: string;
+  members: {
+    id: string;
+    role: string;
+  }[];
 }
 
-export default function Sidebar({ user }: SidebarProps) {
+interface SidebarProps {
+  user: { name: string; email: string } | null;
+  workspaces: Workspaces[];
+}
+
+export default function Sidebar({ user, workspaces }: SidebarProps) {
   const pathname = usePathname();
+  const params = useParams();
+  const workspaceID = params?.workspaceID as string | undefined;
+
+  const workspace = workspaces.find((w) => w.id === workspaceID);
+  console.log(workspace)
+
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
     : "JS";
 
+  const getNavItems = () => {
+    const base = workspaceID ? `/workspace/${workspaceID}` : `/workspace`;
+    return [
+      { label: "Dashboard", icon: LayoutDashboard, href: base, badge: null },
+      { label: "Projects",  icon: Folder,          href: `${base}/projects`, badge: null },
+      { label: "Tasks",     icon: CheckSquare,     href: `${base}/tasks`,   badge: null },
+      { label: "Members",   icon: Users,           href: `${base}/members`, badge: null },
+      { label: "Activity",  icon: Activity,        href: `${base}/activity`,badge: null },
+    ];
+  };
+
+  const currentNavItems = getNavItems();
+
   const isActive = (href: string) => {
-    if (href === "/workspace") return pathname === "/workspace";
+    if (workspaceID && href === `/workspace/${workspaceID}`) {
+      return pathname === href;
+    }
+    if (!workspaceID && href === "/workspace") {
+      return pathname === "/workspace";
+    }
     return pathname.startsWith(href);
   };
 
@@ -88,15 +118,15 @@ export default function Sidebar({ user }: SidebarProps) {
               flexShrink: 0,
             }}
           >
-            S
+            {workspace?.title?.charAt(0).toUpperCase()}
           </div>
           {/* Info */}
           <div className="flex flex-col items-start min-w-0 flex-1">
             <span className="text-[13px] font-[500] text-[#F0EEF8] leading-tight truncate w-full text-left">
-              Shipyard
+              {workspace?.title}
             </span>
             <span className="text-[10px] text-[#5A5870] leading-tight">
-              Pro plan · 9 members
+              Pro plan · {workspace?.members?.length || 0} members
             </span>
           </div>
           <ChevronDown size={13} className="text-[#5A5870] group-hover:text-[#7A7885] transition-colors shrink-0" />
@@ -113,7 +143,7 @@ export default function Sidebar({ user }: SidebarProps) {
           >
             Workspace
           </span>
-          {NAV_ITEMS.map(({ label, icon: Icon, href, badge }) => (
+          {currentNavItems.map(({ label, icon: Icon, href, badge }) => (
             <Link key={label} href={href} className={navItemClass(href)}>
               <Icon size={14} strokeWidth={1.8} className="shrink-0" />
               <span className="flex-1 truncate">{label}</span>

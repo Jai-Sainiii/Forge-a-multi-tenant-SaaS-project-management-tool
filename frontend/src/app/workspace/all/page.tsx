@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { Briefcase, Globe, Lock, Users, Calendar, AlertCircle, Loader2 } from "lucide-react";
+import { Briefcase, Globe, Lock, Users, Calendar, AlertCircle } from "lucide-react";
 import { useWorkspaceModal } from "@/context/WorkspaceModalContext";
 import CreateWorkspaceModal from "@/components/forms/CreateWorkspace";
 
@@ -223,6 +223,7 @@ export default function AllWorkspacePage() {
   }, []);
 
   useEffect(() => {
+    
     fetchWorkspaces();
   }, [fetchWorkspaces]);
 

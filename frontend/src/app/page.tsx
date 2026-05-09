@@ -2,18 +2,13 @@
 import { motion } from 'framer-motion';
 import { 
   ArrowRight, 
-  CheckCircle2, 
   Terminal, 
   Users, 
   Layout, 
   TrendingUp, 
   Database, 
-  ShieldCheck,
-  Globe,
-  Mail,
-  Users2
+  ShieldCheck
 } from 'lucide-react';
-import Link from 'next/link';
 import { ElementType } from 'react';
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: ElementType, title: string, description: string }) => (

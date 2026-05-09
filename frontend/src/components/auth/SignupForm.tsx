@@ -33,8 +33,12 @@ export default function SignupForm({
       console.log(res.data);
       setSuccess(true);
       setTimeout(() => onSwitchToLogin(), 1500);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Could not create account. Try again.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Could not create account. Try again.");
+      } else {
+        setError("Could not create account. Try again.");
+      }
     } finally {
       setIsLoading(false);
     }

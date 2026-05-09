@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { use } from "react";
 
@@ -74,7 +75,7 @@ function ActivityRow({ initials, avatarColor, action, time }: ActivityRowProps) 
 
 interface TaskRowProps {
   title: string;
-  priority: "High" | "Medium" | "Low";
+  priority: string;
   due: string;
   done?: boolean;
 }
@@ -84,13 +85,13 @@ const PRIORITY_STYLE: Record<string, { bg: string; color: string }> = {
   Low:    { bg: "#F0FDF4", color: "#16A34A" },
 };
 function TaskRow({ title, priority, due, done }: TaskRowProps) {
-  const ps = PRIORITY_STYLE[priority];
+  const ps = PRIORITY_STYLE[priority] || PRIORITY_STYLE["Low"];
   return (
     <div
       className="flex items-center gap-3 py-3 hover:bg-[#F4F3F0] transition-colors rounded-lg px-2 -mx-2 cursor-default"
       style={{ borderBottom: "1px solid #F0EEE9" }}
     >
-      {/* Checkbox */}
+      
       <div
         style={{
           width: 16,
@@ -139,10 +140,15 @@ function TaskRow({ title, priority, due, done }: TaskRowProps) {
 }
 
 
-export default async function WorkspaceDashboard({ params }: { params: Promise<{ workspaceID: string }> }) {
+export default function WorkspaceDashboard({ params }: { params: Promise<{ workspaceID: string }> }) {
   const { user } = useAuth()!;
   const { workspaceID } = use(params);
-  const [singleWorkspaceData,setSingleWorkspaceData] = useState<any>([]);
+  const [singleWorkspaceData, setSingleWorkspaceData] = useState<object>([]);
+  const [workspace, setWorkspace] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+  
  
 
   useEffect(() => {
@@ -151,11 +157,15 @@ export default async function WorkspaceDashboard({ params }: { params: Promise<{
         `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/workspace/${workspaceID}`,
         { withCredentials: true },
       );
-      console.log(response);
+    //   console.log(response.data.workspaceData);
       setSingleWorkspaceData(response.data.workspaceData);
+      setWorkspace(response.data.workspaceData.workspace);
+      setProjects(response.data.workspaceData.projects);
+      setTasks(response.data.workspaceData.tasks);
+      setMembers(response.data.workspaceData.members);
     }
     getSingleWorkspaceData();
-  }, []);
+  }, [workspaceID]);
 
   return (
     <div style={{ padding: "28px 32px", maxWidth: 1100 }}>
@@ -169,15 +179,15 @@ export default async function WorkspaceDashboard({ params }: { params: Promise<{
           lineHeight: 1.3,
         }}
       >
-        Good morning, {singleWorkspaceData?.workspace.title} 👋
+        Good morning, {user?.name} 👋
       </h1>
 
       {/* Stat cards */}
       <div className="flex gap-4 mb-8" style={{ flexWrap: "wrap" }}>
-        <StatCard label="Active Projects" value="12" sub="+2 this week" subColor="#16A34A" />
-        <StatCard label="Open Tasks"      value="34" sub="8 due today"  subColor="#D97706" />
-        <StatCard label="Team Members"    value="9"  sub="2 online now" subColor="#9A9890" />
-        <StatCard label="Completed"       value="87%" sub="this month"  subColor="#6C5CE7" />
+        <StatCard label="Active Projects" value={projects?.length?.toString() || "0"} sub="" subColor="#16A34A" />
+        <StatCard label="Open Tasks"      value={tasks?.filter((t: any) => t.status !== "done").length?.toString() || "0"} sub=""  subColor="#D97706" />
+        <StatCard label="Team Members"    value={members?.length?.toString() || "0"}  sub="" subColor="#9A9890" />
+        <StatCard label="Completed Tasks" value={tasks?.length > 0 ? `${Math.round((tasks.filter((t: any) => t.status === "done").length / tasks.length) * 100)}%` : "0%"} sub=""  subColor="#6C5CE7" />
       </div>
 
       
@@ -201,31 +211,28 @@ export default async function WorkspaceDashboard({ params }: { params: Promise<{
               letterSpacing: "-0.01em",
             }}
           >
-            Recent Activity
+            Recent Projects
           </h2>
           <p style={{ fontSize: 11, color: "#9A9890", marginBottom: 12 }}>
-            Latest updates across the workspace
+            Latest projects across the workspace
           </p>
-          <ActivityRow
-            initials="JS" avatarColor="#6C5CE7"
-            action="Jai Saini created a new task in Website Redesign"
-            time="2 min ago"
-          />
-          <ActivityRow
-            initials="AR" avatarColor="#00B894"
-            action="Arya R. moved 'API Auth' to In Review"
-            time="14 min ago"
-          />
-          <ActivityRow
-            initials="MK" avatarColor="#E17055"
-            action="Mia K. commented on Mobile App v2 sprint"
-            time="1 hr ago"
-          />
-          <ActivityRow
-            initials="TL" avatarColor="#FDCB6E" 
-            action="Team added 2 new members to Shipyard"
-            time="3 hrs ago"
-          />
+          {projects && projects.length > 0 ? (
+            projects.slice(0, 5).map((project: any, i: number) => {
+              const colors = ["#6C5CE7", "#00B894", "#E17055", "#FDCB6E"];
+              const initials = project.name.substring(0, 2).toUpperCase();
+              return (
+                <ActivityRow
+                  key={project.id}
+                  initials={initials}
+                  avatarColor={colors[i % colors.length]}
+                  action={`Project ${project.name} was created`}
+                  time={new Date(project.createdAt).toLocaleDateString()}
+                />
+              );
+            })
+          ) : (
+            <p style={{ fontSize: 13, color: "#9A9890" }}>No recent projects.</p>
+          )}
         </div>
 
         
@@ -251,11 +258,19 @@ export default async function WorkspaceDashboard({ params }: { params: Promise<{
           <p style={{ fontSize: 11, color: "#9A9890", marginBottom: 12 }}>
             Tasks assigned to you
           </p>
-          <TaskRow title="Finalize homepage redesign wireframes" priority="High"   due="Today" />
-          <TaskRow title="Review pull request for auth module"    priority="High"   due="Today" />
-          <TaskRow title="Write API integration docs"             priority="Medium" due="May 9" />
-          <TaskRow title="Update onboarding copy"                 priority="Low"    due="May 12" />
-          <TaskRow title="Set up CI/CD pipeline"                  priority="Medium" due="May 8" done />
+          {tasks && tasks.length > 0 ? (
+            tasks.slice(0, 5).map((task: any) => (
+              <TaskRow 
+                key={task.id}
+                title={task.title} 
+                priority={task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : "Medium"} 
+                due={new Date(task.createdAt).toLocaleDateString()} 
+                done={task.status === "done" || task.status === "completed"} 
+              />
+            ))
+          ) : (
+            <p style={{ fontSize: 13, color: "#9A9890" }}>No tasks yet.</p>
+          )}
         </div>
       </div>
     </div>

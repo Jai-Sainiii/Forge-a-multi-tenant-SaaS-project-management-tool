@@ -38,8 +38,12 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
         const tasks = await prisma.task.findMany({
             where: { workspaceId: workspaceid },
         });
+
+        const members = await prisma.member.findMany({
+            where: { workspaceId: workspaceid },
+        });
         
-        res.json({ success: true, workspaceData: { workspace, projects, tasks }});
+        res.json({ success: true, workspaceData: { workspace, projects, tasks, members }});
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Internal server error" });

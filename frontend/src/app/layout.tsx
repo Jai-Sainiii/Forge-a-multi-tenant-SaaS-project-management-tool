@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/authContext/AuthContext";
 import ConditionalShell from "@/components/ConditionalShell";
+import { WorkspaceModalProvider } from "@/context/WorkspaceModalContext";
 
 export const metadata: Metadata = {
   title: "Forge — Project Management for Modern Teams",
@@ -19,9 +20,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            <ConditionalShell>
-              {children}
-            </ConditionalShell>
+            <WorkspaceModalProvider>
+              <ConditionalShell>
+                {children}
+              </ConditionalShell>
+            </WorkspaceModalProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>

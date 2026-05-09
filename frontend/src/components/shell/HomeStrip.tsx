@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Home, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -55,7 +55,7 @@ export default function HomeStrip({ workspaces: workspaces }: HomeStripProps) {
               title={ws.title}
               onClick={() => {
                 setActiveWorkspace(ws.id);
-                router.push(`/workspace/${ws.id}/dashboard`);
+                router.push(`/workspace/${ws.id}`);
               }}
               className="transition-transform duration-150 hover:scale-[1.08] focus:outline-none"
               style={{

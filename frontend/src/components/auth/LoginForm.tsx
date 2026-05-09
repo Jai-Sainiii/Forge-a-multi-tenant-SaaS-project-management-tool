@@ -30,8 +30,12 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
         auth.setUser(res.data.user);
       }
       onClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Invalid email or password.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Invalid email or password.");
+      } else {
+        setError("Invalid email or password.");
+      }
     } finally {
       setIsLoading(false);
     }

@@ -41,8 +41,12 @@ export default function CreateWorkspaceModal({ onClose, onSuccess }: CreateWorks
       );
       onSuccess?.();
       onClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Something went wrong. Please try again.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -286,7 +290,7 @@ export default function CreateWorkspaceModal({ onClose, onSuccess }: CreateWorks
                 className="ws-input"
                 name="describtion"
                 value={formData.describtion}
-                onChange={handleChange as any}
+                onChange={handleChange}
                 placeholder="What is this workspace for?"
                 rows={3}
                 style={{
