@@ -26,7 +26,7 @@ const ACCOUNT_ITEMS = [
 ];
 
 interface Workspaces {
-  id: string;
+  id: number;
   title: string;
   companyname: string;
   describtion: string;
@@ -44,10 +44,9 @@ interface SidebarProps {
 export default function Sidebar({ user, workspaces }: SidebarProps) {
   const pathname = usePathname();
   const params = useParams();
-  const workspaceID = params?.workspaceID as string | undefined;
+  const workspaceID = params?.workspaceID as number | undefined;
 
-  const workspace = workspaces.find((w) => w.id === workspaceID);
-  console.log(workspace)
+  const workspace = workspaces.find((w) => w.id === Number(workspaceID));
 
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()

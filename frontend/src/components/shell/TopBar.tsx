@@ -16,24 +16,34 @@ import { useParams } from "next/navigation";
 //     return pathname.startsWith(href);
 //   };
 
-export default function TopBar() {
+interface Workspace{
+  id: number;
+  title: string;
+}
+
+interface TopbarProps{
+  workspaces: Workspace[];
+}
+
+export default function TopBar({ workspaces }: TopbarProps) {
   const { user } = useAuth()!;
   const pathname = usePathname();
   const homepage = pathname === "/workspace/all";
   const params = useParams();
-  const workspaceID = params?.workspaceID as string | undefined;
+  const workspaceID = params?.workspaceID as number | undefined;
+  const workspace = workspaces.find((w) => w.id === Number(workspaceID));
   const { openModal } = useWorkspaceModal();
   
   const PAGE_META: Record<string, { title: string; crumb: string }> = {
-    "/workspace": { title: "Dashboard", crumb: "Shipyard › Dashboard" },
-    "/workspace/projects": { title: "Projects", crumb: "Shipyard › Projects" },
-    "/workspace/tasks": { title: "Tasks", crumb: "Shipyard › Tasks" },
-    "/workspace/members": { title: "Members", crumb: "Shipyard › Members" },
-    "/workspace/activity": { title: "Activity", crumb: "Shipyard › Activity" },
-    "/workspace/settings": { title: "Settings", crumb: "Shipyard › Settings" },
+    "/workspace": { title: "Dashboard", crumb: `${workspace?.title} › Dashboard` },
+    "/workspace/projects": { title: "Projects", crumb: `${workspace?.title} › Projects` },
+    "/workspace/tasks": { title: "Tasks", crumb: `${workspace?.title} › Tasks` },
+    "/workspace/members": { title: "Members", crumb: `${workspace?.title} › Members` },
+    "/workspace/activity": { title: "Activity", crumb: `${workspace?.title} › Activity` },
+    "/workspace/settings": { title: "Settings", crumb: `${workspace?.title} › Settings` },
   };
   
-  const meta = PAGE_META[pathname] ?? { title: "Workspace", crumb: "Shipyard" };
+  const meta = PAGE_META[pathname] ?? { title: "Workspace", crumb: `${workspace?.title}` };
 
 
   if (homepage) {

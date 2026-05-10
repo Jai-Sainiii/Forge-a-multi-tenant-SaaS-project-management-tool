@@ -9,6 +9,16 @@ import { WorkspaceModalProvider } from "@/context/WorkspaceModalContext";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 
+// interface Workspace {
+//   id: string;
+//   title: string;
+//   companyname: string;
+//   describtion?: string;
+//   visibility?: string;
+//   memberCount?: number;
+//   createdAt?: string;
+// }
+
 export default function WorkspaceLayout({
   children,
 }: {
@@ -16,12 +26,11 @@ export default function WorkspaceLayout({
 }) {
   const { user } = useAuth()!;
   const path = usePathname();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [workspaces, setWorkspaces] = useState<[]>([]);
 
   const activeHomepage = () => {
     if (path === "/workspace/all") return null;
-    else return <Sidebar user={user} workspaces = {workspaces} />;
+    else return <Sidebar user={user} workspaces={workspaces} />;
   };
 
   useEffect(() => {
@@ -53,7 +62,7 @@ export default function WorkspaceLayout({
           className="flex flex-col flex-1 overflow-hidden"
           style={{ background: "#F7F6F3" }}
         >
-          <TopBar />
+          <TopBar workspaces={workspaces} />
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
