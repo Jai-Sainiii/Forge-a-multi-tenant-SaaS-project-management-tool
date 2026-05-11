@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import checkRoute from "./routes/checkRoute.js";
 import workSpaceRoutes from "./routes/workSpaceRoutes.js";
 import dashBoardRoutes from "./routes/dashBoardRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use("/auth", authRoutes);
 app.use("/check", checkRoute);
 app.use("/workspace", workSpaceRoutes);
 app.use("/dashboard", dashBoardRoutes);
+app.use("/project", projectRoutes);
 
 prismaConnect();
 

@@ -42,6 +42,7 @@ export type ProjectMemberMinAggregateOutputType = {
   id: number | null
   userId: number | null
   projectId: number | null
+  position: string | null
   role: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -51,6 +52,7 @@ export type ProjectMemberMaxAggregateOutputType = {
   id: number | null
   userId: number | null
   projectId: number | null
+  position: string | null
   role: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -84,6 +86,7 @@ export type ProjectMemberMinAggregateInputType = {
   id?: true
   userId?: true
   projectId?: true
+  position?: true
   role?: true
   createdAt?: true
   updatedAt?: true
@@ -93,6 +96,7 @@ export type ProjectMemberMaxAggregateInputType = {
   id?: true
   userId?: true
   projectId?: true
+  position?: true
   role?: true
   createdAt?: true
   updatedAt?: true
@@ -199,7 +203,7 @@ export type ProjectMemberGroupByOutputType = {
   id: number
   userId: number
   projectId: number
-  position: string[]
+  position: string
   role: string
   createdAt: Date
   updatedAt: Date
@@ -232,7 +236,7 @@ export type ProjectMemberWhereInput = {
   id?: Prisma.IntFilter<"ProjectMember"> | number
   userId?: Prisma.IntFilter<"ProjectMember"> | number
   projectId?: Prisma.IntFilter<"ProjectMember"> | number
-  position?: Prisma.StringNullableListFilter<"ProjectMember">
+  position?: Prisma.StringFilter<"ProjectMember"> | string
   role?: Prisma.StringFilter<"ProjectMember"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectMember"> | Date | string
@@ -259,7 +263,7 @@ export type ProjectMemberWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProjectMemberWhereInput | Prisma.ProjectMemberWhereInput[]
   userId?: Prisma.IntFilter<"ProjectMember"> | number
   projectId?: Prisma.IntFilter<"ProjectMember"> | number
-  position?: Prisma.StringNullableListFilter<"ProjectMember">
+  position?: Prisma.StringFilter<"ProjectMember"> | string
   role?: Prisma.StringFilter<"ProjectMember"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectMember"> | Date | string
@@ -289,14 +293,14 @@ export type ProjectMemberScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"ProjectMember"> | number
   userId?: Prisma.IntWithAggregatesFilter<"ProjectMember"> | number
   projectId?: Prisma.IntWithAggregatesFilter<"ProjectMember"> | number
-  position?: Prisma.StringNullableListFilter<"ProjectMember">
+  position?: Prisma.StringWithAggregatesFilter<"ProjectMember"> | string
   role?: Prisma.StringWithAggregatesFilter<"ProjectMember"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectMember"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectMember"> | Date | string
 }
 
 export type ProjectMemberCreateInput = {
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -308,14 +312,14 @@ export type ProjectMemberUncheckedCreateInput = {
   id?: number
   userId: number
   projectId: number
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ProjectMemberUpdateInput = {
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -327,7 +331,7 @@ export type ProjectMemberUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   projectId?: Prisma.IntFieldUpdateOperationsInput | number
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,14 +341,14 @@ export type ProjectMemberCreateManyInput = {
   id?: number
   userId: number
   projectId: number
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ProjectMemberUpdateManyMutationInput = {
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -354,7 +358,7 @@ export type ProjectMemberUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   projectId?: Prisma.IntFieldUpdateOperationsInput | number
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -390,6 +394,7 @@ export type ProjectMemberMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
+  position?: Prisma.SortOrder
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -399,6 +404,7 @@ export type ProjectMemberMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
+  position?: Prisma.SortOrder
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -494,17 +500,8 @@ export type ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.ProjectMemberScalarWhereInput | Prisma.ProjectMemberScalarWhereInput[]
 }
 
-export type ProjectMemberCreatepositionInput = {
-  set: string[]
-}
-
-export type ProjectMemberUpdatepositionInput = {
-  set?: string[]
-  push?: string | string[]
-}
-
 export type ProjectMemberCreateWithoutUserInput = {
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -514,7 +511,7 @@ export type ProjectMemberCreateWithoutUserInput = {
 export type ProjectMemberUncheckedCreateWithoutUserInput = {
   id?: number
   projectId: number
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -553,14 +550,14 @@ export type ProjectMemberScalarWhereInput = {
   id?: Prisma.IntFilter<"ProjectMember"> | number
   userId?: Prisma.IntFilter<"ProjectMember"> | number
   projectId?: Prisma.IntFilter<"ProjectMember"> | number
-  position?: Prisma.StringNullableListFilter<"ProjectMember">
+  position?: Prisma.StringFilter<"ProjectMember"> | string
   role?: Prisma.StringFilter<"ProjectMember"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectMember"> | Date | string
 }
 
 export type ProjectMemberCreateWithoutProjectInput = {
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -570,7 +567,7 @@ export type ProjectMemberCreateWithoutProjectInput = {
 export type ProjectMemberUncheckedCreateWithoutProjectInput = {
   id?: number
   userId: number
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -605,14 +602,14 @@ export type ProjectMemberUpdateManyWithWhereWithoutProjectInput = {
 export type ProjectMemberCreateManyUserInput = {
   id?: number
   projectId: number
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ProjectMemberUpdateWithoutUserInput = {
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -622,7 +619,7 @@ export type ProjectMemberUpdateWithoutUserInput = {
 export type ProjectMemberUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   projectId?: Prisma.IntFieldUpdateOperationsInput | number
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -631,7 +628,7 @@ export type ProjectMemberUncheckedUpdateWithoutUserInput = {
 export type ProjectMemberUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   projectId?: Prisma.IntFieldUpdateOperationsInput | number
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -640,14 +637,14 @@ export type ProjectMemberUncheckedUpdateManyWithoutUserInput = {
 export type ProjectMemberCreateManyProjectInput = {
   id?: number
   userId: number
-  position?: Prisma.ProjectMemberCreatepositionInput | string[]
+  position: string
   role?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ProjectMemberUpdateWithoutProjectInput = {
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -657,7 +654,7 @@ export type ProjectMemberUpdateWithoutProjectInput = {
 export type ProjectMemberUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -666,7 +663,7 @@ export type ProjectMemberUncheckedUpdateWithoutProjectInput = {
 export type ProjectMemberUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  position?: Prisma.ProjectMemberUpdatepositionInput | string[]
+  position?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -744,7 +741,7 @@ export type $ProjectMemberPayload<ExtArgs extends runtime.Types.Extensions.Inter
     id: number
     userId: number
     projectId: number
-    position: string[]
+    position: string
     role: string
     createdAt: Date
     updatedAt: Date
@@ -1176,7 +1173,7 @@ export interface ProjectMemberFieldRefs {
   readonly id: Prisma.FieldRef<"ProjectMember", 'Int'>
   readonly userId: Prisma.FieldRef<"ProjectMember", 'Int'>
   readonly projectId: Prisma.FieldRef<"ProjectMember", 'Int'>
-  readonly position: Prisma.FieldRef<"ProjectMember", 'String[]'>
+  readonly position: Prisma.FieldRef<"ProjectMember", 'String'>
   readonly role: Prisma.FieldRef<"ProjectMember", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProjectMember", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProjectMember", 'DateTime'>

@@ -998,6 +998,7 @@ export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof t
 export const ProjectsScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  field: 'field',
   description: 'description',
   status: 'status',
   workspaceId: 'workspaceId',

@@ -48,8 +48,9 @@ model Workspace {
 model Projects {
   id          Int      @id @default(autoincrement())
   name        String
+  field       String
   description String
-  status      String
+  status      String @default("Active")
   workspaceId Int
   projectMembers ProjectMember[]
   leftedMembers String[] @default([])
@@ -97,7 +98,7 @@ model ProjectMember {
   id Int @id @default(autoincrement())
   userId Int
   projectId Int
-  position String[]
+  position String
   role String @default("member") //admin, member, viewer, tester
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

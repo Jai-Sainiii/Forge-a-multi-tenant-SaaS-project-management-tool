@@ -7,9 +7,10 @@ import { X, Briefcase, FileText, Globe, Lock, Loader2 } from "lucide-react";
 interface CreateWorkspaceModalProps {
   onClose: () => void;
   onSuccess?: () => void;
+  getworkspaces: () => Promise<void>;
 }
 
-export default function CreateWorkspaceModal({ onClose, onSuccess }: CreateWorkspaceModalProps) {
+export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces }: CreateWorkspaceModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     describtion: "",
@@ -41,6 +42,7 @@ export default function CreateWorkspaceModal({ onClose, onSuccess }: CreateWorks
       );
       onSuccess?.();
       onClose();
+      getworkspaces();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Something went wrong. Please try again.");

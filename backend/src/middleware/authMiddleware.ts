@@ -40,7 +40,7 @@ export const signup = async (req: Request, res: Response) => {
             secure: false, 
             sameSite: "strict",
             path: "/",
-            maxAge: 60 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
         res.json({message: "Signup Successfull", user: {name: newUser.name, email: newUser.email}});
@@ -88,7 +88,7 @@ export const login = async (req: Request, res: Response) => {
             secure: false,
             sameSite: "strict",
             path: "/",
-            maxAge: 60 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
         res.json({ message: "Login Successfull", user: {name: user.name, email: user.email} });
@@ -131,6 +131,9 @@ export const protectedRoute = async (req: Request, res: Response, next: NextFunc
 
         const decodedToken = jwt.verify(token, JWT_SECRET);
 
+        if (!req.body) {
+            req.body = {};
+        }
         req.body.user = decodedToken;
 
         next();

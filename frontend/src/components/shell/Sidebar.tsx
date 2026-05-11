@@ -12,14 +12,8 @@ import {
   ChevronDown,
   MoreHorizontal,
 } from "lucide-react";
-
-const WORKSPACE_PROJECTS = [
-  { name: "Website Redesign", color: "#E17055" },
-  { name: "Mobile App v2",    color: "#6C5CE7" },
-  { name: "API Integration",  color: "#FDCB6E" },
-];
-
-
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const ACCOUNT_ITEMS = [
   { label: "Settings", icon: Settings, href: "/workspace/settings" },
@@ -30,10 +24,28 @@ interface Workspaces {
   title: string;
   companyname: string;
   describtion: string;
+  projects: [];
+  tasks: [];
   members: {
     id: string;
     role: string;
   }[];
+}
+
+interface Projects{
+  id: number;
+  name: string;
+  field: string;
+  describtion: string;
+  workspaceID: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface WorkspaceData {
+  workspace: Workspaces;
+  projects: Projects[];
 }
 
 interface SidebarProps {
@@ -45,21 +57,53 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
   const pathname = usePathname();
   const params = useParams();
   const workspaceID = params?.workspaceID as number | undefined;
+  const [workspaceData, setWorkspaceData] = useState<WorkspaceData | null>(null);
 
   const workspace = workspaces.find((w) => w.id === Number(workspaceID));
 
+  const fetchworkspaces = async()=>{
+    try {
+      const res = await axios.get(`http://localhost:5000/dashboard/workspace/${workspaceID}`,{
+        withCredentials: true,
+      })
+      setWorkspaceData(res.data.workspaceData)
+    } catch (error) {
+      console.log("Error while fetching workspaces")
+    }
+  }
+
+  useEffect(() => {
+    fetchworkspaces()
+  }, [])
+    
+
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
     : "JS";
 
   const getNavItems = () => {
     const base = workspaceID ? `/workspace/${workspaceID}` : `/workspace`;
     return [
       { label: "Dashboard", icon: LayoutDashboard, href: base, badge: null },
-      { label: "Projects",  icon: Folder,          href: `${base}/projects`, badge: null },
-      { label: "Tasks",     icon: CheckSquare,     href: `${base}/tasks`,   badge: null },
-      { label: "Members",   icon: Users,           href: `${base}/members`, badge: null },
-      { label: "Activity",  icon: Activity,        href: `${base}/activity`,badge: null },
+      {
+        label: "Projects",
+        icon: Folder,
+        href: `${base}/projects`,
+        badge: null,
+      },
+      { label: "Tasks", icon: CheckSquare, href: `${base}/tasks`, badge: null },
+      { label: "Members", icon: Users, href: `${base}/members`, badge: null },
+      {
+        label: "Activity",
+        icon: Activity,
+        href: `${base}/activity`,
+        badge: null,
+      },
     ];
   };
 
@@ -128,7 +172,10 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
               Pro plan · {workspace?.members?.length || 0} members
             </span>
           </div>
-          <ChevronDown size={13} className="text-[#5A5870] group-hover:text-[#7A7885] transition-colors shrink-0" />
+          <ChevronDown
+            size={13}
+            className="text-[#5A5870] group-hover:text-[#7A7885] transition-colors shrink-0"
+          />
         </button>
       </div>
 
@@ -149,7 +196,10 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
               {badge && (
                 <span
                   className="text-[10px] px-1.5 py-0.5 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.08)", color: "#7A7885" }}
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#7A7885",
+                  }}
                 >
                   {badge}
                 </span>
@@ -159,36 +209,38 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
         </div>
 
         {/* PROJECTS section */}
-        <div className="flex flex-col gap-0.5">
-          <span
-            className="px-[10px] pb-1.5 text-[10px] font-[500] uppercase tracking-[0.07em]"
-            style={{ color: "#3D3B4A" }}
-          >
-            Projects
-          </span>
-          {WORKSPACE_PROJECTS.map(({ name, color }) => (
-            <Link
-              key={name}
-              href={`/workspace/projects`}
-              className={navItemClass("/workspace/projects-" + name)}
-              title={name}
+        {(workspaceData?.projects?.length ?? 0) > 0 && (
+          <div className="flex flex-col gap-0.5">
+            <span
+              className="px-[10px] pb-1.5 text-[10px] font-[500] uppercase tracking-[0.07em]"
+              style={{ color: "#3D3B4A" }}
             >
-              <span
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: "50%",
-                  background: color,
-                  display: "inline-block",
-                  flexShrink: 0,
-                }}
-              />
-              <span className="flex-1 truncate text-[#7A7885] hover:text-[#C8C4E8]">
-                {name}
-              </span>
-            </Link>
-          ))}
-        </div>
+              Projects
+            </span>
+            {workspaceData?.projects?.map((p) => (
+              <Link
+                key={p.id}
+                href={`/workspace/projects/${p.id}`}
+                className={navItemClass(`/workspace/projects/${p.id}`)}
+                title={p.name}
+              >
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: "#3030d0ff",
+                    display: "inline-block",
+                    flexShrink: 0,
+                  }}
+                />
+                <span className="flex-1 truncate text-[#7A7885] hover:text-[#C8C4E8]">
+                  {p.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* ACCOUNT section */}
         <div className="flex flex-col gap-0.5">

@@ -39,6 +39,7 @@ export type ProjectsSumAggregateOutputType = {
 export type ProjectsMinAggregateOutputType = {
   id: number | null
   name: string | null
+  field: string | null
   description: string | null
   status: string | null
   workspaceId: number | null
@@ -49,6 +50,7 @@ export type ProjectsMinAggregateOutputType = {
 export type ProjectsMaxAggregateOutputType = {
   id: number | null
   name: string | null
+  field: string | null
   description: string | null
   status: string | null
   workspaceId: number | null
@@ -59,6 +61,7 @@ export type ProjectsMaxAggregateOutputType = {
 export type ProjectsCountAggregateOutputType = {
   id: number
   name: number
+  field: number
   description: number
   status: number
   workspaceId: number
@@ -83,6 +86,7 @@ export type ProjectsSumAggregateInputType = {
 export type ProjectsMinAggregateInputType = {
   id?: true
   name?: true
+  field?: true
   description?: true
   status?: true
   workspaceId?: true
@@ -93,6 +97,7 @@ export type ProjectsMinAggregateInputType = {
 export type ProjectsMaxAggregateInputType = {
   id?: true
   name?: true
+  field?: true
   description?: true
   status?: true
   workspaceId?: true
@@ -103,6 +108,7 @@ export type ProjectsMaxAggregateInputType = {
 export type ProjectsCountAggregateInputType = {
   id?: true
   name?: true
+  field?: true
   description?: true
   status?: true
   workspaceId?: true
@@ -202,6 +208,7 @@ export type ProjectsGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type ProjectsGroupByOutputType = {
   id: number
   name: string
+  field: string
   description: string
   status: string
   workspaceId: number
@@ -237,6 +244,7 @@ export type ProjectsWhereInput = {
   NOT?: Prisma.ProjectsWhereInput | Prisma.ProjectsWhereInput[]
   id?: Prisma.IntFilter<"Projects"> | number
   name?: Prisma.StringFilter<"Projects"> | string
+  field?: Prisma.StringFilter<"Projects"> | string
   description?: Prisma.StringFilter<"Projects"> | string
   status?: Prisma.StringFilter<"Projects"> | string
   workspaceId?: Prisma.IntFilter<"Projects"> | number
@@ -252,6 +260,7 @@ export type ProjectsWhereInput = {
 export type ProjectsOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  field?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
@@ -270,6 +279,7 @@ export type ProjectsWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProjectsWhereInput[]
   NOT?: Prisma.ProjectsWhereInput | Prisma.ProjectsWhereInput[]
   name?: Prisma.StringFilter<"Projects"> | string
+  field?: Prisma.StringFilter<"Projects"> | string
   description?: Prisma.StringFilter<"Projects"> | string
   status?: Prisma.StringFilter<"Projects"> | string
   workspaceId?: Prisma.IntFilter<"Projects"> | number
@@ -285,6 +295,7 @@ export type ProjectsWhereUniqueInput = Prisma.AtLeast<{
 export type ProjectsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  field?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
@@ -305,6 +316,7 @@ export type ProjectsScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProjectsScalarWhereWithAggregatesInput | Prisma.ProjectsScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Projects"> | number
   name?: Prisma.StringWithAggregatesFilter<"Projects"> | string
+  field?: Prisma.StringWithAggregatesFilter<"Projects"> | string
   description?: Prisma.StringWithAggregatesFilter<"Projects"> | string
   status?: Prisma.StringWithAggregatesFilter<"Projects"> | string
   workspaceId?: Prisma.IntWithAggregatesFilter<"Projects"> | number
@@ -316,8 +328,9 @@ export type ProjectsScalarWhereWithAggregatesInput = {
 
 export type ProjectsCreateInput = {
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
   createdAt?: Date | string
@@ -330,8 +343,9 @@ export type ProjectsCreateInput = {
 export type ProjectsUncheckedCreateInput = {
   id?: number
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
@@ -343,6 +357,7 @@ export type ProjectsUncheckedCreateInput = {
 
 export type ProjectsUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -357,6 +372,7 @@ export type ProjectsUpdateInput = {
 export type ProjectsUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -371,8 +387,9 @@ export type ProjectsUncheckedUpdateInput = {
 export type ProjectsCreateManyInput = {
   id?: number
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
@@ -382,6 +399,7 @@ export type ProjectsCreateManyInput = {
 
 export type ProjectsUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -393,6 +411,7 @@ export type ProjectsUpdateManyMutationInput = {
 export type ProjectsUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -415,6 +434,7 @@ export type ProjectsOrderByRelationAggregateInput = {
 export type ProjectsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  field?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
@@ -432,6 +452,7 @@ export type ProjectsAvgOrderByAggregateInput = {
 export type ProjectsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  field?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
@@ -442,6 +463,7 @@ export type ProjectsMaxOrderByAggregateInput = {
 export type ProjectsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  field?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
@@ -549,8 +571,9 @@ export type ProjectsUpdateOneRequiredWithoutProjectMembersNestedInput = {
 
 export type ProjectsCreateWithoutWorkspaceInput = {
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
   createdAt?: Date | string
@@ -562,8 +585,9 @@ export type ProjectsCreateWithoutWorkspaceInput = {
 export type ProjectsUncheckedCreateWithoutWorkspaceInput = {
   id?: number
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
   createdAt?: Date | string
@@ -604,6 +628,7 @@ export type ProjectsScalarWhereInput = {
   NOT?: Prisma.ProjectsScalarWhereInput | Prisma.ProjectsScalarWhereInput[]
   id?: Prisma.IntFilter<"Projects"> | number
   name?: Prisma.StringFilter<"Projects"> | string
+  field?: Prisma.StringFilter<"Projects"> | string
   description?: Prisma.StringFilter<"Projects"> | string
   status?: Prisma.StringFilter<"Projects"> | string
   workspaceId?: Prisma.IntFilter<"Projects"> | number
@@ -615,8 +640,9 @@ export type ProjectsScalarWhereInput = {
 
 export type ProjectsCreateWithoutTasksInput = {
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
   createdAt?: Date | string
@@ -628,8 +654,9 @@ export type ProjectsCreateWithoutTasksInput = {
 export type ProjectsUncheckedCreateWithoutTasksInput = {
   id?: number
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
@@ -656,6 +683,7 @@ export type ProjectsUpdateToOneWithWhereWithoutTasksInput = {
 
 export type ProjectsUpdateWithoutTasksInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -669,6 +697,7 @@ export type ProjectsUpdateWithoutTasksInput = {
 export type ProjectsUncheckedUpdateWithoutTasksInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -681,8 +710,9 @@ export type ProjectsUncheckedUpdateWithoutTasksInput = {
 
 export type ProjectsCreateWithoutProjectMembersInput = {
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
   createdAt?: Date | string
@@ -694,8 +724,9 @@ export type ProjectsCreateWithoutProjectMembersInput = {
 export type ProjectsUncheckedCreateWithoutProjectMembersInput = {
   id?: number
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
@@ -722,6 +753,7 @@ export type ProjectsUpdateToOneWithWhereWithoutProjectMembersInput = {
 
 export type ProjectsUpdateWithoutProjectMembersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -735,6 +767,7 @@ export type ProjectsUpdateWithoutProjectMembersInput = {
 export type ProjectsUncheckedUpdateWithoutProjectMembersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -748,8 +781,9 @@ export type ProjectsUncheckedUpdateWithoutProjectMembersInput = {
 export type ProjectsCreateManyWorkspaceInput = {
   id?: number
   name: string
+  field: string
   description: string
-  status: string
+  status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
   positions?: Prisma.ProjectsCreatepositionsInput | string[]
   createdAt?: Date | string
@@ -758,6 +792,7 @@ export type ProjectsCreateManyWorkspaceInput = {
 
 export type ProjectsUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -771,6 +806,7 @@ export type ProjectsUpdateWithoutWorkspaceInput = {
 export type ProjectsUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -784,6 +820,7 @@ export type ProjectsUncheckedUpdateWithoutWorkspaceInput = {
 export type ProjectsUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
@@ -835,6 +872,7 @@ export type ProjectsCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.
 export type ProjectsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  field?: boolean
   description?: boolean
   status?: boolean
   workspaceId?: boolean
@@ -851,6 +889,7 @@ export type ProjectsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type ProjectsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  field?: boolean
   description?: boolean
   status?: boolean
   workspaceId?: boolean
@@ -864,6 +903,7 @@ export type ProjectsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type ProjectsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  field?: boolean
   description?: boolean
   status?: boolean
   workspaceId?: boolean
@@ -877,6 +917,7 @@ export type ProjectsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type ProjectsSelectScalar = {
   id?: boolean
   name?: boolean
+  field?: boolean
   description?: boolean
   status?: boolean
   workspaceId?: boolean
@@ -886,7 +927,7 @@ export type ProjectsSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProjectsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "status" | "workspaceId" | "leftedMembers" | "positions" | "createdAt" | "updatedAt", ExtArgs["result"]["projects"]>
+export type ProjectsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "field" | "description" | "status" | "workspaceId" | "leftedMembers" | "positions" | "createdAt" | "updatedAt", ExtArgs["result"]["projects"]>
 export type ProjectsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projectMembers?: boolean | Prisma.Projects$projectMembersArgs<ExtArgs>
   tasks?: boolean | Prisma.Projects$tasksArgs<ExtArgs>
@@ -910,6 +951,7 @@ export type $ProjectsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     name: string
+    field: string
     description: string
     status: string
     workspaceId: number
@@ -1345,6 +1387,7 @@ export interface Prisma__ProjectsClient<T, Null = never, ExtArgs extends runtime
 export interface ProjectsFieldRefs {
   readonly id: Prisma.FieldRef<"Projects", 'Int'>
   readonly name: Prisma.FieldRef<"Projects", 'String'>
+  readonly field: Prisma.FieldRef<"Projects", 'String'>
   readonly description: Prisma.FieldRef<"Projects", 'String'>
   readonly status: Prisma.FieldRef<"Projects", 'String'>
   readonly workspaceId: Prisma.FieldRef<"Projects", 'Int'>

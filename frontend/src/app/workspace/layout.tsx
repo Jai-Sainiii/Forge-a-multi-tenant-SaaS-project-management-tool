@@ -33,8 +33,7 @@ export default function WorkspaceLayout({
     else return <Sidebar user={user} workspaces={workspaces} />;
   };
 
-  useEffect(() => {
-    async function getWorkspaces() {
+  async function getWorkspaces() {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/getAllWorkspaces`,
         { withCredentials: true },
@@ -42,6 +41,8 @@ export default function WorkspaceLayout({
       // console.log(response.data.workspaceData);
       setWorkspaces(response.data.workspaceData.workspaces);
     }
+
+  useEffect(() => {
     getWorkspaces();
   }, []);
 
@@ -62,7 +63,7 @@ export default function WorkspaceLayout({
           className="flex flex-col flex-1 overflow-hidden"
           style={{ background: "#F7F6F3" }}
         >
-          <TopBar workspaces={workspaces} />
+          <TopBar workspaces={workspaces} getworkspaces={getWorkspaces} />
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>

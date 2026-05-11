@@ -23,9 +23,10 @@ interface Workspace{
 
 interface TopbarProps{
   workspaces: Workspace[];
+  getworkspaces: () => Promise<void>;
 }
 
-export default function TopBar({ workspaces }: TopbarProps) {
+export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
   const { user } = useAuth()!;
   const pathname = usePathname();
   const homepage = pathname === "/workspace/all";
@@ -88,7 +89,7 @@ export default function TopBar({ workspaces }: TopbarProps) {
         <div className="flex items-center gap-2">
           {/* New project filled purple button */}
           <button
-            onClick={openModal}
+            onClick={() => {openModal(); getworkspaces();}}
             className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 transition-colors hover:bg-[#5a4ed1] cursor-pointer"
             style={{
               background: "#6C5CE7",

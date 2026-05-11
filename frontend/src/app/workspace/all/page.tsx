@@ -205,21 +205,20 @@ export default function AllWorkspacePage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const { isOpen, closeModal } = useWorkspaceModal();
 
-  const fetchWorkspaces = useCallback(() => {
+  const fetchWorkspaces = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BASE_URL}/workspace/getAllWorkSpace`, {
+    try {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/workspace/getAllWorkSpace`, {
         withCredentials: true,
-      })
-      .then((res) => {
-        console.log(res.data);
-        setWorkspaces(res.data.workspace);
-      })
-      .catch(() => {
-        setFetchError("Failed to load workspaces. Please try again.");
-      })
-      .finally(() => setLoading(false));
+      });
+      console.log(res.data);
+      setWorkspaces(res.data.workspace);
+    } catch (error) {
+      setFetchError("Failed to load workspaces. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -234,6 +233,7 @@ export default function AllWorkspacePage() {
         <CreateWorkspaceModal
           onClose={closeModal}
           onSuccess={fetchWorkspaces}
+          getworkspaces={fetchWorkspaces}
         />
       )}
 
