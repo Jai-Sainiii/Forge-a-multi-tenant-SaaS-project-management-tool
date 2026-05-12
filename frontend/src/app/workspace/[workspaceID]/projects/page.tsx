@@ -1,6 +1,7 @@
 "use client";
 import { use, useState, useEffect, useCallback } from "react";
 import { FolderArchive, ChevronRight, MoreHorizontal, AlertCircle } from "lucide-react";
+import Link from "next/link";
 import axios from "axios";
 
 interface Project {
@@ -12,7 +13,7 @@ interface Project {
   workspaceId: number;
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project, workspaceID }: { project: Project, workspaceID: string }) {
     const isReview = project.status?.toLowerCase() === 'review';
     const isSuspended = project.status?.toLowerCase() === 'suspended';
     const isPlanning = project.status?.toLowerCase() === 'planning';
@@ -29,6 +30,7 @@ function ProjectCard({ project }: { project: Project }) {
     let opacityClass = isSuspended ? "opacity-75" : "";
 
     return (
+        <Link href={`/workspace/${workspaceID}/projects/${project.id}`}>
         <div className={`p-4 bg-white dark:bg-[#1e293b] border border-outline-variant dark:border-gray-700 rounded-lg flex flex-col gap-4 shadow-sm ${opacityClass}`}>
             <div className="flex justify-between items-start">
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>{badgeText}</span>
@@ -50,6 +52,7 @@ function ProjectCard({ project }: { project: Project }) {
                 </div>
             </div>
         </div>
+        </Link>
     );
 }
 
@@ -152,7 +155,7 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
                                 <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Active Projects</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {activeProjects.map(project => (
-                                        <ProjectCard key={project.id} project={project} />
+                                        <ProjectCard key={project.id} project={project} workspaceID={workspaceID} />
                                     ))}
                                 </div>
                             </div>
@@ -164,7 +167,7 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
                                 <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Review</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {reviewProjects.map(project => (
-                                        <ProjectCard key={project.id} project={project} />
+                                        <ProjectCard key={project.id} project={project} workspaceID={workspaceID} />
                                     ))}
                                 </div>
                             </div>
@@ -176,7 +179,7 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
                                 <h3 className="text-md font-medium text-gray-700 dark:text-gray-300">Suspended</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {suspendedProjects.map(project => (
-                                        <ProjectCard key={project.id} project={project} />
+                                        <ProjectCard key={project.id} project={project} workspaceID={workspaceID} />
                                     ))}
                                 </div>
                             </div>
@@ -196,7 +199,7 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {otherProjects.map(project => (
-                            <ProjectCard key={project.id} project={project} />
+                            <ProjectCard key={project.id} project={project} workspaceID={workspaceID} />
                         ))}
                     </div>
                 </section>

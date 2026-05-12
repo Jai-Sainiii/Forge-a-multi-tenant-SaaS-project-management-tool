@@ -8,16 +8,7 @@ import { useAuth } from "@/authContext/AuthContext";
 import { WorkspaceModalProvider } from "@/context/WorkspaceModalContext";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-
-// interface Workspace {
-//   id: string;
-//   title: string;
-//   companyname: string;
-//   describtion?: string;
-//   visibility?: string;
-//   memberCount?: number;
-//   createdAt?: string;
-// }
+import {useRouter} from "next/navigation";
 
 export default function WorkspaceLayout({
   children,
@@ -27,20 +18,24 @@ export default function WorkspaceLayout({
   const { user } = useAuth()!;
   const path = usePathname();
   const [workspaces, setWorkspaces] = useState<[]>([]);
+  const router = useRouter();
 
   const activeHomepage = () => {
     if (path === "/workspace/all") return null;
     else return <Sidebar user={user} workspaces={workspaces} />;
   };
 
-  async function getWorkspaces() {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/getAllWorkspaces`,
-        { withCredentials: true },
-      );
-      // console.log(response.data.workspaceData);
-      setWorkspaces(response.data.workspaceData.workspaces);
-    }
+  const getWorkspaces = async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/getAllWorkspaces`,
+      { withCredentials: true },
+    );
+    setWorkspaces(response.data.workspaceData.workspaces);
+  };
+
+  // if (!user) {
+  //   router.push("/");
+  // }
 
   useEffect(() => {
     getWorkspaces();

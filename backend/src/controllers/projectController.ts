@@ -56,3 +56,23 @@ export const getProjects = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+export const singleProject = async (req: Request, res: Response)=>{
+  try {
+    const projectID = Number(req.params.projectID);
+    const project = await prisma.projects.findUnique({
+      where: {
+        id: projectID,
+      },
+      include: {
+        projectMembers: true,
+        tasks: true,
+      },
+    });
+    res.json({ sucess: "true", project });
+  } catch (error) {
+    console.error("Get single project error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

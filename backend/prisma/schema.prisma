@@ -55,7 +55,7 @@ model Projects {
   projectMembers ProjectMember[]
   leftedMembers String[] @default([])
   tasks       task[]
-  positions String[] @default([])
+  positions   String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

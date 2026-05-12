@@ -74,7 +74,7 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
 
   useEffect(() => {
     fetchworkspaces()
-  }, [])
+  }, [workspaceID])
     
 
   const initials = user?.name
@@ -220,8 +220,8 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
             {workspaceData?.projects?.map((p) => (
               <Link
                 key={p.id}
-                href={`/workspace/projects/${p.id}`}
-                className={navItemClass(`/workspace/projects/${p.id}`)}
+                href={`/workspace/${workspaceID}/projects/${p.id}`}
+                className={navItemClass(`/workspace/${workspaceID}/projects/${p.id}`)}
                 title={p.name}
               >
                 <span
