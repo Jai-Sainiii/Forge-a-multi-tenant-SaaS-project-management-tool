@@ -43,6 +43,7 @@ export type ProjectsMinAggregateOutputType = {
   description: string | null
   status: string | null
   workspaceId: number | null
+  positions: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +55,7 @@ export type ProjectsMaxAggregateOutputType = {
   description: string | null
   status: string | null
   workspaceId: number | null
+  positions: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -90,6 +92,7 @@ export type ProjectsMinAggregateInputType = {
   description?: true
   status?: true
   workspaceId?: true
+  positions?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -101,6 +104,7 @@ export type ProjectsMaxAggregateInputType = {
   description?: true
   status?: true
   workspaceId?: true
+  positions?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -213,7 +217,7 @@ export type ProjectsGroupByOutputType = {
   status: string
   workspaceId: number
   leftedMembers: string[]
-  positions: string[]
+  positions: string
   createdAt: Date
   updatedAt: Date
   _count: ProjectsCountAggregateOutputType | null
@@ -249,11 +253,12 @@ export type ProjectsWhereInput = {
   status?: Prisma.StringFilter<"Projects"> | string
   workspaceId?: Prisma.IntFilter<"Projects"> | number
   leftedMembers?: Prisma.StringNullableListFilter<"Projects">
-  positions?: Prisma.StringNullableListFilter<"Projects">
+  positions?: Prisma.StringFilter<"Projects"> | string
   createdAt?: Prisma.DateTimeFilter<"Projects"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Projects"> | Date | string
   projectMembers?: Prisma.ProjectMemberListRelationFilter
   tasks?: Prisma.TaskListRelationFilter
+  team?: Prisma.TeamListRelationFilter
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
 }
 
@@ -270,6 +275,7 @@ export type ProjectsOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   projectMembers?: Prisma.ProjectMemberOrderByRelationAggregateInput
   tasks?: Prisma.taskOrderByRelationAggregateInput
+  team?: Prisma.TeamOrderByRelationAggregateInput
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
 }
 
@@ -284,11 +290,12 @@ export type ProjectsWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Projects"> | string
   workspaceId?: Prisma.IntFilter<"Projects"> | number
   leftedMembers?: Prisma.StringNullableListFilter<"Projects">
-  positions?: Prisma.StringNullableListFilter<"Projects">
+  positions?: Prisma.StringFilter<"Projects"> | string
   createdAt?: Prisma.DateTimeFilter<"Projects"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Projects"> | Date | string
   projectMembers?: Prisma.ProjectMemberListRelationFilter
   tasks?: Prisma.TaskListRelationFilter
+  team?: Prisma.TeamListRelationFilter
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
 }, "id">
 
@@ -321,7 +328,7 @@ export type ProjectsScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"Projects"> | string
   workspaceId?: Prisma.IntWithAggregatesFilter<"Projects"> | number
   leftedMembers?: Prisma.StringNullableListFilter<"Projects">
-  positions?: Prisma.StringNullableListFilter<"Projects">
+  positions?: Prisma.StringWithAggregatesFilter<"Projects"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Projects"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Projects"> | Date | string
 }
@@ -332,11 +339,12 @@ export type ProjectsCreateInput = {
   description: string
   status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
   tasks?: Prisma.taskCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamCreateNestedManyWithoutProjectInput
   workspace: Prisma.WorkspaceCreateNestedOneWithoutProjectsInput
 }
 
@@ -348,11 +356,12 @@ export type ProjectsUncheckedCreateInput = {
   status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
   tasks?: Prisma.taskUncheckedCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectsUpdateInput = {
@@ -361,11 +370,12 @@ export type ProjectsUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.taskUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUpdateManyWithoutProjectNestedInput
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProjectsNestedInput
 }
 
@@ -377,11 +387,12 @@ export type ProjectsUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.taskUncheckedUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectsCreateManyInput = {
@@ -392,7 +403,7 @@ export type ProjectsCreateManyInput = {
   status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -403,7 +414,7 @@ export type ProjectsUpdateManyMutationInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -416,7 +427,7 @@ export type ProjectsUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -456,6 +467,7 @@ export type ProjectsMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  positions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -467,6 +479,7 @@ export type ProjectsMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  positions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -527,16 +540,7 @@ export type ProjectsCreateleftedMembersInput = {
   set: string[]
 }
 
-export type ProjectsCreatepositionsInput = {
-  set: string[]
-}
-
 export type ProjectsUpdateleftedMembersInput = {
-  set?: string[]
-  push?: string | string[]
-}
-
-export type ProjectsUpdatepositionsInput = {
   set?: string[]
   push?: string | string[]
 }
@@ -553,6 +557,20 @@ export type ProjectsUpdateOneRequiredWithoutTasksNestedInput = {
   upsert?: Prisma.ProjectsUpsertWithoutTasksInput
   connect?: Prisma.ProjectsWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectsUpdateToOneWithWhereWithoutTasksInput, Prisma.ProjectsUpdateWithoutTasksInput>, Prisma.ProjectsUncheckedUpdateWithoutTasksInput>
+}
+
+export type ProjectsCreateNestedOneWithoutTeamInput = {
+  create?: Prisma.XOR<Prisma.ProjectsCreateWithoutTeamInput, Prisma.ProjectsUncheckedCreateWithoutTeamInput>
+  connectOrCreate?: Prisma.ProjectsCreateOrConnectWithoutTeamInput
+  connect?: Prisma.ProjectsWhereUniqueInput
+}
+
+export type ProjectsUpdateOneRequiredWithoutTeamNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectsCreateWithoutTeamInput, Prisma.ProjectsUncheckedCreateWithoutTeamInput>
+  connectOrCreate?: Prisma.ProjectsCreateOrConnectWithoutTeamInput
+  upsert?: Prisma.ProjectsUpsertWithoutTeamInput
+  connect?: Prisma.ProjectsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectsUpdateToOneWithWhereWithoutTeamInput, Prisma.ProjectsUpdateWithoutTeamInput>, Prisma.ProjectsUncheckedUpdateWithoutTeamInput>
 }
 
 export type ProjectsCreateNestedOneWithoutProjectMembersInput = {
@@ -575,11 +593,12 @@ export type ProjectsCreateWithoutWorkspaceInput = {
   description: string
   status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
   tasks?: Prisma.taskCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectsUncheckedCreateWithoutWorkspaceInput = {
@@ -589,11 +608,12 @@ export type ProjectsUncheckedCreateWithoutWorkspaceInput = {
   description: string
   status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
   tasks?: Prisma.taskUncheckedCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectsCreateOrConnectWithoutWorkspaceInput = {
@@ -633,7 +653,7 @@ export type ProjectsScalarWhereInput = {
   status?: Prisma.StringFilter<"Projects"> | string
   workspaceId?: Prisma.IntFilter<"Projects"> | number
   leftedMembers?: Prisma.StringNullableListFilter<"Projects">
-  positions?: Prisma.StringNullableListFilter<"Projects">
+  positions?: Prisma.StringFilter<"Projects"> | string
   createdAt?: Prisma.DateTimeFilter<"Projects"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Projects"> | Date | string
 }
@@ -644,10 +664,11 @@ export type ProjectsCreateWithoutTasksInput = {
   description: string
   status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamCreateNestedManyWithoutProjectInput
   workspace: Prisma.WorkspaceCreateNestedOneWithoutProjectsInput
 }
 
@@ -659,10 +680,11 @@ export type ProjectsUncheckedCreateWithoutTasksInput = {
   status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectsCreateOrConnectWithoutTasksInput = {
@@ -687,10 +709,11 @@ export type ProjectsUpdateWithoutTasksInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUpdateManyWithoutProjectNestedInput
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProjectsNestedInput
 }
 
@@ -702,10 +725,85 @@ export type ProjectsUncheckedUpdateWithoutTasksInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectsCreateWithoutTeamInput = {
+  name: string
+  field: string
+  description: string
+  status?: string
+  leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
+  positions?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projectMembers?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
+  tasks?: Prisma.taskCreateNestedManyWithoutProjectInput
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutProjectsInput
+}
+
+export type ProjectsUncheckedCreateWithoutTeamInput = {
+  id?: number
+  name: string
+  field: string
+  description: string
+  status?: string
+  workspaceId: number
+  leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
+  positions?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projectMembers?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+  tasks?: Prisma.taskUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectsCreateOrConnectWithoutTeamInput = {
+  where: Prisma.ProjectsWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectsCreateWithoutTeamInput, Prisma.ProjectsUncheckedCreateWithoutTeamInput>
+}
+
+export type ProjectsUpsertWithoutTeamInput = {
+  update: Prisma.XOR<Prisma.ProjectsUpdateWithoutTeamInput, Prisma.ProjectsUncheckedUpdateWithoutTeamInput>
+  create: Prisma.XOR<Prisma.ProjectsCreateWithoutTeamInput, Prisma.ProjectsUncheckedCreateWithoutTeamInput>
+  where?: Prisma.ProjectsWhereInput
+}
+
+export type ProjectsUpdateToOneWithWhereWithoutTeamInput = {
+  where?: Prisma.ProjectsWhereInput
+  data: Prisma.XOR<Prisma.ProjectsUpdateWithoutTeamInput, Prisma.ProjectsUncheckedUpdateWithoutTeamInput>
+}
+
+export type ProjectsUpdateWithoutTeamInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectMembers?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
+  tasks?: Prisma.taskUpdateManyWithoutProjectNestedInput
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProjectsNestedInput
+}
+
+export type ProjectsUncheckedUpdateWithoutTeamInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+  tasks?: Prisma.taskUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectsCreateWithoutProjectMembersInput = {
@@ -714,10 +812,11 @@ export type ProjectsCreateWithoutProjectMembersInput = {
   description: string
   status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.taskCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamCreateNestedManyWithoutProjectInput
   workspace: Prisma.WorkspaceCreateNestedOneWithoutProjectsInput
 }
 
@@ -729,10 +828,11 @@ export type ProjectsUncheckedCreateWithoutProjectMembersInput = {
   status?: string
   workspaceId: number
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.taskUncheckedCreateNestedManyWithoutProjectInput
+  team?: Prisma.TeamUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectsCreateOrConnectWithoutProjectMembersInput = {
@@ -757,10 +857,11 @@ export type ProjectsUpdateWithoutProjectMembersInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.taskUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUpdateManyWithoutProjectNestedInput
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProjectsNestedInput
 }
 
@@ -772,10 +873,11 @@ export type ProjectsUncheckedUpdateWithoutProjectMembersInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.taskUncheckedUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectsCreateManyWorkspaceInput = {
@@ -785,7 +887,7 @@ export type ProjectsCreateManyWorkspaceInput = {
   description: string
   status?: string
   leftedMembers?: Prisma.ProjectsCreateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsCreatepositionsInput | string[]
+  positions?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -796,11 +898,12 @@ export type ProjectsUpdateWithoutWorkspaceInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectMembers?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.taskUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectsUncheckedUpdateWithoutWorkspaceInput = {
@@ -810,11 +913,12 @@ export type ProjectsUncheckedUpdateWithoutWorkspaceInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectMembers?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
   tasks?: Prisma.taskUncheckedUpdateManyWithoutProjectNestedInput
+  team?: Prisma.TeamUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectsUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -824,7 +928,7 @@ export type ProjectsUncheckedUpdateManyWithoutWorkspaceInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   leftedMembers?: Prisma.ProjectsUpdateleftedMembersInput | string[]
-  positions?: Prisma.ProjectsUpdatepositionsInput | string[]
+  positions?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -837,11 +941,13 @@ export type ProjectsUncheckedUpdateManyWithoutWorkspaceInput = {
 export type ProjectsCountOutputType = {
   projectMembers: number
   tasks: number
+  team: number
 }
 
 export type ProjectsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projectMembers?: boolean | ProjectsCountOutputTypeCountProjectMembersArgs
   tasks?: boolean | ProjectsCountOutputTypeCountTasksArgs
+  team?: boolean | ProjectsCountOutputTypeCountTeamArgs
 }
 
 /**
@@ -868,6 +974,13 @@ export type ProjectsCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.
   where?: Prisma.taskWhereInput
 }
 
+/**
+ * ProjectsCountOutputType without action
+ */
+export type ProjectsCountOutputTypeCountTeamArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TeamWhereInput
+}
+
 
 export type ProjectsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -882,6 +995,7 @@ export type ProjectsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   projectMembers?: boolean | Prisma.Projects$projectMembersArgs<ExtArgs>
   tasks?: boolean | Prisma.Projects$tasksArgs<ExtArgs>
+  team?: boolean | Prisma.Projects$teamArgs<ExtArgs>
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projects"]>
@@ -931,6 +1045,7 @@ export type ProjectsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type ProjectsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projectMembers?: boolean | Prisma.Projects$projectMembersArgs<ExtArgs>
   tasks?: boolean | Prisma.Projects$tasksArgs<ExtArgs>
+  team?: boolean | Prisma.Projects$teamArgs<ExtArgs>
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectsCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -946,6 +1061,7 @@ export type $ProjectsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     projectMembers: Prisma.$ProjectMemberPayload<ExtArgs>[]
     tasks: Prisma.$taskPayload<ExtArgs>[]
+    team: Prisma.$TeamPayload<ExtArgs>[]
     workspace: Prisma.$WorkspacePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -956,7 +1072,7 @@ export type $ProjectsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     status: string
     workspaceId: number
     leftedMembers: string[]
-    positions: string[]
+    positions: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["projects"]>
@@ -1355,6 +1471,7 @@ export interface Prisma__ProjectsClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   projectMembers<T extends Prisma.Projects$projectMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Projects$projectMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tasks<T extends Prisma.Projects$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Projects$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$taskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  team<T extends Prisma.Projects$teamArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Projects$teamArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1392,7 +1509,7 @@ export interface ProjectsFieldRefs {
   readonly status: Prisma.FieldRef<"Projects", 'String'>
   readonly workspaceId: Prisma.FieldRef<"Projects", 'Int'>
   readonly leftedMembers: Prisma.FieldRef<"Projects", 'String[]'>
-  readonly positions: Prisma.FieldRef<"Projects", 'String[]'>
+  readonly positions: Prisma.FieldRef<"Projects", 'String'>
   readonly createdAt: Prisma.FieldRef<"Projects", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Projects", 'DateTime'>
 }
@@ -1841,6 +1958,30 @@ export type Projects$tasksArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
+}
+
+/**
+ * Projects.team
+ */
+export type Projects$teamArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Team
+   */
+  select?: Prisma.TeamSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Team
+   */
+  omit?: Prisma.TeamOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeamInclude<ExtArgs> | null
+  where?: Prisma.TeamWhereInput
+  orderBy?: Prisma.TeamOrderByWithRelationInput | Prisma.TeamOrderByWithRelationInput[]
+  cursor?: Prisma.TeamWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TeamScalarFieldEnum | Prisma.TeamScalarFieldEnum[]
 }
 
 /**

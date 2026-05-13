@@ -38,6 +38,11 @@ export type Projects = Prisma.ProjectsModel
  */
 export type task = Prisma.taskModel
 /**
+ * Model Team
+ * 
+ */
+export type Team = Prisma.TeamModel
+/**
  * Model Member
  * 
  */
@@ -52,3 +57,8 @@ export type ProjectMember = Prisma.ProjectMemberModel
  * 
  */
 export type taskMember = Prisma.taskMemberModel
+/**
+ * Model TeamMember
+ * 
+ */
+export type TeamMember = Prisma.TeamMemberModel

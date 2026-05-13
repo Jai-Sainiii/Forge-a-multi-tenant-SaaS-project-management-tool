@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Task {
     id: number;
@@ -47,6 +48,8 @@ export default function ProjectDetailsPage({
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const router = useRouter();
 
     const fetchProjectDetails = useCallback(async () => {
         setLoading(true);
@@ -237,7 +240,7 @@ export default function ProjectDetailsPage({
                                 </tr>
                             ) : (
                                 project.tasks.map((task) => (
-                                    <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr onClick={() => router.push(`/workspace/${workspaceID}/tasks/${task.id}`)} key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
                                         <td className="px-6 py-4">
                                             <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                                                 {task.title}

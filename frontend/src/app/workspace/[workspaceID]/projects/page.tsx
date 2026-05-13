@@ -1,6 +1,6 @@
 "use client";
 import { use, useState, useEffect, useCallback } from "react";
-import { FolderArchive, ChevronRight, MoreHorizontal, AlertCircle } from "lucide-react";
+import { FolderArchive, ChevronRight, MoreHorizontal, AlertCircle, Plus } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
 
@@ -78,11 +78,148 @@ function ProjectSkeleton() {
     );
 }
 
+function CreateProjectModal({ 
+    isOpen, 
+    onClose, 
+    workspaceID, 
+    onSuccess 
+}: { 
+    isOpen: boolean; 
+    onClose: () => void; 
+    workspaceID: string;
+    onSuccess: () => void;
+}) {
+    const [name, setName] = useState("");
+    const [field, setField] = useState("");
+    const [description, setDescription] = useState("");
+    const [status, setStatus] = useState("active");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    if (!isOpen) return null;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/project/createProject`, {
+                name,
+                field,
+                description,
+                status,
+                workspaceId: Number(workspaceID)
+            }, { withCredentials: true });
+            onSuccess();
+            onClose();
+            setName("");
+            setField("");
+            setDescription("");
+            setStatus("active");
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Failed to create project");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white">New Project</h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    {error && (
+                        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800">
+                            {error}
+                        </div>
+                    )}
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Name</label>
+                        <input 
+                            type="text" 
+                            required
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                            placeholder="e.g. Website Redesign"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Field / Category</label>
+                        <input 
+                            type="text" 
+                            required
+                            value={field}
+                            onChange={e => setField(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                            placeholder="e.g. Design, Engineering"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                        >
+                            <option value="planning">Planning</option>
+                            <option value="active">Active</option>
+                            <option value="review">Review</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <textarea 
+                            required
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            rows={3}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors resize-none"
+                            placeholder="Briefly describe this project..."
+                        />
+                    </div>
+
+                    <div className="pt-4 flex justify-end gap-3">
+                        <button 
+                            type="button" 
+                            onClick={onClose}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2"
+                        >
+                            {loading ? "Creating..." : "Create Project"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
 export default function ProjectsPage({params}: {params: Promise<{ workspaceID: string }>}) {
     const { workspaceID } = use(params);
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showAddModal, setShowAddModal] = useState(false);
 
     const fetchProjects = useCallback(async () => {
         setLoading(true);
@@ -114,7 +251,29 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
     const hasActiveProjects = activeProjectIds.size > 0;
 
     return (
-        <main className="max-w-7xl mx-auto px-6 py-6 space-y-12">
+        <main className="max-w-7xl mx-auto px-6 py-6 space-y-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant dark:border-gray-700 pb-4">
+                <div>
+                    <h1 className="text-2xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <FolderArchive className="w-6 h-6 text-primary-light" />
+                        Projects
+                    </h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                        Manage your workspace projects.
+                    </p>
+                </div>
+                <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm">
+                    <Plus className="w-4 h-4" />
+                    New Project
+                </button>
+            </div>
+
+            <CreateProjectModal 
+                isOpen={showAddModal} 
+                onClose={() => setShowAddModal(false)} 
+                workspaceID={workspaceID}
+                onSuccess={fetchProjects}
+            />
             {error && (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3 text-red-700 dark:text-red-400 text-sm">
                     <AlertCircle className="w-5 h-5" />

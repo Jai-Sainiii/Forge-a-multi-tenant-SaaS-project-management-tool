@@ -55,9 +55,11 @@ export const ModelName = {
   Workspace: 'Workspace',
   Projects: 'Projects',
   task: 'task',
+  Team: 'Team',
   Member: 'Member',
   ProjectMember: 'ProjectMember',
-  taskMember: 'taskMember'
+  taskMember: 'taskMember',
+  TeamMember: 'TeamMember'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -127,6 +129,9 @@ export const TaskScalarFieldEnum = {
   status: 'status',
   projectId: 'projectId',
   workspaceId: 'workspaceId',
+  submittionType: 'submittionType',
+  submittedFile: 'submittedFile',
+  submittedTextorLink: 'submittedTextorLink',
   leftedMembers: 'leftedMembers',
   priority: 'priority',
   createdAt: 'createdAt',
@@ -134,6 +139,17 @@ export const TaskScalarFieldEnum = {
 } as const
 
 export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const TeamScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  teamName: 'teamName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TeamScalarFieldEnum = (typeof TeamScalarFieldEnum)[keyof typeof TeamScalarFieldEnum]
 
 
 export const MemberScalarFieldEnum = {
@@ -172,6 +188,19 @@ export const TaskMemberScalarFieldEnum = {
 } as const
 
 export type TaskMemberScalarFieldEnum = (typeof TaskMemberScalarFieldEnum)[keyof typeof TaskMemberScalarFieldEnum]
+
+
+export const TeamMemberScalarFieldEnum = {
+  id: 'id',
+  teamId: 'teamId',
+  userId: 'userId',
+  role: 'role',
+  position: 'position',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TeamMemberScalarFieldEnum = (typeof TeamMemberScalarFieldEnum)[keyof typeof TeamMemberScalarFieldEnum]
 
 
 export const SortOrder = {

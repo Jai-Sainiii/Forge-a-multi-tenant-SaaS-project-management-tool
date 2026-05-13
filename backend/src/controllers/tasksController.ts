@@ -54,6 +54,44 @@ export const createTask = async(req:Request,res:Response)=>{
     }
 }
 
+export const getSingleTask = async(req:Request,res:Response)=>{
+    try {
+        const taskID = Number(req.params.taskID);
+        const task = await prisma.task.findUnique({
+            where:{
+                id: taskID
+            },
+            include:{
+                project:{
+                    select:{
+                        name:true
+                    }
+                },
+                workspace:{
+                    select:{
+                        title:true
+                    }
+                },
+                taskMembers:{
+                    select:{
+                        user:{
+                            select:{
+                                name:true,
+                                email:true,
+                                id:true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        return res.status(200).json({success:true, task})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({success:false,message:"Internal Server Error"})
+    }
+}
+
 export const updateTask = async(req:Request,res:Response)=>{
     try {
         const {id,title,description,status,projectId,workspaceId} = req.body;
@@ -85,6 +123,29 @@ export const deleteTask = async(req:Request,res:Response)=>{
             }
         })
         return res.status(200).json({success:true,task})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({success:false,message:"Internal Server Error"})
+    }
+}
+
+
+export const TaskSubmitToReview = async(req:Request,res:Response)=>{
+    try {
+        const {taskId} = req.params;
+        const {submittionType, submittedTextorLink} = req.body;
+        const TaskID = Number(taskId);
+        const task = await prisma.task.update({
+            where:{
+                id: TaskID
+            },
+            data:{
+                status:"review",
+                submittionType,
+                submittedTextorLink
+            }
+        })
+        return res.status(200).json({success:true, task})
     } catch (error) {
         console.log(error)
         return res.status(500).json({success:false,message:"Internal Server Error"})

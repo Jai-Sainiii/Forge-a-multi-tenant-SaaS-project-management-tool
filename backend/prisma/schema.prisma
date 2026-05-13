@@ -25,6 +25,7 @@ model User {
   memberInfo   Member[]
   projectInfo   ProjectMember[]
   taskInfo   taskMember[]
+  teamMember   TeamMember[]
 }
 
 model Workspace {
@@ -55,7 +56,8 @@ model Projects {
   projectMembers ProjectMember[]
   leftedMembers String[] @default([])
   tasks       task[]
-  positions   String[] @default([])
+  team        Team[]
+  positions   String @default("[]")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -71,6 +73,9 @@ model task {
   projectId   Int
   workspaceId Int
   taskMembers taskMember[]
+  submittionType String? @default("text") //text, link, file
+  submittedFile  String?
+  submittedTextorLink String?
   leftedMembers String[] @default([])
   priority    String @default("low") //low, medium, high
   createdAt   DateTime @default(now())
@@ -78,6 +83,17 @@ model task {
 
   project  Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Team {
+  id Int @id @default(autoincrement())
+  projectId Int
+  teamName String
+  teamMembers TeamMember[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Member {
@@ -118,3 +134,17 @@ model taskMember {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   task task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
+
+model TeamMember {
+  id Int @id @default(autoincrement())
+  teamId Int
+  userId Int
+  role String @default("member") //admin, member, viewer, tester
+  position String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
