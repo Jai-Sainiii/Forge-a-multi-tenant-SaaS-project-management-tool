@@ -101,7 +101,7 @@ model Member {
   userId Int
   workspaceId Int
   isActive Boolean @default(true)
-  role String @default("member") //admin, member, viewer, tester
+  role String @default("member") //admin, member, viewer, tester, owner
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

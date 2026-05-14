@@ -1,6 +1,7 @@
 "use client";
 import { use, useState, useEffect, useCallback } from "react";
-import { Search, MoreHorizontal, AlertCircle, Users, Mail, Shield, UserPlus, Circle } from "lucide-react";
+import { Search, MoreHorizontal, AlertCircle, Users, Mail, Shield, UserPlus, Circle, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
 interface UserInfo {
@@ -25,7 +26,7 @@ export default function MembersPage({params}: {params: Promise<{ workspaceID: st
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
-
+    const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
     const fetchMembers = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -45,9 +46,33 @@ export default function MembersPage({params}: {params: Promise<{ workspaceID: st
         }
     }, [workspaceID]);
 
+    const [teams, setTeams] = useState<any[]>([]);
+    const [teamsLoading, setTeamsLoading] = useState(true);
+    const [teamsError, setTeamsError] = useState<string | null>(null);
+
+    const fetchTeams = useCallback(async () => {
+        setTeamsLoading(true);
+        setTeamsError(null);
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/team/workspace/${workspaceID}`, {
+                withCredentials: true,
+            });
+            if (res.data.success) {
+                setTeams(res.data.teams);
+            } else {
+                setTeamsError(res.data.error || "Failed to load teams.");
+            }
+        } catch (err) {
+            setTeamsError("Failed to load teams. Please try again.");
+        } finally {
+            setTeamsLoading(false);
+        }
+    }, [workspaceID]);
+
     useEffect(() => {
         fetchMembers();
-    }, [fetchMembers]);
+        fetchTeams();
+    }, [fetchMembers, fetchTeams]);
 
     const filteredMembers = members.filter(member => 
         member.user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -231,6 +256,111 @@ export default function MembersPage({params}: {params: Promise<{ workspaceID: st
                     </div>
                 </div>
             )}
+
+            <div className="pt-8 border-t border-outline-variant dark:border-gray-700 mt-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4">
+                    <div>
+                        <h2 className="text-2xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Users className="w-6 h-6 text-primary-light" />
+                            Project Teams
+                        </h2>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                            Overview of all teams across your projects.
+                        </p>
+                    </div>
+                </div>
+
+                {teamsError && (
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4 flex items-center gap-3 text-red-700 dark:text-red-400 text-sm">
+                        <AlertCircle className="w-5 h-5" />
+                        {teamsError}
+                        <button onClick={fetchTeams} className="ml-auto px-3 py-1 border border-red-200 dark:border-red-800 rounded-md hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
+                            Retry
+                        </button>
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {teamsLoading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg p-5 animate-pulse">
+                                <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                                <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                            </div>
+                        ))
+                    ) : teams.length === 0 ? (
+                        <div className="col-span-full py-12 text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg">
+                            <Users className="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                            <p className="text-base font-medium text-gray-900 dark:text-white">No teams found</p>
+                            <p className="text-sm mt-1">There are no teams created in your projects yet.</p>
+                        </div>
+                    ) : (
+                        teams.map((team) => (
+                            <div key={team.id} className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm transition-all hover:border-primary-light/50">
+                                <div 
+                                    className="p-5 cursor-pointer flex justify-between items-center"
+                                    onClick={() => setExpandedTeamId(expandedTeamId === team.id ? null : team.id)}
+                                >
+                                    <div>
+                                        <h3 className="text-base font-medium text-gray-900 dark:text-white">
+                                            {team.teamName}
+                                        </h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                            {team.project?.name || "Unknown Project"}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                                            {team.teamMembers?.length || 0}
+                                        </span>
+                                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${expandedTeamId === team.id ? 'rotate-180' : ''}`} />
+                                    </div>
+                                </div>
+                                
+                                <AnimatePresence>
+                                    {expandedTeamId === team.id && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden border-t border-gray-200 dark:border-gray-700"
+                                        >
+                                            <div className="p-2 bg-gray-50/50 dark:bg-[#0f172a]/50">
+                                                {team.teamMembers?.length > 0 ? (
+                                                    <div className="space-y-1">
+                                                        {team.teamMembers.map((member: any, i: number) => (
+                                                            <div key={i} className="flex items-center justify-between p-3 hover:bg-white dark:hover:bg-[#1e293b] rounded-md transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-medium text-sm border border-primary-light/20">
+                                                                        {member.user?.name?.charAt(0).toUpperCase() || "?"}
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="text-sm font-medium text-gray-900 dark:text-white">{member.user?.name || "Unknown User"}</div>
+                                                                        <div className="text-xs text-gray-500 dark:text-gray-400">{member.user?.email}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-right flex flex-col items-end">
+                                                                    <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{member.role}</span>
+                                                                    <span className="text-xs text-gray-700 dark:text-gray-300 capitalize mt-0.5">{member.position}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-center text-gray-500 dark:text-gray-400 py-6">
+                                                        No members in this team.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
         </main>
     );
 }

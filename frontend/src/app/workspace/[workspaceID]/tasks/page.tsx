@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import CreateTaskModal from "@/components/forms/CreateTask";
 
 interface Task {
   id: number;
@@ -41,6 +42,7 @@ export default function TasksPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -126,7 +128,10 @@ export default function TasksPage({
             Manage and track tasks across all projects in this workspace.
           </p>
         </div>
-        <button className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm">
+        <button 
+          onClick={() => setIsCreateTaskModalOpen(true)}
+          className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+        >
           <Plus className="w-4 h-4" />
           Create Task
         </button>
@@ -277,6 +282,14 @@ export default function TasksPage({
           </table>
         </div>
       </div>
+
+      {isCreateTaskModalOpen && (
+        <CreateTaskModal
+          workspaceID={workspaceID}
+          onClose={() => setIsCreateTaskModalOpen(false)}
+          onSuccess={fetchTasks}
+        />
+      )}
     </main>
   );
 }

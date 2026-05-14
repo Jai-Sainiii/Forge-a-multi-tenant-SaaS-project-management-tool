@@ -4,12 +4,16 @@ import {
   getTeam,
   updateTeam,
   deleteTeam,
+  addTeamMember,
+  getTeamsByWorkspace
 } from "../controllers/teamController.js";
 const router: Router = Router();
 
-router.post("/createTeam", createTeam);
+router.post("/createTeam/:projectId", createTeam);
 router.post("/getTeam", getTeam);
 router.post("/updateTeam", updateTeam);
 router.post("/deleteTeam", deleteTeam);
+router.post("/addTeamMember/:teamId", addTeamMember);
+router.get("/workspace/:workspaceId", getTeamsByWorkspace);
 
 export default router;

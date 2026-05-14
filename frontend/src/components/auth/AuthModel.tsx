@@ -46,20 +46,20 @@ export default function AuthModel({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           onClick={onClose}
         >
           
-          <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-slate-950/70" />
 
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.97, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative w-full max-w-[440px] bg-white dark:bg-[#0f172a] border border-[#c8c4d3] dark:border-slate-700 rounded-xl z-10"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="relative w-full max-w-[440px] bg-white dark:bg-[#0f172a] border border-[#c8c4d3] dark:border-slate-700 rounded-xl z-10 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
           
@@ -85,7 +85,7 @@ export default function AuthModel({
                   onClick={() => setActiveTab("login")}
                   className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
                     activeTab === "login"
-                      ? "bg-[#251b72] text-white"
+                      ? "bg-[#251b72] text-white shadow-sm"
                       : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function AuthModel({
                   onClick={() => setActiveTab("signup")}
                   className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
                     activeTab === "signup"
-                      ? "bg-[#251b72] text-white"
+                      ? "bg-[#251b72] text-white shadow-sm"
                       : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
                   }`}
                 >
@@ -104,21 +104,23 @@ export default function AuthModel({
               </div>
 
               
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, x: activeTab === "login" ? -8 : 8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: activeTab === "login" ? 8 : -8 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {activeTab === "login" ? (
-                    <LoginForm onClose={onClose} />
-                  ) : (
-                    <SignupForm onSwitchToLogin={() => setActiveTab("login")} />
-                  )}
-                </motion.div>
-              </AnimatePresence>
+              <div className="relative">
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15, ease: "easeInOut" }}
+                  >
+                    {activeTab === "login" ? (
+                      <LoginForm onClose={onClose} />
+                    ) : (
+                      <SignupForm onSwitchToLogin={() => setActiveTab("login")} />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </motion.div>
         </motion.div>
