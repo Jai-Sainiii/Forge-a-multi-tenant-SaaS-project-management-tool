@@ -11,6 +11,7 @@ import projectRoutes from "./routes/projectRoutes.js";
 import membersRoutes from "./routes/membersRoutes.js";
 import taskRoutes from "./routes/tasksRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
+import inviteRoutes from "./routes/inviteRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ app.use("/project", projectRoutes);
 app.use("/members", membersRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/team", teamRoutes);
+app.use("/invite", inviteRoutes);
 
 prismaConnect();
 

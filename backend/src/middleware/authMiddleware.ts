@@ -138,8 +138,7 @@ export const protectedRoute = async (req: Request, res: Response, next: NextFunc
 
         next();
     } catch (error) {
-        console.error("Protected route error:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(401).json({ success: false, message: "Signin or Login expired" });
     }
 };
 
@@ -159,6 +158,10 @@ export const me = async (req: Request, res: Response) => {
 
         const decodedToken: any = jwt.verify(token, JWT_SECRET);
 
+        if(decodedToken.expiresIn < Date.now()){
+            return res.status(401).json({message: "Token expired"});
+        }
+
         const user = await prisma.user.findUnique({where: {email: decodedToken.email}});
 
         if(!user){
@@ -167,7 +170,6 @@ export const me = async (req: Request, res: Response) => {
 
         res.json({user: {name: user.name, email: user.email}});
     } catch (error) {
-        console.error("Me error:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(401).json({ success: false, message: "Invalid or expired token" });
     }
 }

@@ -17,10 +17,25 @@ import {
     Calendar,
     Briefcase,
     Send,
-    ExternalLink
+    ExternalLink,
+    X,
+    RotateCcw,
+    Play,
+    Loader2,
+    Eye,
+    Pause
 } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
+
+const TASK_STATUSES = [
+    { value: "active", label: "Active", icon: Play, color: "text-blue-500" },
+    { value: "in progress", label: "In Progress", icon: Loader2, color: "text-indigo-500" },
+    { value: "review", label: "Review", icon: Eye, color: "text-yellow-500" },
+    { value: "completed", label: "Completed", icon: CheckCircle2, color: "text-green-500" },
+    { value: "redo", label: "Redo", icon: RotateCcw, color: "text-orange-500" },
+    { value: "suspended", label: "Suspended", icon: Pause, color: "text-gray-500" },
+];
 
 interface TaskMember {
     user: {
@@ -59,6 +74,15 @@ export default function TaskDetailsPage({
     const [submissionType, setSubmissionType] = useState('link');
     const [submittedContent, setSubmittedContent] = useState('');
     const [submitting, setSubmitting] = useState(false);
+
+    // Edit Modal State
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editTitle, setEditTitle] = useState('');
+    const [editDescription, setEditDescription] = useState('');
+    const [editStatus, setEditStatus] = useState('');
+    const [editPriority, setEditPriority] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [editError, setEditError] = useState<string | null>(null);
 
     const fetchTaskDetails = useCallback(async () => {
         setLoading(true);
@@ -100,6 +124,54 @@ export default function TaskDetailsPage({
         }
     }
 
+    const openEditModal = () => {
+        if (!task) return;
+        setEditTitle(task.title);
+        setEditDescription(task.description);
+        setEditStatus(task.status);
+        setEditPriority(task.priority);
+        setEditError(null);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateTask = async () => {
+        if (!editTitle.trim()) return;
+        setSaving(true);
+        setEditError(null);
+        try {
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/update/${taskID}`,
+                { title: editTitle, description: editDescription, status: editStatus, priority: editPriority },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setTask(res.data.task);
+                setIsEditModalOpen(false);
+            } else {
+                setEditError(res.data.message || "Failed to update task.");
+            }
+        } catch (err: any) {
+            setEditError(err?.response?.data?.message || "Failed to update task.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleQuickStatus = async (newStatus: string) => {
+        try {
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/update/${taskID}`,
+                { status: newStatus },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setTask(res.data.task);
+            }
+        } catch (err) {
+            console.error("Failed to update status", err);
+        }
+    };
+
     useEffect(() => {
         fetchTaskDetails();
     }, [fetchTaskDetails]);
@@ -120,6 +192,7 @@ export default function TaskDetailsPage({
             case 'active': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-500 border border-blue-200 dark:border-blue-800/50';
             case 'review': return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-800/50';
             case 'todo':
+            case 'redo': return 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-500 border border-orange-200 dark:border-orange-800/50';
             case 'suspended':
             default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
         }
@@ -200,7 +273,7 @@ export default function TaskDetailsPage({
                                 Submit for Review
                             </button>
                         )}
-                        <button className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
+                        <button onClick={openEditModal} className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
                             <Edit className="w-4 h-4" />
                             Edit Task
                         </button>
@@ -292,6 +365,34 @@ export default function TaskDetailsPage({
                         </div>
                     </div>
 
+                    {/* Quick Status Update */}
+                    <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
+                        <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            Update Status
+                        </h2>
+                        <div className="grid grid-cols-2 gap-2">
+                            {TASK_STATUSES.map((s) => {
+                                const Icon = s.icon;
+                                const isActive = task.status?.toLowerCase() === s.value;
+                                return (
+                                    <button
+                                        key={s.value}
+                                        onClick={() => !isActive && handleQuickStatus(s.value)}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                                            isActive
+                                                ? 'bg-[#3C3489]/10 text-[#3C3489] border border-[#3C3489]/30 ring-1 ring-[#3C3489]/20'
+                                                : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
+                                    >
+                                        <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#3C3489]' : s.color}`} />
+                                        {s.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
                     {/* Task Members */}
                     <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
                         <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -380,6 +481,126 @@ export default function TaskDetailsPage({
                                 className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50"
                             >
                                 {submitting ? "Submitting..." : "Submit Task"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Task Modal */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+                    <div className="bg-white dark:bg-[#1e293b] rounded-lg w-full max-w-lg shadow-xl border border-gray-200 dark:border-gray-700">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h2 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                <Edit className="w-5 h-5 text-[#3C3489]" />
+                                Edit Task
+                            </h2>
+                            <button onClick={() => setIsEditModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                            {editError && (
+                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3 text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
+                                    <AlertCircle className="w-4 h-4 shrink-0" />
+                                    {editError}
+                                </div>
+                            )}
+
+                            {/* Title */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                                <input
+                                    type="text"
+                                    value={editTitle}
+                                    onChange={(e) => setEditTitle(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] text-sm"
+                                />
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                                <textarea
+                                    value={editDescription}
+                                    onChange={(e) => setEditDescription(e.target.value)}
+                                    rows={4}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] resize-none text-sm"
+                                />
+                            </div>
+
+                            {/* Status */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {TASK_STATUSES.map((s) => {
+                                        const Icon = s.icon;
+                                        const isSelected = editStatus?.toLowerCase() === s.value;
+                                        return (
+                                            <button
+                                                key={s.value}
+                                                type="button"
+                                                onClick={() => setEditStatus(s.value)}
+                                                className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                                                    isSelected
+                                                        ? 'bg-[#3C3489] text-white shadow-sm'
+                                                        : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                }`}
+                                            >
+                                                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : s.color}`} />
+                                                {s.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Priority */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
+                                <div className="flex gap-2">
+                                    {[{value: 'low', label: 'Low', icon: ArrowDown, color: 'text-blue-500'}, {value: 'medium', label: 'Medium', icon: Minus, color: 'text-gray-500'}, {value: 'high', label: 'High', icon: ArrowUp, color: 'text-red-500'}].map((p) => {
+                                        const Icon = p.icon;
+                                        const isSelected = editPriority?.toLowerCase() === p.value;
+                                        return (
+                                            <button
+                                                key={p.value}
+                                                type="button"
+                                                onClick={() => setEditPriority(p.value)}
+                                                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                                                    isSelected
+                                                        ? 'bg-[#3C3489] text-white shadow-sm'
+                                                        : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                }`}
+                                            >
+                                                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : p.color}`} />
+                                                {p.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+                            <button
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                                disabled={saving}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleUpdateTask}
+                                disabled={saving || !editTitle.trim()}
+                                className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 cursor-pointer"
+                            >
+                                {saving ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
                     </div>

@@ -59,7 +59,8 @@ export const ModelName = {
   Member: 'Member',
   ProjectMember: 'ProjectMember',
   taskMember: 'taskMember',
-  TeamMember: 'TeamMember'
+  TeamMember: 'TeamMember',
+  InviteLink: 'InviteLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -201,6 +202,21 @@ export const TeamMemberScalarFieldEnum = {
 } as const
 
 export type TeamMemberScalarFieldEnum = (typeof TeamMemberScalarFieldEnum)[keyof typeof TeamMemberScalarFieldEnum]
+
+
+export const InviteLinkScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  workspaceId: 'workspaceId',
+  createdBy: 'createdBy',
+  role: 'role',
+  isUsed: 'isUsed',
+  usedBy: 'usedBy',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type InviteLinkScalarFieldEnum = (typeof InviteLinkScalarFieldEnum)[keyof typeof InviteLinkScalarFieldEnum]
 
 
 export const SortOrder = {

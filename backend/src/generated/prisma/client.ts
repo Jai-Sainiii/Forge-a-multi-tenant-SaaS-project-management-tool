@@ -86,3 +86,8 @@ export type taskMember = Prisma.taskMemberModel
  * 
  */
 export type TeamMember = Prisma.TeamMemberModel
+/**
+ * Model InviteLink
+ * 
+ */
+export type InviteLink = Prisma.InviteLinkModel

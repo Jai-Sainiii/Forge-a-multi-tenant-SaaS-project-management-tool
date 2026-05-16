@@ -19,7 +19,7 @@ export const createWorkSpace = async (req: Request, res: Response) => {
             workspaceId: workspace.id,
             userId: user.id,
             isActive: true,
-            role: "admin",
+            role: "owner",
         },
     });
 

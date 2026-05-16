@@ -96,23 +96,50 @@ export const getSingleTask = async(req:Request,res:Response)=>{
 
 export const updateTask = async(req:Request,res:Response)=>{
     try {
-        const {id,title,description,status,projectId,workspaceId} = req.body;
-        const task = await prisma.task.update({
-            where:{
-                id:Number(id)
-            },
-            data:{
-                title,
-                description,
-                status,
-                projectId: Number(projectId),
-                workspaceId: Number(workspaceId)
+        const { taskId } = req.params;
+        const user = req.body.user;
+        const { title, description, status, priority } = req.body;
+        const taskID = Number(taskId);
+
+        // Verify the user is a task admin
+        const taskMember = await prisma.taskMember.findFirst({
+            where: {
+                taskId: taskID,
+                userId: user.id,
+                role: "admin"
             }
-        })
-        return res.status(200).json({success:true,task})
+        });
+
+        if (!taskMember) {
+            return res.status(403).json({ success: false, message: "Unauthorized. Only task admins can update this task." });
+        }
+
+        // Build dynamic update data — only include fields that were provided
+        const updateData: Record<string, any> = {};
+        if (title !== undefined) updateData.title = title;
+        if (description !== undefined) updateData.description = description;
+        if (status !== undefined) updateData.status = status;
+        if (priority !== undefined) updateData.priority = priority;
+
+        const task = await prisma.task.update({
+            where: { id: taskID },
+            data: updateData,
+            include: {
+                project: { select: { name: true } },
+                workspace: { select: { title: true } },
+                taskMembers: {
+                    select: {
+                        user: { select: { name: true, email: true, id: true } },
+                        role: true
+                    }
+                }
+            }
+        });
+
+        return res.status(200).json({ success: true, task });
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({success:false,message:"Internal Server Error"})
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 

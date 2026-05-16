@@ -392,7 +392,8 @@ export const ModelName = {
   Member: 'Member',
   ProjectMember: 'ProjectMember',
   taskMember: 'taskMember',
-  TeamMember: 'TeamMember'
+  TeamMember: 'TeamMember',
+  InviteLink: 'InviteLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "projects" | "task" | "team" | "member" | "projectMember" | "taskMember" | "teamMember"
+    modelProps: "user" | "workspace" | "projects" | "task" | "team" | "member" | "projectMember" | "taskMember" | "teamMember" | "inviteLink"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1078,6 +1079,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InviteLink: {
+      payload: Prisma.$InviteLinkPayload<ExtArgs>
+      fields: Prisma.InviteLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InviteLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InviteLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.InviteLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InviteLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>
+        }
+        findMany: {
+          args: Prisma.InviteLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>[]
+        }
+        create: {
+          args: Prisma.InviteLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>
+        }
+        createMany: {
+          args: Prisma.InviteLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InviteLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.InviteLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>
+        }
+        update: {
+          args: Prisma.InviteLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.InviteLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InviteLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InviteLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.InviteLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InviteLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.InviteLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInviteLink>
+        }
+        groupBy: {
+          args: Prisma.InviteLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InviteLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InviteLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InviteLinkCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1240,6 +1315,21 @@ export const TeamMemberScalarFieldEnum = {
 } as const
 
 export type TeamMemberScalarFieldEnum = (typeof TeamMemberScalarFieldEnum)[keyof typeof TeamMemberScalarFieldEnum]
+
+
+export const InviteLinkScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  workspaceId: 'workspaceId',
+  createdBy: 'createdBy',
+  role: 'role',
+  isUsed: 'isUsed',
+  usedBy: 'usedBy',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type InviteLinkScalarFieldEnum = (typeof InviteLinkScalarFieldEnum)[keyof typeof InviteLinkScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1453,6 +1543,7 @@ export type GlobalOmitConfig = {
   projectMember?: Prisma.ProjectMemberOmit
   taskMember?: Prisma.taskMemberOmit
   teamMember?: Prisma.TeamMemberOmit
+  inviteLink?: Prisma.InviteLinkOmit
 }
 
 /* Types for Logging */

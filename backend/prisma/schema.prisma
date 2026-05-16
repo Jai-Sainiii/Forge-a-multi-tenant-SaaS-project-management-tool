@@ -38,6 +38,7 @@ model Workspace {
   leftedMembers String[] @default([])
   projects    Projects[]
   tasks       task[]
+  inviteLinks InviteLink[]
   visibility  String   @default("public") //public , private
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -148,3 +149,16 @@ model TeamMember {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model InviteLink {
+  id          Int       @id @default(autoincrement())
+  token       String    @unique
+  workspaceId Int
+  createdBy   Int
+  role        String    @default("member")
+  isUsed      Boolean   @default(false)
+  usedBy      Int?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
