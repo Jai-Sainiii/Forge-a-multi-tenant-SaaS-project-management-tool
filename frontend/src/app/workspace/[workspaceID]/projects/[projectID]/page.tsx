@@ -20,6 +20,8 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CreateTaskModal from "@/components/forms/CreateTask";
+import { useAuth } from "@/authContext/AuthContext";
+import { th } from "framer-motion/client";
 
 interface Task {
     id: number;
@@ -37,7 +39,146 @@ interface Project {
     description: string;
     status: string;
     tasks: Task[];
+    projectMembers: {
+        id: number;
+        userId: number;
+        projectId: number;
+        position: string;
+        role: string;
+    }[];
     createdAt: string;
+}
+
+interface EditProjectModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    project: Project;
+    onSuccess: () => void;
+}
+
+function EditProjectModal({ isOpen, onClose, project, onSuccess }: EditProjectModalProps) {
+    const [name, setName] = useState(project.name);
+    const [field, setField] = useState(project.field);
+    const [description, setDescription] = useState(project.description);
+    const [status, setStatus] = useState(project.status || "active");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        setName(project.name);
+        setField(project.field);
+        setDescription(project.description);
+        setStatus(project.status || "active");
+    }, [project]);
+
+    if (!isOpen) return null;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        try {
+            await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/project/updateProject/${project.id}`, {
+                name,
+                field,
+                description,
+                status
+            }, { withCredentials: true });
+            onSuccess();
+            onClose();
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Failed to update project details");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white">Edit Project Details</h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    {error && (
+                        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800 animate-pulse">
+                            {error}
+                        </div>
+                    )}
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Name</label>
+                        <input 
+                            type="text" 
+                            required
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Field / Category</label>
+                        <input 
+                            type="text" 
+                            required
+                            value={field}
+                            onChange={e => setField(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                        >
+                            <option value="planning">Planning</option>
+                            <option value="active">Active</option>
+                            <option value="review">Review</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <textarea 
+                            required
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            rows={3}
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors resize-none"
+                        />
+                    </div>
+
+                    <div className="pt-4 flex justify-end gap-3">
+                        <button 
+                            type="button" 
+                            onClick={onClose}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                        >
+                            {loading ? "Saving..." : "Save Changes"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }
 
 export default function ProjectDetailsPage({
@@ -50,8 +191,44 @@ export default function ProjectDetailsPage({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
+    const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
+    const [canEdit, setCanEdit] = useState(false);
 
     const router = useRouter();
+    const authContext = useAuth();
+    const user = authContext ? authContext.user : null;
+
+    const checkUserRole = useCallback(async (projectData: Project) => {
+        if (!user) return;
+        try {
+            const res = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}`,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                const membersList = res.data.members;
+                const currentMember = membersList.find((m: any) => m.user?.email === user.email);
+                if (currentMember) {
+                    
+                    const isWorkspaceAdmin = ["admin", "owner"].includes(currentMember.role?.toLowerCase());
+                    
+                    
+                    const projectMembers = projectData.projectMembers || [];
+                    const isProjectAdmin = projectMembers.some(
+                        (pm: any) => pm.userId === currentMember.userId && pm.role?.toLowerCase() === "admin"
+                    );
+
+                    if (isWorkspaceAdmin || isProjectAdmin) {
+                        setCanEdit(true);
+                    } else {
+                        setCanEdit(false);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Error checking user role:", err);
+        }
+    }, [workspaceID, user]);
 
     const fetchProjectDetails = useCallback(async () => {
         setLoading(true);
@@ -62,7 +239,9 @@ export default function ProjectDetailsPage({
                 { withCredentials: true }
             );
             if (res.data.success || res.data.sucess === "true") {
-                setProject(res.data.project);
+                const projectData = res.data.project;
+                setProject(projectData);
+                checkUserRole(projectData);
             } else {
                 setError(res.data.message || "Failed to load project details.");
             }
@@ -71,7 +250,7 @@ export default function ProjectDetailsPage({
         } finally {
             setLoading(false);
         }
-    }, [projectID]);
+    }, [projectID, checkUserRole]);
 
     useEffect(() => {
         fetchProjectDetails();
@@ -128,7 +307,7 @@ export default function ProjectDetailsPage({
 
     return (
         <main className="max-w-7xl mx-auto px-6 py-6 space-y-8">
-            {/* Header & Breadcrumb */}
+           
             <div>
                 <Link 
                     href={`/workspace/${workspaceID}/projects`} 
@@ -154,10 +333,15 @@ export default function ProjectDetailsPage({
                     </div>
                     
                     <div className="flex items-center gap-3 shrink-0">
-                        <button className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
-                            <Edit className="w-4 h-4" />
-                            Edit Project
-                        </button>
+                        {canEdit && (
+                            <button 
+                                onClick={() => setIsEditProjectModalOpen(true)}
+                                className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+                            >
+                                <Edit className="w-4 h-4" />
+                                Edit Project
+                            </button>
+                        )}
                         <button 
                             onClick={() => setIsCreateTaskModalOpen(true)}
                             className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
@@ -169,7 +353,7 @@ export default function ProjectDetailsPage({
                 </div>
             </div>
 
-            {/* Project Stats Cards */}
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white dark:bg-[#1e293b] p-4 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm flex items-start gap-3">
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
@@ -207,7 +391,7 @@ export default function ProjectDetailsPage({
                 </div>
             </div>
 
-            {/* Tasks Section */}
+           
             <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
                     <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -288,6 +472,15 @@ export default function ProjectDetailsPage({
                     workspaceID={workspaceID}
                     projectID={projectID}
                     onClose={() => setIsCreateTaskModalOpen(false)}
+                    onSuccess={fetchProjectDetails}
+                />
+            )}
+
+            {isEditProjectModalOpen && (
+                <EditProjectModal
+                    isOpen={isEditProjectModalOpen}
+                    onClose={() => setIsEditProjectModalOpen(false)}
+                    project={project}
                     onSuccess={fetchProjectDetails}
                 />
             )}

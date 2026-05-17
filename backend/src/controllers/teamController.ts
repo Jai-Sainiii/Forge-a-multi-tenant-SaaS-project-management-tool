@@ -109,4 +109,35 @@ const getTeamsByWorkspace = async (req: Request, res: Response) => {
     }
 }
 
-export { createTeam, getTeam, updateTeam, deleteTeam, addTeamMember, getTeamsByWorkspace }
+const updateTeamMember = async (req: Request, res: Response) => {
+    try {
+        const { memberId } = req.params
+        const memberID = Number(memberId)
+        const { position, role } = req.body
+        const updatedMember = await prisma.teamMember.update({
+            where: { id: memberID },
+            data: {
+                position,
+                role
+            }
+        })
+        res.status(200).json({ success: true, message: "Team member updated", updatedMember })
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: "Failed to update team member", error: error.message })
+    }
+}
+
+const deleteTeamMember = async (req: Request, res: Response) => {
+    try {
+        const { memberId } = req.params
+        const memberID = Number(memberId)
+        const deletedMember = await prisma.teamMember.delete({
+            where: { id: memberID }
+        })
+        res.status(200).json({ success: true, message: "Team member removed", deletedMember })
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: "Failed to remove team member", error: error.message })
+    }
+}
+
+export { createTeam, getTeam, updateTeam, deleteTeam, addTeamMember, getTeamsByWorkspace, updateTeamMember, deleteTeamMember }

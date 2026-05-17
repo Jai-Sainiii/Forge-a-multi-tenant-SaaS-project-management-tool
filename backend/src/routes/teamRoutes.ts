@@ -5,7 +5,9 @@ import {
   updateTeam,
   deleteTeam,
   addTeamMember,
-  getTeamsByWorkspace
+  getTeamsByWorkspace,
+  updateTeamMember,
+  deleteTeamMember
 } from "../controllers/teamController.js";
 const router: Router = Router();
 
@@ -15,5 +17,7 @@ router.post("/updateTeam", updateTeam);
 router.post("/deleteTeam", deleteTeam);
 router.post("/addTeamMember/:teamId", addTeamMember);
 router.get("/workspace/:workspaceId", getTeamsByWorkspace);
+router.put("/updateTeamMember/:memberId", updateTeamMember);
+router.delete("/deleteTeamMember/:memberId", deleteTeamMember);
 
 export default router;
