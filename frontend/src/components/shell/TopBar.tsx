@@ -180,20 +180,6 @@ export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
           Invite
         </button>
 
-        {/* New project filled purple button */}
-        <button
-          className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 transition-colors hover:bg-[#5a4ed1] cursor-pointer"
-          style={{
-            background: "#6C5CE7",
-            color: "#ffffff",
-            borderRadius: 8,
-            border: "none",
-          }}
-        >
-          <Plus size={13} strokeWidth={2.2} />
-          New project
-        </button>
-
         {/* Notification bell */}
         <button
           className="relative flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer"

@@ -77,12 +77,7 @@ export default function TaskDetailsPage({
 
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editTitle, setEditTitle] = useState('');
-    const [editDescription, setEditDescription] = useState('');
-    const [editStatus, setEditStatus] = useState('');
-    const [editPriority, setEditPriority] = useState('');
-    const [saving, setSaving] = useState(false);
-    const [editError, setEditError] = useState<string | null>(null);
+    const [workspaceMembers, setWorkspaceMembers] = useState<any[]>([]);
 
     const fetchTaskDetails = useCallback(async () => {
         setLoading(true);
@@ -104,6 +99,20 @@ export default function TaskDetailsPage({
         }
     }, [taskID]);
 
+    const fetchWorkspaceMembers = useCallback(async () => {
+        try {
+            const res = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}`,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setWorkspaceMembers(res.data.members || []);
+            }
+        } catch (err) {
+            console.error("Failed to load workspace members", err);
+        }
+    }, [workspaceID]);
+
     const handleSubmitTask = async () => {
         if (!submittedContent.trim()) return;
         setSubmitting(true);
@@ -121,39 +130,6 @@ export default function TaskDetailsPage({
             console.error("Failed to submit task", error);
         } finally {
             setSubmitting(false);
-        }
-    }
-
-    const openEditModal = () => {
-        if (!task) return;
-        setEditTitle(task.title);
-        setEditDescription(task.description);
-        setEditStatus(task.status);
-        setEditPriority(task.priority);
-        setEditError(null);
-        setIsEditModalOpen(true);
-    };
-
-    const handleUpdateTask = async () => {
-        if (!editTitle.trim()) return;
-        setSaving(true);
-        setEditError(null);
-        try {
-            const res = await axios.put(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/update/${taskID}`,
-                { title: editTitle, description: editDescription, status: editStatus, priority: editPriority },
-                { withCredentials: true }
-            );
-            if (res.data.success) {
-                setTask(res.data.task);
-                setIsEditModalOpen(false);
-            } else {
-                setEditError(res.data.message || "Failed to update task.");
-            }
-        } catch (err: any) {
-            setEditError(err?.response?.data?.message || "Failed to update task.");
-        } finally {
-            setSaving(false);
         }
     };
 
@@ -174,7 +150,8 @@ export default function TaskDetailsPage({
 
     useEffect(() => {
         fetchTaskDetails();
-    }, [fetchTaskDetails]);
+        fetchWorkspaceMembers();
+    }, [fetchTaskDetails, fetchWorkspaceMembers]);
 
     const getPriorityIcon = (priority: string) => {
         switch (priority?.toLowerCase()) {
@@ -273,7 +250,7 @@ export default function TaskDetailsPage({
                                 Submit for Review
                             </button>
                         )}
-                        <button onClick={openEditModal} className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
+                        <button onClick={() => setIsEditModalOpen(true)} className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
                             <Edit className="w-4 h-4" />
                             Edit Task
                         </button>
@@ -488,124 +465,223 @@ export default function TaskDetailsPage({
             )}
 
             {/* Edit Task Modal */}
-            {isEditModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-lg w-full max-w-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                            <h2 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                <Edit className="w-5 h-5 text-[#3C3489]" />
-                                Edit Task
-                            </h2>
-                            <button onClick={() => setIsEditModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                                <X className="w-5 h-5 text-gray-500" />
-                            </button>
-                        </div>
-
-                        {/* Modal Body */}
-                        <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-                            {editError && (
-                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3 text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
-                                    <AlertCircle className="w-4 h-4 shrink-0" />
-                                    {editError}
-                                </div>
-                            )}
-
-                            {/* Title */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    value={editTitle}
-                                    onChange={(e) => setEditTitle(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] text-sm"
-                                />
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                                <textarea
-                                    value={editDescription}
-                                    onChange={(e) => setEditDescription(e.target.value)}
-                                    rows={4}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] resize-none text-sm"
-                                />
-                            </div>
-
-                            {/* Status */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {TASK_STATUSES.map((s) => {
-                                        const Icon = s.icon;
-                                        const isSelected = editStatus?.toLowerCase() === s.value;
-                                        return (
-                                            <button
-                                                key={s.value}
-                                                type="button"
-                                                onClick={() => setEditStatus(s.value)}
-                                                className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                                    isSelected
-                                                        ? 'bg-[#3C3489] text-white shadow-sm'
-                                                        : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                            >
-                                                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : s.color}`} />
-                                                {s.label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Priority */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
-                                <div className="flex gap-2">
-                                    {[{value: 'low', label: 'Low', icon: ArrowDown, color: 'text-blue-500'}, {value: 'medium', label: 'Medium', icon: Minus, color: 'text-gray-500'}, {value: 'high', label: 'High', icon: ArrowUp, color: 'text-red-500'}].map((p) => {
-                                        const Icon = p.icon;
-                                        const isSelected = editPriority?.toLowerCase() === p.value;
-                                        return (
-                                            <button
-                                                key={p.value}
-                                                type="button"
-                                                onClick={() => setEditPriority(p.value)}
-                                                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                                    isSelected
-                                                        ? 'bg-[#3C3489] text-white shadow-sm'
-                                                        : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                            >
-                                                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : p.color}`} />
-                                                {p.label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Modal Footer */}
-                        <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                                disabled={saving}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleUpdateTask}
-                                disabled={saving || !editTitle.trim()}
-                                className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 cursor-pointer"
-                            >
-                                {saving ? 'Saving...' : 'Save Changes'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {isEditModalOpen && task && (
+                <EditTaskModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    task={task}
+                    workspaceMembers={workspaceMembers}
+                    onSuccess={(updatedTask) => setTask(updatedTask)}
+                />
             )}
         </main>
+    );
+}
+
+interface EditTaskModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    task: any;
+    workspaceMembers: any[];
+    onSuccess: (updatedTask: any) => void;
+}
+
+function EditTaskModal({ isOpen, onClose, task, workspaceMembers, onSuccess }: EditTaskModalProps) {
+    const [editTitle, setEditTitle] = useState(task.title || '');
+    const [editDescription, setEditDescription] = useState(task.description || '');
+    const [editStatus, setEditStatus] = useState(task.status || '');
+    const [editPriority, setEditPriority] = useState(task.priority || '');
+    const [editAssigneeIds, setEditAssigneeIds] = useState<number[]>(
+        task.taskMembers ? task.taskMembers.map((m: any) => m.userId) : []
+    );
+    const [saving, setSaving] = useState(false);
+    const [editError, setEditError] = useState<string | null>(null);
+
+    const handleUpdateTask = async () => {
+        if (!editTitle.trim()) return;
+        setSaving(true);
+        setEditError(null);
+        try {
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/update/${task.id}`,
+                { 
+                    title: editTitle, 
+                    description: editDescription, 
+                    status: editStatus, 
+                    priority: editPriority,
+                    assigneeIds: editAssigneeIds 
+                },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                onSuccess(res.data.task);
+                onClose();
+            } else {
+                setEditError(res.data.message || "Failed to update task.");
+            }
+        } catch (err: any) {
+            setEditError(err?.response?.data?.message || "Failed to update task.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            <div className="bg-white dark:bg-[#1e293b] rounded-lg w-full max-w-lg shadow-xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <Edit className="w-5 h-5 text-[#3C3489]" />
+                        Edit Task
+                    </h2>
+                    <button onClick={onClose} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                        <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                    {editError && (
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3 text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 shrink-0" />
+                            {editError}
+                        </div>
+                    )}
+
+                    {/* Title */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] text-sm"
+                        />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <textarea
+                            value={editDescription}
+                            onChange={(e) => setEditDescription(e.target.value)}
+                            rows={4}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] resize-none text-sm"
+                        />
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {TASK_STATUSES.map((s) => {
+                                const Icon = s.icon;
+                                const isSelected = editStatus?.toLowerCase() === s.value;
+                                return (
+                                    <button
+                                        key={s.value}
+                                        type="button"
+                                        onClick={() => setEditStatus(s.value)}
+                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                                            isSelected
+                                                ? 'bg-[#3C3489] text-white shadow-sm'
+                                                : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
+                                    >
+                                        <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : s.color}`} />
+                                        {s.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Priority */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
+                        <div className="flex gap-2">
+                            {[{value: 'low', label: 'Low', icon: ArrowDown, color: 'text-blue-500'}, {value: 'medium', label: 'Medium', icon: Minus, color: 'text-gray-500'}, {value: 'high', label: 'High', icon: ArrowUp, color: 'text-red-500'}].map((p) => {
+                                const Icon = p.icon;
+                                const isSelected = editPriority?.toLowerCase() === p.value;
+                                return (
+                                    <button
+                                        key={p.value}
+                                        type="button"
+                                        onClick={() => setEditPriority(p.value)}
+                                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                                            isSelected
+                                                ? 'bg-[#3C3489] text-white shadow-sm'
+                                                : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
+                                    >
+                                        <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : p.color}`} />
+                                        {p.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Assignees */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Assign Members</label>
+                        {workspaceMembers.length > 0 ? (
+                            <div className="max-h-[140px] overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3 bg-gray-50 dark:bg-gray-800/50 space-y-2">
+                                {workspaceMembers.map((member) => {
+                                    const isChecked = editAssigneeIds.includes(member.userId);
+                                    return (
+                                        <label
+                                            key={member.id}
+                                            className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={isChecked}
+                                                onChange={() => {
+                                                    if (isChecked) {
+                                                        setEditAssigneeIds(editAssigneeIds.filter((id) => id !== member.userId));
+                                                    } else {
+                                                        setEditAssigneeIds([...editAssigneeIds, member.userId]);
+                                                    }
+                                                }}
+                                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-[#3C3489] focus:ring-[#3C3489] accent-[#3C3489] cursor-pointer"
+                                            />
+                                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary-light to-[#3C3489] text-white flex items-center justify-center text-[10px] font-medium shrink-0">
+                                                {member.user.name?.charAt(0).toUpperCase()}
+                                            </div>
+                                            <span className="font-medium text-xs">{member.user.name}</span>
+                                            <span className="text-[11px] text-gray-500 dark:text-gray-400">({member.user.email})</span>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">No members available in this workspace.</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                        disabled={saving}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleUpdateTask}
+                        disabled={saving || !editTitle.trim()}
+                        className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                        {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }

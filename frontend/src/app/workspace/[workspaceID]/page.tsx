@@ -185,9 +185,9 @@ export default function WorkspaceDashboard({ params }: { params: Promise<{ works
       {/* Stat cards */}
       <div className="flex gap-4 mb-8" style={{ flexWrap: "wrap" }}>
         <StatCard label="Active Projects" value={projects?.length?.toString() || "0"} sub="" subColor="#16A34A" />
-        <StatCard label="Open Tasks"      value={tasks?.filter((t: any) => t.status !== "done").length?.toString() || "0"} sub=""  subColor="#D97706" />
+        <StatCard label="Open Tasks"      value={tasks?.filter((t: any) => t.status?.toLowerCase() !== "done" && t.status?.toLowerCase() !== "completed").length?.toString() || "0"} sub=""  subColor="#D97706" />
         <StatCard label="Team Members"    value={members?.length?.toString() || "0"}  sub="" subColor="#9A9890" />
-        <StatCard label="Completed Tasks" value={tasks?.length > 0 ? `${Math.round((tasks.filter((t: any) => t.status === "done").length / tasks.length) * 100)}%` : "0%"} sub=""  subColor="#6C5CE7" />
+        <StatCard label="Completed Tasks" value={tasks?.length > 0 ? `${Math.round((tasks.filter((t: any) => t.status?.toLowerCase() === "done" || t.status?.toLowerCase() === "completed").length / tasks.length) * 100)}%` : "0%"} sub=""  subColor="#6C5CE7" />
       </div>
 
       

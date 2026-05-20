@@ -2,11 +2,23 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { X, FileText, Loader2, ListTodo, AlignLeft, AlertCircle, ArrowUp, CheckCircle2, Clock } from "lucide-react";
+import { X, FileText, Loader2, ListTodo, AlignLeft, AlertCircle, ArrowUp, CheckCircle2, Clock, Users } from "lucide-react";
 
 interface Project {
   id: number;
   name: string;
+}
+
+interface UserInfo {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface Member {
+  id: number;
+  userId: number;
+  user: UserInfo;
 }
 
 interface CreateTaskModalProps {
@@ -29,6 +41,10 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Assignee states
+  const [workspaceMembers, setWorkspaceMembers] = useState<Member[]>([]);
+  const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
+
   useEffect(() => {
     if (!projectID) {
       const fetchProjects = async () => {
@@ -49,6 +65,23 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
       fetchProjects();
     }
   }, [projectID, workspaceID]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}`,
+          { withCredentials: true }
+        );
+        if (res.data.success) {
+          setWorkspaceMembers(res.data.members || []);
+        }
+      } catch (err) {
+        console.error("Failed to load workspace members", err);
+      }
+    };
+    fetchMembers();
+  }, [workspaceID]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -72,7 +105,10 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/createTask/${workspaceID}`,
-        formData,
+        {
+          ...formData,
+          assigneeIds: selectedAssigneeIds,
+        },
         { withCredentials: true }
       );
       if (res.data.success) {
@@ -464,8 +500,95 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
             </div>
           )}
 
+          {/* Assignees Selection */}
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: 12,
+                fontWeight: 500,
+                color: "#4A4845",
+                marginBottom: 8,
+                letterSpacing: "0.01em",
+              }}
+            >
+              Assign Members
+            </label>
+            {workspaceMembers.length > 0 ? (
+              <div
+                style={{
+                  maxHeight: 120,
+                  overflowY: "auto",
+                  border: "1.5px solid #E8E6E0",
+                  borderRadius: 8,
+                  padding: "8px 12px",
+                  background: "#FAFAF8",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                }}
+              >
+                 {workspaceMembers.map((member) => {
+                  const isChecked = selectedAssigneeIds.includes(member.userId);
+                  return (
+                    <label
+                      key={member.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        fontSize: 13,
+                        color: "#1A1918",
+                        cursor: "pointer",
+                        userSelect: "none",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          if (isChecked) {
+                            setSelectedAssigneeIds(selectedAssigneeIds.filter((id) => id !== member.userId));
+                          } else {
+                            setSelectedAssigneeIds([...selectedAssigneeIds, member.userId]);
+                          }
+                        }}
+                        style={{
+                          width: 15,
+                          height: 15,
+                          accentColor: "#6C5CE7",
+                          cursor: "pointer",
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: "50%",
+                          background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+                          color: "#fff",
+                          fontSize: 10,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {member.user.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <span style={{ fontWeight: 500 }}>{member.user.name}</span>
+                      <span style={{ fontSize: 11, color: "#9A9890" }}>({member.user.email})</span>
+                    </label>
+                  );
+                })}
+              </div>
+            ) : (
+              <p style={{ fontSize: 12, color: "#9A9890" }}>No members available in this workspace.</p>
+            )}
+          </div>
+
           {/* Actions */}
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: projectID ? 24 : 0 }}>
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 24 }}>
             <button
               type="button"
               onClick={onClose}

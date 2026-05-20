@@ -301,7 +301,7 @@ export default function ProjectDetailsPage({
         );
     }
 
-    const completedTasksCount = project.tasks?.filter(t => t.status?.toLowerCase() === 'completed').length || 0;
+    const completedTasksCount = project.tasks?.filter(t => t.status?.toLowerCase() === 'completed' || t.status?.toLowerCase() === 'done').length || 0;
     const totalTasksCount = project.tasks?.length || 0;
     const progressPercentage = totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
 
@@ -342,13 +342,15 @@ export default function ProjectDetailsPage({
                                 Edit Project
                             </button>
                         )}
-                        <button 
-                            onClick={() => setIsCreateTaskModalOpen(true)}
-                            className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Add Task
-                        </button>
+                        {canEdit && (
+                            <button 
+                                onClick={() => setIsCreateTaskModalOpen(true)}
+                                className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Add Task
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

@@ -82,3 +82,93 @@ export const joinWorkSpace = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+export const updateWorkSpace = async (req: Request, res: Response) => {
+  try {
+    const user = req.body.user;
+    const workspaceID = Number(req.params.workspaceID);
+    const { title, companyname, describtion, visibility } = req.body;
+
+    if (isNaN(workspaceID)) {
+      return res.status(400).json({ success: false, message: "Invalid workspace ID" });
+    }
+
+    const member = await prisma.member.findFirst({
+      where: {
+        workspaceId: workspaceID,
+        userId: user.id,
+        role: "owner",
+        isActive: true,
+      },
+    });
+
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: workspaceID },
+    });
+
+    if (!workspace) {
+      return res.status(404).json({ success: false, message: "Workspace not found" });
+    }
+
+    if (!member && workspace.userId !== user.id) {
+      return res.status(403).json({ success: false, message: "Unauthorized. Only the workspace owner can update settings." });
+    }
+
+    const updateData: Record<string, any> = {};
+    if (title !== undefined) updateData.title = title;
+    if (companyname !== undefined) updateData.companyname = companyname;
+    if (describtion !== undefined) updateData.describtion = describtion;
+    if (visibility !== undefined) updateData.visibility = visibility;
+
+    const updatedWorkspace = await prisma.workspace.update({
+      where: { id: workspaceID },
+      data: updateData,
+    });
+
+    res.json({ success: true, workspace: updatedWorkspace });
+  } catch (error) {
+    console.error("Update workspace error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const deleteWorkSpace = async (req: Request, res: Response) => {
+  try {
+    const user = req.body.user;
+    const workspaceID = Number(req.params.workspaceID);
+
+    if (isNaN(workspaceID)) {
+      return res.status(400).json({ success: false, message: "Invalid workspace ID" });
+    }
+
+    const member = await prisma.member.findFirst({
+      where: {
+        workspaceId: workspaceID,
+        userId: user.id,
+        role: "owner",
+        isActive: true,
+      },
+    });
+
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: workspaceID },
+    });
+
+    if (!workspace) {
+      return res.status(404).json({ success: false, message: "Workspace not found" });
+    }
+
+    if (!member && workspace.userId !== user.id) {
+      return res.status(403).json({ success: false, message: "Unauthorized. Only the workspace owner can delete this workspace." });
+    }
+
+    await prisma.workspace.delete({
+      where: { id: workspaceID },
+    });
+
+    res.json({ success: true, message: "Workspace deleted successfully" });
+  } catch (error) {
+    console.error("Delete workspace error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};

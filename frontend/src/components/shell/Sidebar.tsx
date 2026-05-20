@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { span } from "framer-motion/client";
 
 const ACCOUNT_ITEMS = [
   { label: "Settings", icon: Settings, href: "/workspace/settings" },
@@ -86,9 +87,10 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
         .toUpperCase()
     : "JS";
 
+  const base = `/workspace/${workspaceID}`;
+
   const getNavItems = () => {
-    const base = workspaceID ? `/workspace/${workspaceID}` : `/workspace`;
-    return [
+    const items = [
       { label: "Dashboard", icon: LayoutDashboard, href: base, badge: null },
       {
         label: "Projects",
@@ -105,6 +107,15 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
         badge: null,
       },
     ];
+    if (workspaceID) {
+      items.push({
+        label: "Settings",
+        icon: Settings,
+        href: `${base}/settings`,
+        badge: null,
+      });
+    }
+    return items;
   };
 
   const currentNavItems = getNavItems();
@@ -251,7 +262,7 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
             Account
           </span>
           {ACCOUNT_ITEMS.map(({ label, icon: Icon, href }) => (
-            <Link key={label} href={href} className={navItemClass(href)}>
+            <Link key={label} href={`${base}/settings`} className={navItemClass(href)}>
               <Icon size={14} strokeWidth={1.8} className="shrink-0" />
               <span className="flex-1 truncate">{label}</span>
             </Link>

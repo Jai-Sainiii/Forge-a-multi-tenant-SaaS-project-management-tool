@@ -3,6 +3,7 @@ import { use, useState, useEffect, useCallback } from "react";
 import { FolderArchive, ChevronRight, MoreHorizontal, AlertCircle, Plus } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
+import { useAuth } from "@/authContext/AuthContext";
 
 interface Project {
   id: number;
@@ -11,6 +12,7 @@ interface Project {
   description: string;
   status: string;
   workspaceId: number;
+  tasks?: any[];
 }
 
 function ProjectCard({ project, workspaceID }: { project: Project, workspaceID: string }) {
@@ -29,6 +31,10 @@ function ProjectCard({ project, workspaceID }: { project: Project, workspaceID: 
     if (badgeText) badgeText = badgeText.charAt(0).toUpperCase() + badgeText.slice(1);
     let opacityClass = isSuspended ? "opacity-75" : "";
 
+    const totalTasks = project.tasks?.length || 0;
+    const completedTasks = project.tasks?.filter((t: any) => t.status?.toLowerCase() === 'completed' || t.status?.toLowerCase() === 'done').length || 0;
+    const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
     return (
         <Link href={`/workspace/${workspaceID}/projects/${project.id}`}>
         <div className={`p-4 bg-white dark:bg-[#1e293b] border border-outline-variant dark:border-gray-700 rounded-lg flex flex-col gap-4 shadow-sm ${opacityClass}`}>
@@ -45,10 +51,10 @@ function ProjectCard({ project, workspaceID }: { project: Project, workspaceID: 
             <div className="space-y-1.5 mt-2">
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                     <span>Progress</span>
-                    <span>0%</span>
+                    <span>{progressPercent}%</span>
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-primary-light h-full w-[0%]"></div>
+                    <div className="bg-primary-light h-full transition-all duration-300" style={{ width: `${progressPercent}%` }}></div>
                 </div>
             </div>
         </div>
@@ -220,6 +226,30 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const authContext = useAuth();
+    const user = authContext ? authContext.user : null;
+
+    const checkWorkspaceAdmin = useCallback(async () => {
+        if (!user) return;
+        try {
+            const res = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}`,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                const membersList = res.data.members;
+                const currentMember = membersList.find((m: any) => m.user?.email === user.email);
+                if (currentMember) {
+                    const isWorkspaceAdmin = ["admin", "owner"].includes(currentMember.role?.toLowerCase());
+                    setIsAdmin(isWorkspaceAdmin);
+                }
+            }
+        } catch (err) {
+            console.error("Error checking workspace admin role:", err);
+        }
+    }, [workspaceID, user]);
 
     const fetchProjects = useCallback(async () => {
         setLoading(true);
@@ -239,7 +269,8 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
 
     useEffect(() => {
         fetchProjects();
-    }, [fetchProjects]);
+        checkWorkspaceAdmin();
+    }, [fetchProjects, checkWorkspaceAdmin]);
 
     const activeProjects = (projects || []).filter(p => p.status?.toLowerCase() === 'active');
     const reviewProjects = (projects || []).filter(p => p.status?.toLowerCase() === 'review');
@@ -262,10 +293,12 @@ export default function ProjectsPage({params}: {params: Promise<{ workspaceID: s
                         Manage your workspace projects.
                     </p>
                 </div>
-                <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm">
-                    <Plus className="w-4 h-4" />
-                    New Project
-                </button>
+                {isAdmin && (
+                    <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
+                        <Plus className="w-4 h-4" />
+                        New Project
+                    </button>
+                )}
             </div>
 
             <CreateProjectModal 

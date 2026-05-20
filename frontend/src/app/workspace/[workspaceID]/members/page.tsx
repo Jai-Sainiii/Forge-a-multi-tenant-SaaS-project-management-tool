@@ -16,7 +16,8 @@ import {
   Clock,
   Link as LinkIcon,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Plus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -82,6 +83,17 @@ export default function MembersPage({
   const [generatingLink, setGeneratingLink] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
+
+  // Create Team States
+  const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
+  const [createTeamProjectId, setCreateTeamProjectId] = useState<string>("");
+  const [createTeamName, setCreateTeamName] = useState<string>("");
+  const [createTeamLoading, setCreateTeamLoading] = useState(false);
+  const [createTeamError, setCreateTeamError] = useState<string | null>(null);
+
+  // Projects State
+  const [projects, setProjects] = useState<any[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -129,6 +141,53 @@ export default function MembersPage({
       setTeamsLoading(false);
     }
   }, [workspaceID]);
+
+  const fetchProjects = useCallback(async () => {
+    setProjectsLoading(true);
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/project/getProjects/${workspaceID}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setProjects(res.data.projects || []);
+    } catch (err) {
+      console.error("Failed to load projects", err);
+    } finally {
+      setProjectsLoading(false);
+    }
+  }, [workspaceID]);
+
+  const handleCreateTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createTeamProjectId || !createTeamName.trim()) return;
+    setCreateTeamLoading(true);
+    setCreateTeamError(null);
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/team/createTeam/${createTeamProjectId}`,
+        {
+          teamName: createTeamName.trim(),
+        },
+        { withCredentials: true }
+      );
+      if (res.data.team) {
+        setIsCreateTeamModalOpen(false);
+        setCreateTeamName("");
+        setCreateTeamProjectId("");
+        fetchTeams();
+      } else {
+        setCreateTeamError("Failed to create team.");
+      }
+    } catch (err: any) {
+      setCreateTeamError(
+        err.response?.data?.message || err.response?.data?.error || "Failed to create team."
+      );
+    } finally {
+      setCreateTeamLoading(false);
+    }
+  };
 
   const handleAddTeamMember = async () => {
     if (!selectedTeamForAdd || !addMemberUserId) return;
@@ -209,7 +268,8 @@ export default function MembersPage({
   useEffect(() => {
     fetchMembers();
     fetchTeams();
-  }, [fetchMembers, fetchTeams]);
+    fetchProjects();
+  }, [fetchMembers, fetchTeams, fetchProjects]);
 
   const handleGenerateInvite = async () => {
     setGeneratingLink(true);
@@ -505,6 +565,20 @@ export default function MembersPage({
               Overview of all teams across your projects.
             </p>
           </div>
+          {isAdmin && (
+            <button 
+              onClick={() => {
+                setIsCreateTeamModalOpen(true);
+                setCreateTeamName("");
+                setCreateTeamProjectId("");
+                setCreateTeamError(null);
+              }}
+              className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Create Team
+            </button>
+          )}
         </div>
 
         {teamsError && (
@@ -1010,6 +1084,93 @@ export default function MembersPage({
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {isCreateTeamModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-[#3C3489]" />
+                Create New Team
+              </h3>
+              <button 
+                onClick={() => setIsCreateTeamModalOpen(false)}
+                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <form onSubmit={handleCreateTeam} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Select Project
+                </label>
+                <select
+                  required
+                  value={createTeamProjectId}
+                  onChange={(e) => setCreateTeamProjectId(e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                >
+                  <option value="">-- Select a Project --</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Team Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Design System Team, QA Engineers"
+                  value={createTeamName}
+                  onChange={(e) => setCreateTeamName(e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                />
+              </div>
+
+              {createTeamError && (
+                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {createTeamError}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateTeamModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createTeamLoading || !createTeamProjectId || !createTeamName.trim()}
+                  className="bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {createTeamLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Team"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

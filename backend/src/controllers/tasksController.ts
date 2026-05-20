@@ -28,8 +28,31 @@ export const createTask = async(req:Request,res:Response)=>{
     try {
         const user = req.body.user;
         const workspaceId = Number(req.params.workspaceID);
-        const {title,description,status,projectId,priority} = req.body;
-        const projectID = Number(projectId)
+        const {title,description,status,projectId,priority,assigneeIds} = req.body;
+        const projectID = Number(projectId);
+
+        // Verify the user is a project admin/owner OR a workspace admin/owner
+        const projectMember = await prisma.projectMember.findFirst({
+            where: {
+                projectId: projectID,
+                userId: user.id,
+                role: { in: ["admin", "owner"] }
+            }
+        });
+
+        const workspaceMember = await prisma.member.findFirst({
+            where: {
+                workspaceId,
+                userId: user.id,
+                role: { in: ["admin", "owner"] },
+                isActive: true
+            }
+        });
+
+        if (!projectMember && !workspaceMember) {
+            return res.status(403).json({ success: false, message: "Unauthorized. Only project admins or owners can create tasks in this project." });
+        }
+
         const task = await prisma.task.create({
             data:{
                 title,
@@ -48,6 +71,22 @@ export const createTask = async(req:Request,res:Response)=>{
                 role: "admin"
             }
         })
+
+        if (assigneeIds && Array.isArray(assigneeIds)) {
+            const memberData = assigneeIds
+                .filter((uid: any) => Number(uid) !== Number(user.id))
+                .map((uid: any) => ({
+                    taskId: task.id,
+                    userId: Number(uid),
+                    role: "member"
+                }));
+            if (memberData.length > 0) {
+                await prisma.taskMember.createMany({
+                    data: memberData
+                });
+            }
+        }
+
         return res.status(200).json({success:true, task, taskMember})
     } catch (error) {
         console.log(error)
@@ -98,7 +137,7 @@ export const updateTask = async(req:Request,res:Response)=>{
     try {
         const { taskId } = req.params;
         const user = req.body.user;
-        const { title, description, status, priority } = req.body;
+        const { title, description, status, priority, assigneeIds } = req.body;
         const taskID = Number(taskId);
 
         // Verify the user is a task admin
@@ -121,9 +160,37 @@ export const updateTask = async(req:Request,res:Response)=>{
         if (status !== undefined) updateData.status = status;
         if (priority !== undefined) updateData.priority = priority;
 
-        const task = await prisma.task.update({
+        await prisma.task.update({
             where: { id: taskID },
-            data: updateData,
+            data: updateData
+        });
+
+        if (assigneeIds !== undefined && Array.isArray(assigneeIds)) {
+            const existingAdmins = await prisma.taskMember.findMany({
+                where: { taskId: taskID, role: "admin" }
+            });
+            const adminUserIds = existingAdmins.map(m => m.userId);
+
+            await prisma.taskMember.deleteMany({
+                where: { taskId: taskID }
+            });
+
+            const allAssigneeIds = Array.from(new Set([...assigneeIds.map(Number), ...adminUserIds]));
+            const newMemberData = allAssigneeIds.map((uid) => ({
+                taskId: taskID,
+                userId: uid,
+                role: adminUserIds.includes(uid) ? "admin" : "member"
+            }));
+
+            if (newMemberData.length > 0) {
+                await prisma.taskMember.createMany({
+                    data: newMemberData
+                });
+            }
+        }
+
+        const task = await prisma.task.findUnique({
+            where: { id: taskID },
             include: {
                 project: { select: { name: true } },
                 workspace: { select: { title: true } },

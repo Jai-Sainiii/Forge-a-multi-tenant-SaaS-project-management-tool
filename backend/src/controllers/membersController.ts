@@ -12,6 +12,7 @@ export const getMembers = async(req:Request,res:Response)=>{
             include:{
                 user:{
                     select:{
+                        id:true,
                         name:true,
                         email:true
                     }

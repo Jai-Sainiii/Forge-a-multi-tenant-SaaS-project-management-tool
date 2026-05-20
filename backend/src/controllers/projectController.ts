@@ -10,6 +10,20 @@ export const createProject = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Verify that the user is an admin or owner of the workspace
+    const workspaceMember = await prisma.member.findFirst({
+      where: {
+        workspaceId: Number(workspaceId),
+        userId: user.id,
+        role: { in: ["admin", "owner"] },
+        isActive: true,
+      },
+    });
+
+    if (!workspaceMember) {
+      return res.status(403).json({ message: "Unauthorized. Only workspace admins or owners can create a project." });
+    }
+
     const project = await prisma.projects.create({
       data: {
         name: name,
@@ -49,6 +63,9 @@ export const getProjects = async (req: Request, res: Response) => {
           },
         },
       },
+      include: {
+        tasks: true
+      }
     });
     res.json({ projects });
   } catch (error) {
