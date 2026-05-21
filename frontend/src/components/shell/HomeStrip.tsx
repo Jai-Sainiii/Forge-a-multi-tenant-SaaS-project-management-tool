@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Home, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/authContext/AuthContext";
+import axios from "axios";
+
+const [workspaces, setWorkspaces] = useState([]);
 
 interface workspaces {
   id: string;
@@ -16,11 +20,29 @@ interface workspaces {
   visibility: string;
 }
 
-interface HomeStripProps {
-  workspaces: workspaces[];
-}
+const fetchWorkspacesForUser = async () => {
+  const user = useAuth()!;
+  if (!user) {
+    return;
+  }
+  try {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/workspace/getWorkSpace`,
+      {
+        withCredentials: true,
+      },
+    );
+    setWorkspaces(res.data.workspace);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export default function HomeStrip({ workspaces: workspaces }: HomeStripProps) {
+useEffect(() => {
+  fetchWorkspacesForUser();
+}, []);
+
+export default function HomeStrip() {
   const router = useRouter();
 
   // console.log(activeWorkspace)
@@ -47,7 +69,7 @@ export default function HomeStrip({ workspaces: workspaces }: HomeStripProps) {
 
       {/* Workspace dots */}
       <div className="flex flex-col items-center gap-2 mt-1">
-        {workspaces.map((ws) => {
+        {workspaces.map((ws: workspaces) => {
           const isActive = ws.id === activeWorkspace;
           return (
             <button

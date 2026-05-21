@@ -3,15 +3,44 @@ import { type Request, type Response } from "express";
 
 export const getAllWorkspaces = async (req: Request, res: Response) => {
     try {
+        const user = req.body.user;
+        if (!user || !user.id) {
+            return res.status(401).json({ success: false, message: "Unauthorized" });
+        }
         
         const workspaces = await prisma.workspace.findMany({
+            where: {
+                members: {
+                    some: {
+                        userId: user.id,
+                        isActive: true,
+                    },
+                },
+            },
             include: {
                 members: true,
             },
         });
-        const projects = await prisma.projects.findMany();
-        const tasks = await prisma.task.findMany();
-        res.json({ success: true,workspaceData: { workspaces, projects, tasks }});
+
+        const workspaceIds = workspaces.map((ws) => ws.id);
+
+        const projects = await prisma.projects.findMany({
+            where: {
+                workspaceId: {
+                    in: workspaceIds,
+                },
+            },
+        });
+
+        const tasks = await prisma.task.findMany({
+            where: {
+                workspaceId: {
+                    in: workspaceIds,
+                },
+            },
+        });
+
+        res.json({ success: true, workspaceData: { workspaces, projects, tasks }});
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Internal server error" });
