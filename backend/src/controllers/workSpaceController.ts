@@ -172,3 +172,56 @@ export const deleteWorkSpace = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
+
+export const updateWorkspaceAvatarColor = async(req: Request, res: Response) => {
+  try {
+    const user = req.body.user;
+    const workspaceID = Number(req.params.workspaceID);
+    const { backgroundColor, textColor } = req.body;
+
+    if (isNaN(workspaceID)) {
+      return res.status(400).json({ success: false, message: "Invalid workspace ID" });
+    }
+
+    const member = await prisma.member.findFirst({
+      where: {
+        workspaceId: workspaceID,
+        userId: user.id,
+        role: "owner",
+        isActive: true,
+      },
+    });
+
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: workspaceID },
+    });
+
+    if (!workspace) {
+      return res.status(404).json({ success: false, message: "Workspace not found" });
+    }
+
+    if (!member && workspace.userId !== user.id) {
+      return res.status(403).json({ success: false, message: "Unauthorized. Only the workspace owner can update settings." });
+    }
+
+    const currentColor = (workspace.color as Record<string, any>) || {};
+    const updatedColor = {
+      ...currentColor,
+      ...(backgroundColor !== undefined ? { backgroundColor } : {}),
+      ...(textColor !== undefined ? { textColor } : {})
+    };
+
+    const updatedWorkspace = await prisma.workspace.update({
+      where: { id: workspaceID },
+      data: {
+        color: updatedColor
+      },
+    });
+
+    res.json({ success: true, workspace: updatedWorkspace });
+  } catch (error) {
+    console.error("Update workspace color error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}

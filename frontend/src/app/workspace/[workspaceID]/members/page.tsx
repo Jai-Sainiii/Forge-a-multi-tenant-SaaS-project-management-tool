@@ -58,6 +58,9 @@ export default function MembersPage({
   const isAdmin = currentMember 
     ? ["admin", "owner"].includes(currentMember.role?.toLowerCase()) 
     : (currentUser?.email === "admin@forge.com");
+  const isOwner = currentMember 
+    ? currentMember.role?.toLowerCase() === "owner"
+    : false;
 
  
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
@@ -77,6 +80,14 @@ export default function MembersPage({
   const [editMemberError, setEditMemberError] = useState<string | null>(null);
 
   
+  const [isEditWorkspaceMemberModalOpen, setIsEditWorkspaceMemberModalOpen] = useState(false);
+  const [selectedWorkspaceMemberForEdit, setSelectedWorkspaceMemberForEdit] = useState<Member | null>(null);
+  const [editWorkspaceMemberRole, setEditWorkspaceMemberRole] = useState<string>("member");
+  const [editWorkspaceMemberLoading, setEditWorkspaceMemberLoading] = useState(false);
+  const [editWorkspaceMemberError, setEditWorkspaceMemberError] = useState<string | null>(null);
+  const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null);
+
+  
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteRole, setInviteRole] = useState("member");
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
@@ -84,14 +95,14 @@ export default function MembersPage({
   const [copySuccess, setCopySuccess] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
-  // Create Team States
+ 
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
   const [createTeamProjectId, setCreateTeamProjectId] = useState<string>("");
   const [createTeamName, setCreateTeamName] = useState<string>("");
   const [createTeamLoading, setCreateTeamLoading] = useState(false);
   const [createTeamError, setCreateTeamError] = useState<string | null>(null);
 
-  // Projects State
+  
   const [projects, setProjects] = useState<any[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const fetchMembers = useCallback(async () => {
@@ -262,6 +273,34 @@ export default function MembersPage({
       }
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to remove team member.");
+    }
+  };
+
+  const handleUpdateWorkspaceMemberRole = async () => {
+    if (!selectedWorkspaceMemberForEdit) return;
+    setEditWorkspaceMemberLoading(true);
+    setEditWorkspaceMemberError(null);
+    try {
+      const res = await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}/role`,
+        {
+          userId: selectedWorkspaceMemberForEdit.userId,
+          role: editWorkspaceMemberRole,
+        },
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        setIsEditWorkspaceMemberModalOpen(false);
+        setSelectedWorkspaceMemberForEdit(null);
+        setEditWorkspaceMemberRole("member");
+        fetchMembers();
+      } else {
+        setEditWorkspaceMemberError(res.data.message || "Failed to update member role.");
+      }
+    } catch (err: any) {
+      setEditWorkspaceMemberError(err.response?.data?.message || "Failed to update member role.");
+    } finally {
+      setEditWorkspaceMemberLoading(false);
     }
   };
 
@@ -490,7 +529,7 @@ export default function MembersPage({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {member.role.toLowerCase() === "admin" ? (
+                        {member.role.toLowerCase() === "admin" || member.role.toLowerCase() === "owner" ? (
                           <Shield className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 mr-1.5" />
                         ) : null}
                         <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
@@ -513,9 +552,23 @@ export default function MembersPage({
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        <MoreHorizontal className="w-5 h-5" />
-                      </button>
+                      {isOwner && member.user?.email !== currentUser?.email ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedWorkspaceMemberForEdit(member);
+                            setEditWorkspaceMemberRole(member.role || "member");
+                            setEditWorkspaceMemberError(null);
+                            setIsEditWorkspaceMemberModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#3C3489] hover:text-white border border-[#3C3489]/20 hover:border-[#3C3489] bg-[#3C3489]/5 hover:bg-[#3C3489] rounded-md transition-all duration-200 cursor-pointer shadow-sm"
+                        >
+                          <Shield className="w-3.5 h-3.5" />
+                          Change Role
+                        </button>
+                      ) : (
+                        <span className="text-gray-300 dark:text-gray-600">—</span>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -1171,6 +1224,93 @@ export default function MembersPage({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Workspace Member Role Modal */}
+      {isEditWorkspaceMemberModalOpen && selectedWorkspaceMemberForEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <Shield className="w-5 h-5 text-[#3C3489]" />
+                Change Workspace Member Role
+              </h3>
+              <button 
+                onClick={() => setIsEditWorkspaceMemberModalOpen(false)}
+                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-semibold border border-primary-light/20">
+                  {selectedWorkspaceMemberForEdit.user?.name?.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {selectedWorkspaceMemberForEdit.user?.name}
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {selectedWorkspaceMemberForEdit.user?.email}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Workspace Role
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {["member", "admin", "viewer", "tester"].map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => setEditWorkspaceMemberRole(role)}
+                      className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
+                        editWorkspaceMemberRole === role
+                          ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
+                          : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
+                      }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+                  {editWorkspaceMemberRole === "admin" && "Admins can manage projects, tasks, and members."}
+                  {editWorkspaceMemberRole === "member" && "Members can create and manage their own tasks."}
+                  {editWorkspaceMemberRole === "viewer" && "Viewers have read-only access to the workspace."}
+                  {editWorkspaceMemberRole === "tester" && "Testers can participate in standard testing processes."}
+                </p>
+              </div>
+
+              {editWorkspaceMemberError && (
+                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {editWorkspaceMemberError}
+                </div>
+              )}
+
+              <button
+                onClick={handleUpdateWorkspaceMemberRole}
+                disabled={editWorkspaceMemberLoading}
+                className="w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
+              >
+                {editWorkspaceMemberLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

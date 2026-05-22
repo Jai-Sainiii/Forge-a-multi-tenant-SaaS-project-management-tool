@@ -64,6 +64,7 @@ export type WorkspaceCountAggregateOutputType = {
   title: number
   companyname: number
   describtion: number
+  color: number
   leftedMembers: number
   visibility: number
   createdAt: number
@@ -110,6 +111,7 @@ export type WorkspaceCountAggregateInputType = {
   title?: true
   companyname?: true
   describtion?: true
+  color?: true
   leftedMembers?: true
   visibility?: true
   createdAt?: true
@@ -209,6 +211,7 @@ export type WorkspaceGroupByOutputType = {
   title: string
   companyname: string
   describtion: string
+  color: runtime.JsonValue | null
   leftedMembers: string[]
   visibility: string
   createdAt: Date
@@ -244,6 +247,7 @@ export type WorkspaceWhereInput = {
   title?: Prisma.StringFilter<"Workspace"> | string
   companyname?: Prisma.StringFilter<"Workspace"> | string
   describtion?: Prisma.StringFilter<"Workspace"> | string
+  color?: Prisma.JsonNullableFilter<"Workspace">
   leftedMembers?: Prisma.StringNullableListFilter<"Workspace">
   visibility?: Prisma.StringFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
@@ -261,6 +265,7 @@ export type WorkspaceOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   companyname?: Prisma.SortOrder
   describtion?: Prisma.SortOrder
+  color?: Prisma.SortOrderInput | Prisma.SortOrder
   leftedMembers?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -281,6 +286,7 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"Workspace"> | string
   companyname?: Prisma.StringFilter<"Workspace"> | string
   describtion?: Prisma.StringFilter<"Workspace"> | string
+  color?: Prisma.JsonNullableFilter<"Workspace">
   leftedMembers?: Prisma.StringNullableListFilter<"Workspace">
   visibility?: Prisma.StringFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
@@ -298,6 +304,7 @@ export type WorkspaceOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   companyname?: Prisma.SortOrder
   describtion?: Prisma.SortOrder
+  color?: Prisma.SortOrderInput | Prisma.SortOrder
   leftedMembers?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -318,6 +325,7 @@ export type WorkspaceScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
   companyname?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
   describtion?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
+  color?: Prisma.JsonNullableWithAggregatesFilter<"Workspace">
   leftedMembers?: Prisma.StringNullableListFilter<"Workspace">
   visibility?: Prisma.StringWithAggregatesFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workspace"> | Date | string
@@ -328,6 +336,7 @@ export type WorkspaceCreateInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -345,6 +354,7 @@ export type WorkspaceUncheckedCreateInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -359,6 +369,7 @@ export type WorkspaceUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -376,6 +387,7 @@ export type WorkspaceUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -392,6 +404,7 @@ export type WorkspaceCreateManyInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -402,6 +415,7 @@ export type WorkspaceUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -414,6 +428,7 @@ export type WorkspaceUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -444,6 +459,7 @@ export type WorkspaceCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   companyname?: Prisma.SortOrder
   describtion?: Prisma.SortOrder
+  color?: Prisma.SortOrder
   leftedMembers?: Prisma.SortOrder
   visibility?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -598,6 +614,7 @@ export type WorkspaceCreateWithoutUserInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -613,6 +630,7 @@ export type WorkspaceUncheckedCreateWithoutUserInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -658,6 +676,7 @@ export type WorkspaceScalarWhereInput = {
   title?: Prisma.StringFilter<"Workspace"> | string
   companyname?: Prisma.StringFilter<"Workspace"> | string
   describtion?: Prisma.StringFilter<"Workspace"> | string
+  color?: Prisma.JsonNullableFilter<"Workspace">
   leftedMembers?: Prisma.StringNullableListFilter<"Workspace">
   visibility?: Prisma.StringFilter<"Workspace"> | string
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
@@ -668,6 +687,7 @@ export type WorkspaceCreateWithoutProjectsInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -684,6 +704,7 @@ export type WorkspaceUncheckedCreateWithoutProjectsInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -713,6 +734,7 @@ export type WorkspaceUpdateWithoutProjectsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -729,6 +751,7 @@ export type WorkspaceUncheckedUpdateWithoutProjectsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -742,6 +765,7 @@ export type WorkspaceCreateWithoutTasksInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -758,6 +782,7 @@ export type WorkspaceUncheckedCreateWithoutTasksInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -787,6 +812,7 @@ export type WorkspaceUpdateWithoutTasksInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -803,6 +829,7 @@ export type WorkspaceUncheckedUpdateWithoutTasksInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -816,6 +843,7 @@ export type WorkspaceCreateWithoutMembersInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -832,6 +860,7 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -861,6 +890,7 @@ export type WorkspaceUpdateWithoutMembersInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -877,6 +907,7 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -890,6 +921,7 @@ export type WorkspaceCreateWithoutInviteLinksInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -906,6 +938,7 @@ export type WorkspaceUncheckedCreateWithoutInviteLinksInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -935,6 +968,7 @@ export type WorkspaceUpdateWithoutInviteLinksInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -951,6 +985,7 @@ export type WorkspaceUncheckedUpdateWithoutInviteLinksInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -965,6 +1000,7 @@ export type WorkspaceCreateManyUserInput = {
   title: string
   companyname: string
   describtion: string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceCreateleftedMembersInput | string[]
   visibility?: string
   createdAt?: Date | string
@@ -975,6 +1011,7 @@ export type WorkspaceUpdateWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -990,6 +1027,7 @@ export type WorkspaceUncheckedUpdateWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1005,6 +1043,7 @@ export type WorkspaceUncheckedUpdateManyWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   companyname?: Prisma.StringFieldUpdateOperationsInput | string
   describtion?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   leftedMembers?: Prisma.WorkspaceUpdateleftedMembersInput | string[]
   visibility?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1075,6 +1114,7 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   title?: boolean
   companyname?: boolean
   describtion?: boolean
+  color?: boolean
   leftedMembers?: boolean
   visibility?: boolean
   createdAt?: boolean
@@ -1093,6 +1133,7 @@ export type WorkspaceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   title?: boolean
   companyname?: boolean
   describtion?: boolean
+  color?: boolean
   leftedMembers?: boolean
   visibility?: boolean
   createdAt?: boolean
@@ -1106,6 +1147,7 @@ export type WorkspaceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   title?: boolean
   companyname?: boolean
   describtion?: boolean
+  color?: boolean
   leftedMembers?: boolean
   visibility?: boolean
   createdAt?: boolean
@@ -1119,13 +1161,14 @@ export type WorkspaceSelectScalar = {
   title?: boolean
   companyname?: boolean
   describtion?: boolean
+  color?: boolean
   leftedMembers?: boolean
   visibility?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "companyname" | "describtion" | "leftedMembers" | "visibility" | "createdAt" | "updatedAt", ExtArgs["result"]["workspace"]>
+export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "companyname" | "describtion" | "color" | "leftedMembers" | "visibility" | "createdAt" | "updatedAt", ExtArgs["result"]["workspace"]>
 export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
   projects?: boolean | Prisma.Workspace$projectsArgs<ExtArgs>
@@ -1156,6 +1199,7 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     title: string
     companyname: string
     describtion: string
+    color: runtime.JsonValue | null
     leftedMembers: string[]
     visibility: string
     createdAt: Date
@@ -1593,6 +1637,7 @@ export interface WorkspaceFieldRefs {
   readonly title: Prisma.FieldRef<"Workspace", 'String'>
   readonly companyname: Prisma.FieldRef<"Workspace", 'String'>
   readonly describtion: Prisma.FieldRef<"Workspace", 'String'>
+  readonly color: Prisma.FieldRef<"Workspace", 'Json'>
   readonly leftedMembers: Prisma.FieldRef<"Workspace", 'String[]'>
   readonly visibility: Prisma.FieldRef<"Workspace", 'String'>
   readonly createdAt: Prisma.FieldRef<"Workspace", 'DateTime'>

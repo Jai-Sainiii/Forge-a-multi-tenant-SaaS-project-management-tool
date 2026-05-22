@@ -34,6 +34,7 @@ model Workspace {
   title       String
   companyname String
   describtion String
+  color       Json? // {backgroundColor: string, textColor: string}
   members     Member[]
   leftedMembers String[] @default([])
   projects    Projects[]

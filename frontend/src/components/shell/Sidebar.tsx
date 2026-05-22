@@ -16,15 +16,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { span } from "framer-motion/client";
 
-const ACCOUNT_ITEMS = [
-  { label: "Settings", icon: Settings, href: "/workspace/settings" },
-];
+
 
 interface Workspaces {
   id: number;
   title: string;
   companyname: string;
   describtion: string;
+  color?: {
+    backgroundColor?: string;
+    textColor?: string;
+  };
   projects: [];
   tasks: [];
   members: {
@@ -107,14 +109,7 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
         badge: null,
       },
     ];
-    if (workspaceID) {
-      items.push({
-        label: "Settings",
-        icon: Settings,
-        href: `${base}/settings`,
-        badge: null,
-      });
-    }
+
     return items;
   };
 
@@ -162,14 +157,15 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
               width: 28,
               height: 28,
               borderRadius: 7,
-              background: "linear-gradient(135deg, #6C5CE7, #a29bfe)",
+              backgroundColor: (workspace?.color as any)?.backgroundColor || "#6C5CE7",
+              color: (workspace?.color as any)?.textColor || "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 12,
               fontWeight: 700,
-              color: "white",
               flexShrink: 0,
+              transition: "all 0.3s ease-in-out",
             }}
           >
             {workspace?.title?.charAt(0).toUpperCase()}
@@ -261,12 +257,12 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
           >
             Account
           </span>
-          {ACCOUNT_ITEMS.map(({ label, icon: Icon, href }) => (
-            <Link key={label} href={`${base}/settings`} className={navItemClass(href)}>
-              <Icon size={14} strokeWidth={1.8} className="shrink-0" />
-              <span className="flex-1 truncate">{label}</span>
+          {workspaceID && (
+            <Link href={`${base}/settings`} className={navItemClass(`${base}/settings`)}>
+              <Settings size={14} strokeWidth={1.8} className="shrink-0" />
+              <span className="flex-1 truncate">Settings</span>
             </Link>
-          ))}
+          )}
         </div>
       </nav>
 

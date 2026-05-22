@@ -1,52 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Home, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/authContext/AuthContext";
-import axios from "axios";
 
-const [workspaces, setWorkspaces] = useState([]);
-
-interface workspaces {
-  id: string;
+interface Workspace {
+  id: number;
   title: string;
-  companyname: string;
-  describtion: string;
-  members: [];
-  leftedMembers: [];
-  projects: [];
-  visibility: string;
+  companyname?: string;
+  describtion?: string;
+  color?: {
+    backgroundColor?: string;
+    textColor?: string;
+  };
+  members?: any[];
+  leftedMembers?: any[];
+  projects?: any[];
+  visibility?: string;
 }
 
-const fetchWorkspacesForUser = async () => {
-  const user = useAuth()!;
-  if (!user) {
-    return;
-  }
-  try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/workspace/getWorkSpace`,
-      {
-        withCredentials: true,
-      },
-    );
-    setWorkspaces(res.data.workspace);
-  } catch (error) {
-    console.log(error);
-  }
-};
+interface HomeStripProps {
+  workspaces: Workspace[];
+}
 
-useEffect(() => {
-  fetchWorkspacesForUser();
-}, []);
+const AVATAR_GRADIENTS = [
+  "linear-gradient(135deg, #6C5CE7, #a29bfe)", // Purple
+  "linear-gradient(135deg, #00B894, #55efc4)", // Emerald
+  "linear-gradient(135deg, #FF7675, #fab1a0)", // Coral
+  "linear-gradient(135deg, #0984E3, #74b9ff)", // Ocean
+  "linear-gradient(135deg, #E17055, #ffeaa7)", // Sunset
+  "linear-gradient(135deg, #d63031, #fd79a8)", // Rose
+];
 
-export default function HomeStrip() {
+export default function HomeStrip({ workspaces }: HomeStripProps) {
   const router = useRouter();
-
-  // console.log(activeWorkspace)
-  const [activeWorkspace, setActiveWorkspace] = useState<string>("");
+  const params = useParams();
+  const activeWorkspace = params?.workspaceID ? Number(params.workspaceID) : null;
 
   return (
     <aside
@@ -69,14 +58,17 @@ export default function HomeStrip() {
 
       {/* Workspace dots */}
       <div className="flex flex-col items-center gap-2 mt-1">
-        {workspaces.map((ws: workspaces) => {
+        {(workspaces || []).map((ws: Workspace, index: number) => {
           const isActive = ws.id === activeWorkspace;
+          const bgGradient = AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length];
+          const hasCustomColor = ws.color && (ws.color as any).backgroundColor;
+          const bgVal = hasCustomColor ? (ws.color as any).backgroundColor : null;
+          const textVal = hasCustomColor ? ((ws.color as any).textColor || "#ffffff") : "#ffffff";
           return (
             <button
               key={ws.id}
               title={ws.title}
               onClick={() => {
-                setActiveWorkspace(ws.id);
                 router.push(`/workspace/${ws.id}`);
               }}
               className="transition-transform duration-150 hover:scale-[1.08] focus:outline-none"
@@ -84,17 +76,18 @@ export default function HomeStrip() {
                 width: 24,
                 height: 24,
                 borderRadius: 6,
-                background: "#f3f3f3ff",
+                background: bgVal ? bgVal : bgGradient,
                 border: isActive
-                  ? "2px solid rgba(255,255,255,0.30)"
+                  ? "2px solid rgba(255,255,255,0.40)"
                   : "2px solid transparent",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "432422",
+                color: textVal,
                 fontSize: 10,
                 fontWeight: 700,
                 cursor: "pointer",
+                transition: "all 0.3s ease-in-out",
               }}
             >
               {ws.title

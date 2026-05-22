@@ -17,7 +17,7 @@ export default function WorkspaceLayout({
 }) {
   const { user } = useAuth()!;
   const path = usePathname();
-  const [workspaces, setWorkspaces] = useState<[]>([]);
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
   const router = useRouter();
 
   const activeHomepage = () => {
@@ -39,6 +39,14 @@ export default function WorkspaceLayout({
 
   useEffect(() => {
     getWorkspaces();
+
+    const handleRefetch = () => {
+      getWorkspaces();
+    };
+    window.addEventListener("workspace-updated", handleRefetch);
+    return () => {
+      window.removeEventListener("workspace-updated", handleRefetch);
+    };
   }, []);
 
   return (

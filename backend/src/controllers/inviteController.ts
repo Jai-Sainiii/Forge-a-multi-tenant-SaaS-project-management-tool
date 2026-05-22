@@ -8,7 +8,6 @@ export const generateInvite = async (req: Request, res: Response) => {
         const workspaceId = Number(req.params.workspaceId);
         const { role } = req.body;
 
-        // Verify the caller is an admin or owner of this workspace
         const callerMember = await prisma.member.findFirst({
             where: {
                 workspaceId,
@@ -25,7 +24,6 @@ export const generateInvite = async (req: Request, res: Response) => {
             });
         }
 
-        // Generate a unique token
         const token = crypto.randomUUID();
 
         // Set expiry to 24 hours from now
@@ -41,7 +39,7 @@ export const generateInvite = async (req: Request, res: Response) => {
             },
         });
 
-        const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+        const FRONTEND_URL: string = process.env.FRONTEND_URL as string;
         const inviteUrl = `${FRONTEND_URL}/invite/${token}`;
 
         return res.status(200).json({
