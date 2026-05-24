@@ -10,16 +10,18 @@ import {
   deleteTeamMember,
   getTeamsByProject
 } from "../controllers/teamController.js";
+import { protectedRoute } from "../middleware/authMiddleware.js";
+
 const router: Router = Router();
 
-router.post("/createTeam/:projectId", createTeam);
-router.post("/getTeam", getTeam);
-router.post("/updateTeam", updateTeam);
-router.post("/deleteTeam", deleteTeam);
-router.post("/addTeamMember/:teamId", addTeamMember);
-router.get("/workspace/:workspaceId", getTeamsByWorkspace);
-router.put("/updateTeamMember/:memberId", updateTeamMember);
-router.delete("/deleteTeamMember/:memberId", deleteTeamMember);
-router.get("/project/:projectId", getTeamsByProject);
+router.post("/createTeam/:projectId", protectedRoute, createTeam);
+router.post("/getTeam", protectedRoute, getTeam);
+router.post("/updateTeam", protectedRoute, updateTeam);
+router.post("/deleteTeam", protectedRoute, deleteTeam);
+router.post("/addTeamMember/:teamId", protectedRoute, addTeamMember);
+router.get("/workspace/:workspaceId", protectedRoute, getTeamsByWorkspace);
+router.put("/updateTeamMember/:memberId", protectedRoute, updateTeamMember);
+router.delete("/deleteTeamMember/:memberId", protectedRoute, deleteTeamMember);
+router.get("/project/:projectId", protectedRoute, getTeamsByProject);
 
 export default router;

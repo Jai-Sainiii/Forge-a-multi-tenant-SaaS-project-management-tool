@@ -45,6 +45,15 @@ export const updateMemberRole = async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, message: "Owner cannot be changed" });
         }
 
+        // Verify the workspace exists
+        const workspace = await prisma.workspace.findUnique({
+            where: { id: workspaceId }
+        });
+
+        if (!workspace) {
+            return res.status(404).json({ success: false, message: "Workspace not found" });
+        }
+
         // Verify the caller exists and has 'owner' role in this workspace
         const callerMember = await prisma.member.findFirst({
             where: {
@@ -54,7 +63,9 @@ export const updateMemberRole = async (req: Request, res: Response) => {
             }
         });
 
-        if (!callerMember || callerMember.role !== "owner") {
+        const isWorkspaceOwner = workspace.userId === user.id;
+
+        if (!isWorkspaceOwner && (!callerMember || callerMember.role !== "owner")) {
             return res.status(403).json({ 
                 success: false, 
                 message: "Forbidden: Only workspace owners can update member roles." 

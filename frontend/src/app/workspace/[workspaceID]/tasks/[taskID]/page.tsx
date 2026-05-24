@@ -69,6 +69,7 @@ interface Task {
   status: string;
   priority: string;
   createdAt: string;
+  projectId?: number;
   submittionType?: string;
   submittedTextorLink?: string;
   project?: { name: string };
@@ -89,10 +90,6 @@ export default function TaskDetailsPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isTaskAdmin = task?.taskMembers?.some(
-    (m) => m.user?.email === currentUser?.email && m.role?.toLowerCase() === "admin"
-  ) || false;
-
   // Submission State
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [submissionType, setSubmissionType] = useState("link");
@@ -103,6 +100,31 @@ export default function TaskDetailsPage({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [workspaceMembers, setWorkspaceMembers] = useState<any[]>([]);
   const [projectMembers, setProjectMembers] = useState<any[]>([]);
+
+  const isTaskAdmin = task?.taskMembers?.some(
+    (m) => m.user?.email === currentUser?.email && m.role?.toLowerCase() === "admin"
+  ) || false;
+
+  const currentWorkspaceMember = workspaceMembers.find(
+    (m) => m.user?.email === currentUser?.email
+  );
+  const isWorkspaceAdminOrOwner = currentWorkspaceMember 
+    ? ["admin", "owner"].includes(currentWorkspaceMember.role?.toLowerCase())
+    : false;
+
+  const currentProjectMember = projectMembers.find(
+    (pm) => pm.user?.email === currentUser?.email
+  );
+  const isProjectAdmin = currentProjectMember
+    ? ["admin", "owner"].includes(currentProjectMember.role?.toLowerCase())
+    : false;
+
+  const isAssignedTaskMember = task?.taskMembers?.some(
+    (m) => m.user?.email === currentUser?.email
+  ) || false;
+
+  const canEditTask = isTaskAdmin || isWorkspaceAdminOrOwner || isProjectAdmin;
+  const canSubmitTask = isAssignedTaskMember || isWorkspaceAdminOrOwner || isProjectAdmin;
 
   const fetchTaskDetails = useCallback(async () => {
     setLoading(true);
@@ -288,7 +310,8 @@ export default function TaskDetailsPage({
 
           <div className="flex items-center gap-3 shrink-0">
             {task.status?.toLowerCase() !== "completed" &&
-              task.status?.toLowerCase() !== "review" && (
+              task.status?.toLowerCase() !== "review" &&
+              canSubmitTask && (
                 <button
                   onClick={() => setIsSubmitModalOpen(true)}
                   className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
@@ -297,7 +320,7 @@ export default function TaskDetailsPage({
                   Submit for Review
                 </button>
               )}
-            {isTaskAdmin && (
+            {canEditTask && (
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
