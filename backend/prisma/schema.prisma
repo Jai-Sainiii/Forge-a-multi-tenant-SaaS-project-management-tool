@@ -22,10 +22,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   workspaces    Workspace[]
-  memberInfo   Member[]
+  memberInfo    Member[]
   projectInfo   ProjectMember[]
-  taskInfo   taskMember[]
-  teamMember   TeamMember[]
+  taskInfo      taskMember[]
+  teamMember    TeamMember[]
 }
 
 model Workspace {

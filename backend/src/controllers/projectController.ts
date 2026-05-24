@@ -77,14 +77,38 @@ export const getProjects = async (req: Request, res: Response) => {
 
 export const singleProject = async (req: Request, res: Response)=>{
   try {
+    const user = req.body.user;
     const projectID = Number(req.params.projectID);
     const project = await prisma.projects.findUnique({
       where: {
         id: projectID,
+        projectMembers: {
+          some: {
+            userId: user.id,
+          },
+        },
       },
       include: {
-        projectMembers: true,
-        tasks: true,
+        projectMembers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        },
+        tasks: {
+          where: {
+            taskMembers: {
+              some: {
+                userId: user.id
+              }
+            }
+          }
+        },
       },
     });
     res.json({ sucess: "true", project });
@@ -154,6 +178,100 @@ export const updateProject = async (req: Request, res: Response) => {
     return res.status(200).json({ success: true, project: updatedProject });
   } catch (error) {
     console.error("Update project error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const addProjectMember = async (req: Request, res: Response) => {
+  try {
+    const projectID = Number(req.params.projectID);
+    const user = req.body.user;
+    const { userId, role, position } = req.body;
+
+    if (isNaN(projectID)) {
+      return res.status(400).json({ message: "Invalid project ID" });
+    }
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const project = await prisma.projects.findUnique({
+      where: { id: projectID },
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Verify caller has permissions (workspace admin/owner OR project admin)
+    const workspaceMember = await prisma.member.findFirst({
+      where: {
+        workspaceId: project.workspaceId,
+        userId: user.id,
+        role: { in: ["admin", "owner"] },
+        isActive: true,
+      },
+    });
+
+    const projectMember = await prisma.projectMember.findFirst({
+      where: {
+        projectId: project.id,
+        userId: user.id,
+        role: "admin",
+      },
+    });
+
+    if (!workspaceMember && !projectMember) {
+      return res.status(403).json({ message: "Unauthorized. Only project admins or workspace admins/owners can add members to this project." });
+    }
+
+    // Verify target user is a member of the workspace
+    const isWorkspaceMember = await prisma.member.findFirst({
+      where: {
+        workspaceId: project.workspaceId,
+        userId: Number(userId),
+        isActive: true,
+      },
+    });
+
+    if (!isWorkspaceMember) {
+      return res.status(400).json({ message: "User is not an active member of this workspace" });
+    }
+
+    // Verify target user is not already a member of the project
+    const existingProjectMember = await prisma.projectMember.findFirst({
+      where: {
+        projectId: project.id,
+        userId: Number(userId),
+      },
+    });
+
+    if (existingProjectMember) {
+      return res.status(400).json({ message: "User is already a member of this project" });
+    }
+
+    const newMember = await prisma.projectMember.create({
+      data: {
+        projectId: project.id,
+        userId: Number(userId),
+        role: role || "member",
+        position: position || role || "member",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json({ success: true, member: newMember });
+  } catch (error) {
+    console.error("Add project member error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

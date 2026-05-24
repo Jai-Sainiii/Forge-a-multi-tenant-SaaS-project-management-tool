@@ -14,14 +14,21 @@ import {
     ArrowUp,
     ArrowDown,
     Minus,
-    MoreHorizontal
+    MoreHorizontal,
+    Users,
+    Shield,
+    UserPlus,
+    ChevronDown,
+    X,
+    Loader2,
+    Mail
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CreateTaskModal from "@/components/forms/CreateTask";
 import { useAuth } from "@/authContext/AuthContext";
-import { th } from "framer-motion/client";
 
 interface Task {
     id: number;
@@ -45,6 +52,11 @@ interface Project {
         projectId: number;
         position: string;
         role: string;
+        user: {
+            id: number;
+            name: string;
+            email: string;
+        };
     }[];
     createdAt: string;
 }
@@ -194,6 +206,40 @@ export default function ProjectDetailsPage({
     const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
     const [canEdit, setCanEdit] = useState(false);
 
+    // Project Teams States
+    const [teams, setTeams] = useState<any[]>([]);
+    const [teamsLoading, setTeamsLoading] = useState(true);
+    const [teamsError, setTeamsError] = useState<string | null>(null);
+    const [expandedTeamId, setExpandedTeamId] = useState<number | null>(null);
+
+    // Workspace members state
+    const [workspaceMembers, setWorkspaceMembers] = useState<any[]>([]);
+
+    // Modals States
+    const [isAddProjectMemberModalOpen, setIsAddProjectMemberModalOpen] = useState(false);
+    const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
+    const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
+    const [selectedTeamForAdd, setSelectedTeamForAdd] = useState<any>(null);
+
+    // Add Project Member Form States
+    const [addProjectMemberUserId, setAddProjectMemberUserId] = useState<string>("");
+    const [addProjectMemberRole, setAddProjectMemberRole] = useState<string>("member");
+    const [addProjectMemberPosition, setAddProjectMemberPosition] = useState<string>("");
+    const [addProjectMemberLoading, setAddProjectMemberLoading] = useState(false);
+    const [addProjectMemberError, setAddProjectMemberError] = useState<string | null>(null);
+
+    // Add Team Member Form States
+    const [addTeamMemberUserId, setAddTeamMemberUserId] = useState<string>("");
+    const [addTeamMemberRole, setAddTeamMemberRole] = useState<string>("member");
+    const [addTeamMemberPosition, setAddTeamMemberPosition] = useState<string>("");
+    const [addTeamMemberLoading, setAddTeamMemberLoading] = useState(false);
+    const [addTeamMemberError, setAddTeamMemberError] = useState<string | null>(null);
+
+    // Create Team Form States
+    const [createTeamName, setCreateTeamName] = useState<string>("");
+    const [createTeamLoading, setCreateTeamLoading] = useState(false);
+    const [createTeamError, setCreateTeamError] = useState<string | null>(null);
+
     const router = useRouter();
     const authContext = useAuth();
     const user = authContext ? authContext.user : null;
@@ -207,12 +253,10 @@ export default function ProjectDetailsPage({
             );
             if (res.data.success) {
                 const membersList = res.data.members;
+                setWorkspaceMembers(membersList || []);
                 const currentMember = membersList.find((m: any) => m.user?.email === user.email);
                 if (currentMember) {
-                    
                     const isWorkspaceAdmin = ["admin", "owner"].includes(currentMember.role?.toLowerCase());
-                    
-                    
                     const projectMembers = projectData.projectMembers || [];
                     const isProjectAdmin = projectMembers.some(
                         (pm: any) => pm.userId === currentMember.userId && pm.role?.toLowerCase() === "admin"
@@ -252,9 +296,118 @@ export default function ProjectDetailsPage({
         }
     }, [projectID, checkUserRole]);
 
+    const fetchTeams = useCallback(async () => {
+        setTeamsLoading(true);
+        setTeamsError(null);
+        try {
+            const res = await axios.get(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/team/project/${projectID}`,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setTeams(res.data.teams || []);
+            } else {
+                setTeamsError(res.data.error || "Failed to load project teams.");
+            }
+        } catch (err) {
+            setTeamsError("Failed to load project teams.");
+        } finally {
+            setTeamsLoading(false);
+        }
+    }, [projectID]);
+
     useEffect(() => {
         fetchProjectDetails();
-    }, [fetchProjectDetails]);
+        fetchTeams();
+    }, [fetchProjectDetails, fetchTeams]);
+
+    const handleAddProjectMember = async () => {
+        if (!addProjectMemberUserId) return;
+        setAddProjectMemberLoading(true);
+        setAddProjectMemberError(null);
+        try {
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/project/addProjectMember/${projectID}`,
+                {
+                    userId: Number(addProjectMemberUserId),
+                    role: addProjectMemberRole,
+                    position: addProjectMemberPosition || addProjectMemberRole
+                },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setIsAddProjectMemberModalOpen(false);
+                setAddProjectMemberUserId("");
+                setAddProjectMemberRole("member");
+                setAddProjectMemberPosition("");
+                fetchProjectDetails();
+            } else {
+                setAddProjectMemberError(res.data.message || "Failed to add member to project.");
+            }
+        } catch (err: any) {
+            setAddProjectMemberError(err.response?.data?.message || "Failed to add member to project.");
+        } finally {
+            setAddProjectMemberLoading(false);
+        }
+    };
+
+    const handleAddTeamMember = async () => {
+        if (!selectedTeamForAdd || !addTeamMemberUserId) return;
+        setAddTeamMemberLoading(true);
+        setAddTeamMemberError(null);
+        try {
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/team/addTeamMember/${selectedTeamForAdd.id}`,
+                {
+                    userId: Number(addTeamMemberUserId),
+                    position: addTeamMemberPosition || addTeamMemberRole,
+                    role: addTeamMemberRole
+                },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setIsAddTeamMemberModalOpen(false);
+                setAddTeamMemberUserId("");
+                setAddTeamMemberRole("member");
+                setAddTeamMemberPosition("");
+                setSelectedTeamForAdd(null);
+                fetchTeams();
+            } else {
+                setAddTeamMemberError(res.data.message || "Failed to add member to team.");
+            }
+        } catch (err: any) {
+            setAddTeamMemberError(err.response?.data?.message || "Failed to add member to team.");
+        } finally {
+            setAddTeamMemberLoading(false);
+        }
+    };
+
+    const handleCreateTeam = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!createTeamName.trim()) return;
+        setCreateTeamLoading(true);
+        setCreateTeamError(null);
+        try {
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/team/createTeam/${projectID}`,
+                {
+                    teamName: createTeamName.trim()
+                },
+                { withCredentials: true }
+            );
+            if (res.data.team) {
+                setIsCreateTeamModalOpen(false);
+                setCreateTeamName("");
+                fetchTeams();
+            } else {
+                setCreateTeamError("Failed to create team.");
+            }
+        } catch (err: any) {
+            setCreateTeamError(err.response?.data?.message || err.response?.data?.error || "Failed to create team.");
+        } finally {
+            setCreateTeamLoading(false);
+        }
+    };
 
     const getPriorityIcon = (priority: string) => {
         switch (priority?.toLowerCase()) {
@@ -305,9 +458,21 @@ export default function ProjectDetailsPage({
     const totalTasksCount = project.tasks?.length || 0;
     const progressPercentage = totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
 
+    // Filter workspace members for project inclusion modal
+    const existingProjectUserIds = project.projectMembers?.map((pm: any) => pm.userId) || [];
+    const availableWorkspaceMembers = workspaceMembers.filter(
+        (wm: any) => wm.isActive && !existingProjectUserIds.includes(wm.userId)
+    );
+
+    // Filter project members for team inclusion modal
+    const teamMemberIds = selectedTeamForAdd?.teamMembers?.map((tm: any) => tm.userId) || [];
+    const availableProjectMembers = project.projectMembers?.filter(
+        (pm: any) => !teamMemberIds.includes(pm.userId)
+    ) || [];
+
     return (
         <main className="max-w-7xl mx-auto px-6 py-6 space-y-8">
-           
+            {/* Header */}
             <div>
                 <Link 
                     href={`/workspace/${workspaceID}/projects`} 
@@ -355,7 +520,7 @@ export default function ProjectDetailsPage({
                 </div>
             </div>
 
-            
+            {/* Info Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white dark:bg-[#1e293b] p-4 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm flex items-start gap-3">
                     <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
@@ -393,7 +558,7 @@ export default function ProjectDetailsPage({
                 </div>
             </div>
 
-           
+            {/* Assigned Tasks */}
             <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
                     <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -469,6 +634,178 @@ export default function ProjectDetailsPage({
                 </div>
             </div>
 
+            {/* Project Members & Project Teams side-by-side layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Project Members Panel */}
+                <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm flex flex-col">
+                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
+                        <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Users className="w-5 h-5 text-gray-400" />
+                            Project Members
+                        </h2>
+                        {canEdit && (
+                            <button 
+                                onClick={() => {
+                                    setAddProjectMemberUserId("");
+                                    setAddProjectMemberRole("member");
+                                    setAddProjectMemberPosition("");
+                                    setAddProjectMemberError(null);
+                                    setIsAddProjectMemberModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 bg-[#3C3489] hover:bg-[#251b72] text-white px-3 py-1.5 rounded-md font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+                            >
+                                <UserPlus className="w-3.5 h-3.5" />
+                                Add Member
+                            </button>
+                        )}
+                    </div>
+                    
+                    <div className="flex-1 divide-y divide-gray-100 dark:divide-gray-700 max-h-[400px] overflow-y-auto">
+                        {!project.projectMembers || project.projectMembers.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                                No project members found.
+                            </div>
+                        ) : (
+                            project.projectMembers.map((member) => (
+                                <div key={member.id} className="flex items-center justify-between p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-primary-light/10 text-primary font-medium text-xs border border-primary-light/20 flex items-center justify-center">
+                                            {member.user?.name?.charAt(0).toUpperCase() || "?"}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white">{member.user?.name || "Unknown User"}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">{member.user?.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                                            {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-[#3C3489]" />}
+                                            {member.role}
+                                        </span>
+                                        <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 capitalize">{member.position}</p>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Project Teams Panel */}
+                <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm flex flex-col">
+                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
+                        <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Users className="w-5 h-5 text-gray-400" />
+                            Project Teams
+                        </h2>
+                        {canEdit && (
+                            <button 
+                                onClick={() => {
+                                    setCreateTeamName("");
+                                    setCreateTeamError(null);
+                                    setIsCreateTeamModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 bg-[#3C3489] hover:bg-[#251b72] text-white px-3 py-1.5 rounded-md font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+                            >
+                                <Plus className="w-3.5 h-3.5" />
+                                Create Team
+                            </button>
+                        )}
+                    </div>
+                    
+                    <div className="flex-1 max-h-[400px] overflow-y-auto">
+                        {teamsLoading ? (
+                            <div className="p-8 space-y-3">
+                                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"></div>
+                                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"></div>
+                            </div>
+                        ) : teamsError ? (
+                            <div className="p-8 text-center text-red-500 bg-red-50 dark:bg-red-900/10 text-xs">
+                                {teamsError}
+                            </div>
+                        ) : !teams || teams.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                                <p className="text-sm font-medium">No teams in this project yet.</p>
+                                <p className="text-xs mt-1 text-gray-400">Create a team to organize project members.</p>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                                {teams.map((team) => (
+                                    <div key={team.id} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                        <div 
+                                            className="p-4 cursor-pointer flex justify-between items-center hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
+                                            onClick={() => setExpandedTeamId(expandedTeamId === team.id ? null : team.id)}
+                                        >
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{team.teamName}</h4>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">{team.teamMembers?.length || 0} members</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {canEdit && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedTeamForAdd(team);
+                                                            setAddTeamMemberUserId("");
+                                                            setAddTeamMemberPosition("");
+                                                            setAddTeamMemberRole("member");
+                                                            setAddTeamMemberError(null);
+                                                            setIsAddTeamMemberModalOpen(true);
+                                                        }}
+                                                        className="p-1 text-[#3C3489] hover:bg-[#3C3489]/10 rounded-md transition-all cursor-pointer"
+                                                        title="Add Member to Team"
+                                                    >
+                                                        <UserPlus className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedTeamId === team.id ? "rotate-180" : ""}`} />
+                                            </div>
+                                        </div>
+                                        
+                                        <AnimatePresence>
+                                            {expandedTeamId === team.id && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: "auto", opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    className="overflow-hidden bg-gray-50/30 dark:bg-gray-900/10 border-t border-gray-100 dark:border-gray-700"
+                                                >
+                                                    <div className="p-3 space-y-2">
+                                                        {team.teamMembers && team.teamMembers.length > 0 ? (
+                                                            team.teamMembers.map((tm: any) => (
+                                                                <div key={tm.id} className="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded-md border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="w-6 h-6 rounded-full bg-primary-light/10 text-primary font-medium text-[10px] flex items-center justify-center">
+                                                                            {tm.user?.name?.charAt(0).toUpperCase() || "?"}
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-xs font-medium text-gray-900 dark:text-white">{tm.user?.name}</p>
+                                                                            <p className="text-[10px] text-gray-500 dark:text-gray-400">{tm.user?.email}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="text-right flex flex-col items-end">
+                                                                        <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                                                                            {tm.role}
+                                                                        </span>
+                                                                        <span className="text-[10px] text-gray-750 dark:text-gray-300 capitalize">{tm.position}</span>
+                                                                    </div>
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <p className="text-xs text-center text-gray-500 dark:text-gray-400 py-3">No members in this team.</p>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Task Creation Modal */}
             {isCreateTaskModalOpen && (
                 <CreateTaskModal
                     workspaceID={workspaceID}
@@ -478,6 +815,7 @@ export default function ProjectDetailsPage({
                 />
             )}
 
+            {/* Edit Project Details Modal */}
             {isEditProjectModalOpen && (
                 <EditProjectModal
                     isOpen={isEditProjectModalOpen}
@@ -485,6 +823,232 @@ export default function ProjectDetailsPage({
                     project={project}
                     onSuccess={fetchProjectDetails}
                 />
+            )}
+
+            {/* Add Project Member Modal */}
+            {isAddProjectMemberModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
+                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                <UserPlus className="w-5 h-5 text-[#3C3489]" />
+                                Add Project Member
+                            </h3>
+                            <button onClick={() => setIsAddProjectMemberModalOpen(false)} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        
+                        <div className="p-6 space-y-4">
+                            {addProjectMemberError && (
+                                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800">
+                                    {addProjectMemberError}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Workspace Member</label>
+                                <select 
+                                    value={addProjectMemberUserId}
+                                    onChange={e => setAddProjectMemberUserId(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                >
+                                    <option value="">-- Choose a Workspace Member --</option>
+                                    {availableWorkspaceMembers.map((m) => (
+                                        <option key={m.userId} value={m.userId}>
+                                            {m.user?.name} ({m.user?.email})
+                                        </option>
+                                    ))}
+                                </select>
+                                {availableWorkspaceMembers.length === 0 && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">No other active workspace members available to add.</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Role</label>
+                                <select
+                                    value={addProjectMemberRole}
+                                    onChange={e => setAddProjectMemberRole(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                >
+                                    <option value="member">Member</option>
+                                    <option value="tester">Tester</option>
+                                    <option value="viewer">Viewer</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Position / Title</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="e.g. Lead QA, Designer, Developer"
+                                    value={addProjectMemberPosition}
+                                    onChange={e => setAddProjectMemberPosition(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                />
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3">
+                                <button 
+                                    onClick={() => setIsAddProjectMemberModalOpen(false)}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleAddProjectMember}
+                                    disabled={addProjectMemberLoading || !addProjectMemberUserId}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                                >
+                                    {addProjectMemberLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                                    {addProjectMemberLoading ? "Adding..." : "Add Member"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Team Member Modal */}
+            {isAddTeamMemberModalOpen && selectedTeamForAdd && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
+                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                <UserPlus className="w-5 h-5 text-[#3C3489]" />
+                                Add Member to {selectedTeamForAdd.teamName}
+                            </h3>
+                            <button onClick={() => setIsAddTeamMemberModalOpen(false)} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        
+                        <div className="p-6 space-y-4">
+                            {addTeamMemberError && (
+                                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800">
+                                    {addTeamMemberError}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Project Member</label>
+                                <select 
+                                    value={addTeamMemberUserId}
+                                    onChange={e => setAddTeamMemberUserId(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                >
+                                    <option value="">-- Choose a Project Member --</option>
+                                    {availableProjectMembers.map((m) => (
+                                        <option key={m.userId} value={m.userId}>
+                                            {m.user?.name} ({m.user?.email})
+                                        </option>
+                                    ))}
+                                </select>
+                                {availableProjectMembers.length === 0 && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">No other project members available to join this team.</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Team Role</label>
+                                <select
+                                    value={addTeamMemberRole}
+                                    onChange={e => setAddTeamMemberRole(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                >
+                                    <option value="member">Member</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="viewer">Viewer</option>
+                                    <option value="tester">Tester</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Position / Title</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="e.g. Lead Developer, QA Lead"
+                                    value={addTeamMemberPosition}
+                                    onChange={e => setAddTeamMemberPosition(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                />
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3">
+                                <button 
+                                    onClick={() => setIsAddTeamMemberModalOpen(false)}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleAddTeamMember}
+                                    disabled={addTeamMemberLoading || !addTeamMemberUserId}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                                >
+                                    {addTeamMemberLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                                    {addTeamMemberLoading ? "Adding..." : "Add to Team"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Project Team Modal */}
+            {isCreateTeamModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
+                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                <Plus className="w-5 h-5 text-[#3C3489]" />
+                                Create Project Team
+                            </h3>
+                            <button onClick={() => setIsCreateTeamModalOpen(false)} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleCreateTeam} className="p-6 space-y-4">
+                            {createTeamError && (
+                                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800 animate-pulse">
+                                    {createTeamError}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Team Name</label>
+                                <input 
+                                    type="text" 
+                                    required
+                                    placeholder="e.g. Design Team, Frontend Core"
+                                    value={createTeamName}
+                                    onChange={e => setCreateTeamName(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
+                                />
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3">
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsCreateTeamModalOpen(false)}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={createTeamLoading || !createTeamName.trim()}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                                >
+                                    {createTeamLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                                    {createTeamLoading ? "Creating..." : "Create Team"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </main>
     );

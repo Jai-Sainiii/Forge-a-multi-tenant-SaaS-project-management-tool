@@ -1,12 +1,18 @@
 import { type Request, type Response } from "express";
-import {prisma} from "../lib/prisma.js"
+import { prisma } from "../lib/prisma.js";
 
-export const getTasks = async(req:Request,res:Response)=>{
+export const getTasks = async (req: Request, res: Response) => {
     try {
+        const user = req.body.user;
         const workspaceID = req.params.workspaceID;
         const tasks = await prisma.task.findMany({
             where:{
-                workspaceId: Number(workspaceID)
+                workspaceId: Number(workspaceID),
+                taskMembers: {
+                    some: {
+                        userId: user.id
+                    }
+                }
             },
             include: {
                 project: {
@@ -114,6 +120,7 @@ export const getSingleTask = async(req:Request,res:Response)=>{
                 },
                 taskMembers:{
                     select:{
+                        userId: true,
                         user:{
                             select:{
                                 name:true,
@@ -166,6 +173,23 @@ export const updateTask = async(req:Request,res:Response)=>{
         });
 
         if (assigneeIds !== undefined && Array.isArray(assigneeIds)) {
+            const taskObj = await prisma.task.findUnique({
+                where: { id: taskID }
+            });
+            if (!taskObj) {
+                return res.status(404).json({ success: false, message: "Task not found" });
+            }
+
+            const projectMembers = await prisma.projectMember.findMany({
+                where: { projectId: taskObj.projectId }
+            });
+            const projectMemberUserIds = projectMembers.map(pm => pm.userId);
+
+            const invalidAssignees = assigneeIds.filter(uid => !projectMemberUserIds.includes(Number(uid)));
+            if (invalidAssignees.length > 0) {
+                return res.status(400).json({ success: false, message: "One or more assignees are not members of this project." });
+            }
+
             const existingAdmins = await prisma.taskMember.findMany({
                 where: { taskId: taskID, role: "admin" }
             });
@@ -196,6 +220,7 @@ export const updateTask = async(req:Request,res:Response)=>{
                 workspace: { select: { title: true } },
                 taskMembers: {
                     select: {
+                        userId: true,
                         user: { select: { name: true, email: true, id: true } },
                         role: true
                     }

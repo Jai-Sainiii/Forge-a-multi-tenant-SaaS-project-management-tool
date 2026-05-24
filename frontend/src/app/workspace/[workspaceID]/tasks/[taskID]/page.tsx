@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
+import { useAuth } from "@/authContext/AuthContext";
 
 const TASK_STATUSES = [
   { value: "active", label: "Active", icon: Play, color: "text-blue-500" },
@@ -53,6 +54,7 @@ const TASK_STATUSES = [
 ];
 
 interface TaskMember {
+  role: string;
   user: {
     id: number;
     name: string;
@@ -80,9 +82,16 @@ export default function TaskDetailsPage({
   params: Promise<{ workspaceID: string; taskID: string }>;
 }) {
   const { workspaceID, taskID } = use(params);
+  const authContext = useAuth();
+  const currentUser = authContext ? authContext.user : null;
+
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const isTaskAdmin = task?.taskMembers?.some(
+    (m) => m.user?.email === currentUser?.email && m.role?.toLowerCase() === "admin"
+  ) || false;
 
   // Submission State
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
@@ -93,6 +102,7 @@ export default function TaskDetailsPage({
   // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [workspaceMembers, setWorkspaceMembers] = useState<any[]>([]);
+  const [projectMembers, setProjectMembers] = useState<any[]>([]);
 
   const fetchTaskDetails = useCallback(async () => {
     setLoading(true);
@@ -152,25 +162,29 @@ export default function TaskDetailsPage({
     }
   };
 
-  const handleQuickStatus = async (newStatus: string) => {
-    try {
-      const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/update/${taskID}`,
-        { status: newStatus },
-        { withCredentials: true },
-      );
-      if (res.data.success) {
-        setTask(res.data.task);
-      }
-    } catch (err) {
-      console.error("Failed to update status", err);
-    }
-  };
-
   useEffect(() => {
     fetchTaskDetails();
     fetchWorkspaceMembers();
   }, [fetchTaskDetails, fetchWorkspaceMembers]);
+
+  useEffect(() => {
+    if (task && task.projectId) {
+      const fetchProjectMembers = async () => {
+        try {
+          const res = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/project/singleProject/${task.projectId}`,
+            { withCredentials: true }
+          );
+          if (res.data.success || res.data.sucess === "true") {
+            setProjectMembers(res.data.project.projectMembers || []);
+          }
+        } catch (err) {
+          console.error("Failed to fetch project members:", err);
+        }
+      };
+      fetchProjectMembers();
+    }
+  }, [task]);
 
   const getPriorityIcon = (priority: string) => {
     switch (priority?.toLowerCase()) {
@@ -283,13 +297,15 @@ export default function TaskDetailsPage({
                   Submit for Review
                 </button>
               )}
-            <button
-              onClick={() => setIsEditModalOpen(true)}
-              className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
-            >
-              <Edit className="w-4 h-4" />
-              Edit Task
-            </button>
+            {isTaskAdmin && (
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+              >
+                <Edit className="w-4 h-4" />
+                Edit Task
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -384,35 +400,6 @@ export default function TaskDetailsPage({
             </div>
           </div>
 
-          {/* Quick Status Update */}
-          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
-            <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Update Status
-            </h2>
-            <div className="grid grid-cols-2 gap-2">
-              {TASK_STATUSES.map((s) => {
-                const Icon = s.icon;
-                const isActive = task.status?.toLowerCase() === s.value;
-                return (
-                  <button
-                    key={s.value}
-                    onClick={() => !isActive && handleQuickStatus(s.value)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-[#3C3489]/10 text-[#3C3489] border border-[#3C3489]/30 ring-1 ring-[#3C3489]/20"
-                        : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <Icon
-                      className={`w-3.5 h-3.5 ${isActive ? "text-[#3C3489]" : s.color}`}
-                    />
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
 
           {/* Task Members */}
           <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
@@ -549,7 +536,7 @@ export default function TaskDetailsPage({
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           task={task}
-          workspaceMembers={workspaceMembers}
+          projectMembers={projectMembers}
           onSuccess={(updatedTask) => setTask(updatedTask)}
         />
       )}
@@ -561,7 +548,7 @@ interface EditTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   task: any;
-  workspaceMembers: any[];
+  projectMembers: any[];
   onSuccess: (updatedTask: any) => void;
 }
 
@@ -569,7 +556,7 @@ function EditTaskModal({
   isOpen,
   onClose,
   task,
-  workspaceMembers,
+  projectMembers,
   onSuccess,
 }: EditTaskModalProps) {
   const [editTitle, setEditTitle] = useState(task.title || "");
@@ -579,7 +566,7 @@ function EditTaskModal({
   const [editStatus, setEditStatus] = useState(task.status || "");
   const [editPriority, setEditPriority] = useState(task.priority || "");
   const [editAssigneeIds, setEditAssigneeIds] = useState<number[]>(
-    task.taskMembers ? task.taskMembers.map((m: any) => m.userId) : [],
+    task.taskMembers ? task.taskMembers.map((m: any) => m.userId || m.user?.id) : [],
   );
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -782,9 +769,9 @@ function EditTaskModal({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Assign Members
             </label>
-            {workspaceMembers.length > 0 ? (
+            {projectMembers.length > 0 ? (
               <div className="max-h-[140px] overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3 bg-gray-50 dark:bg-gray-800/50 space-y-2">
-                {workspaceMembers.map((member) => {
+                {projectMembers.map((member) => {
                   const isChecked = editAssigneeIds.includes(member.userId);
                   return (
                     <label
@@ -825,7 +812,7 @@ function EditTaskModal({
               </div>
             ) : (
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                No members available in this workspace.
+                No members available in this project.
               </p>
             )}
           </div>
