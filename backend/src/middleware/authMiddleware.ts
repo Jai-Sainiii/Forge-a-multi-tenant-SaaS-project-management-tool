@@ -121,7 +121,7 @@ export const logout = async (req: Request, res: Response) => {
 
 export const protectedRoute = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token: string | undefined = req.cookies?.token;
+        const token: string | undefined = await req.cookies?.token;
 
         if (!token) {
             return res.status(401).json({ message: "Unauthorized" });
