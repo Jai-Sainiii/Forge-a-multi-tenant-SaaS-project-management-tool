@@ -261,7 +261,6 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
                     name: googleUser.name || "Google User",
                     email: googleUser.email,
                     googleId: googleUser.sub,
-                    password: null, 
                 },
             });
         }
