@@ -20,7 +20,7 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
     }
     setError(null);
     setIsLoading(true);
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000";
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL;
     try {
       const res = await axios.post(
         `${BACKEND_URL}/auth/login`,
@@ -43,7 +43,7 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
   };
   const handleGoogleLogin = () => {
     setError(null);
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000";
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL;
     const width = 500;
     const height = 600;
     const left = window.screen.width / 2 - width / 2;

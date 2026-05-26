@@ -66,7 +66,7 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
 
   const fetchworkspaces = async()=>{
     try {
-      const res = await axios.get(`http://localhost:5000/dashboard/workspace/${workspaceID}`,{
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/workspace/${workspaceID}`,{
         withCredentials: true,
       })
       setWorkspaceData(res.data.workspaceData)

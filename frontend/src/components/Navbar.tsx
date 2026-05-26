@@ -34,7 +34,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     axios
-      .post("http://localhost:5000/auth/logout", {}, { withCredentials: true })
+      .post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/logout`, {}, { withCredentials: true })
       .then(() => {
         window.location.href = "/";
       })

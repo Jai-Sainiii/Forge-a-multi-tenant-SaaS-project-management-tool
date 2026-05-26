@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     axios
       .post(
-        "http://localhost:5000/auth/me",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/me`,
         {},
         {
           withCredentials: true,
