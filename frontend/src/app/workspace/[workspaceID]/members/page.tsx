@@ -8,6 +8,7 @@ import {
   Mail,
   Shield,
   UserPlus,
+  UserMinus,
   Circle,
   ChevronDown,
   X,
@@ -86,6 +87,16 @@ export default function MembersPage({
   const [editWorkspaceMemberLoading, setEditWorkspaceMemberLoading] = useState(false);
   const [editWorkspaceMemberError, setEditWorkspaceMemberError] = useState<string | null>(null);
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null);
+
+  const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
+  const [removeMemberLoading, setRemoveMemberLoading] = useState(false);
+  const [removeMemberError, setRemoveMemberError] = useState<string | null>(null);
+
+  const [isRemoveTeamMemberModalOpen, setIsRemoveTeamMemberModalOpen] = useState(false);
+  const [teamMemberToRemove, setTeamMemberToRemove] = useState<any>(null);
+  const [removeTeamMemberLoading, setRemoveTeamMemberLoading] = useState(false);
+  const [removeTeamMemberError, setRemoveTeamMemberError] = useState<string | null>(null);
 
   
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -259,20 +270,26 @@ export default function MembersPage({
     }
   };
 
-  const handleDeleteTeamMember = async (memberId: number) => {
-    if (!confirm("Are you sure you want to remove this member from the team?")) return;
+  const confirmRemoveTeamMember = async () => {
+    if (!teamMemberToRemove) return;
+    setRemoveTeamMemberLoading(true);
+    setRemoveTeamMemberError(null);
     try {
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/team/deleteTeamMember/${memberId}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/team/deleteTeamMember/${teamMemberToRemove.id}`,
         { withCredentials: true }
       );
       if (res.data.success) {
+        setIsRemoveTeamMemberModalOpen(false);
+        setTeamMemberToRemove(null);
         fetchTeams();
       } else {
-        alert(res.data.message || "Failed to remove member.");
+        setRemoveTeamMemberError(res.data.message || "Failed to remove member.");
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to remove team member.");
+      setRemoveTeamMemberError(err.response?.data?.message || "Failed to remove team member.");
+    } finally {
+      setRemoveTeamMemberLoading(false);
     }
   };
 
@@ -301,6 +318,30 @@ export default function MembersPage({
       setEditWorkspaceMemberError(err.response?.data?.message || "Failed to update member role.");
     } finally {
       setEditWorkspaceMemberLoading(false);
+    }
+  };
+
+  const confirmRemoveMember = async () => {
+    if (!memberToRemove) return;
+    setRemoveMemberLoading(true);
+    setRemoveMemberError(null);
+    try {
+      const res = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}/${memberToRemove.userId}`,
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        setIsRemoveMemberModalOpen(false);
+        setMemberToRemove(null);
+        fetchMembers();
+        fetchTeams();
+      } else {
+        setRemoveMemberError(res.data.message || "Failed to remove member");
+      }
+    } catch (err: any) {
+      setRemoveMemberError(err.response?.data?.message || "Failed to remove member");
+    } finally {
+      setRemoveMemberLoading(false);
     }
   };
 
@@ -553,19 +594,34 @@ export default function MembersPage({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       {isOwner && member.user?.email !== currentUser?.email ? (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedWorkspaceMemberForEdit(member);
-                            setEditWorkspaceMemberRole(member.role || "member");
-                            setEditWorkspaceMemberError(null);
-                            setIsEditWorkspaceMemberModalOpen(true);
-                          }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#3C3489] hover:text-white border border-[#3C3489]/20 hover:border-[#3C3489] bg-[#3C3489]/5 hover:bg-[#3C3489] rounded-md transition-all duration-200 cursor-pointer shadow-sm"
-                        >
-                          <Shield className="w-3.5 h-3.5" />
-                          Change Role
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedWorkspaceMemberForEdit(member);
+                              setEditWorkspaceMemberRole(member.role || "member");
+                              setEditWorkspaceMemberError(null);
+                              setIsEditWorkspaceMemberModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#3C3489] hover:text-white border border-[#3C3489]/20 hover:border-[#3C3489] bg-[#3C3489]/5 hover:bg-[#3C3489] rounded-md transition-all duration-200 cursor-pointer shadow-sm"
+                          >
+                            <Shield className="w-3.5 h-3.5" />
+                            Change Role
+                          </button>
+                          
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMemberToRemove(member);
+                              setRemoveMemberError(null);
+                              setIsRemoveMemberModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white border border-red-200 hover:border-red-600 bg-red-50 hover:bg-red-600 rounded-md transition-all duration-200 cursor-pointer shadow-sm"
+                          >
+                            <UserMinus className="w-3.5 h-3.5" />
+                            Remove
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-gray-300 dark:text-gray-600">—</span>
                       )}
@@ -785,7 +841,13 @@ export default function MembersPage({
                                               <button
                                                 onClick={(e) => {
                                                   e.stopPropagation();
-                                                  handleDeleteTeamMember(member.id);
+                                                  setTeamMemberToRemove({
+                                                    id: member.id,
+                                                    userName: member.user?.name || "Unknown User",
+                                                    teamName: team.teamName
+                                                  });
+                                                  setRemoveTeamMemberError(null);
+                                                  setIsRemoveTeamMemberModalOpen(true);
                                                 }}
                                                 className="p-1 text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-md transition-colors cursor-pointer"
                                                 title="Remove from Team"
@@ -1310,6 +1372,150 @@ export default function MembersPage({
                   "Save Changes"
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Workspace Member Confirmation Modal */}
+      {isRemoveMemberModalOpen && memberToRemove && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
+              <h3 className="text-xl font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
+                <UserMinus className="w-5 h-5" />
+                Remove Member
+              </h3>
+              <button 
+                onClick={() => {
+                  setIsRemoveMemberModalOpen(false);
+                  setMemberToRemove(null);
+                }}
+                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Are you sure you want to remove <strong>{memberToRemove.user?.name}</strong> (<em>{memberToRemove.user?.email}</em>) from this workspace?
+              </p>
+
+              <div className="flex items-start gap-3 text-red-650 dark:text-red-400 text-xs bg-red-50 dark:bg-red-950/20 p-3.5 rounded-lg border border-red-100 dark:border-red-900/30">
+                <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-red-500" />
+                <span>
+                  This action is permanent. This user will be automatically removed from all project teams, task assignments, and active lists within this workspace.
+                </span>
+              </div>
+
+              {removeMemberError && (
+                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {removeMemberError}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRemoveMemberModalOpen(false);
+                    setMemberToRemove(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmRemoveMember}
+                  disabled={removeMemberLoading}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {removeMemberLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Removing...
+                    </>
+                  ) : (
+                    "Remove Member"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Team Member Confirmation Modal */}
+      {isRemoveTeamMemberModalOpen && teamMemberToRemove && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
+              <h3 className="text-xl font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
+                <UserMinus className="w-5 h-5" />
+                Remove from Team
+              </h3>
+              <button 
+                onClick={() => {
+                  setIsRemoveTeamMemberModalOpen(false);
+                  setTeamMemberToRemove(null);
+                }}
+                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Are you sure you want to remove <strong>{teamMemberToRemove.userName}</strong> from the project team <strong>{teamMemberToRemove.teamName}</strong>?
+              </p>
+
+              <div className="flex items-start gap-3 text-red-650 dark:text-red-400 text-xs bg-red-50 dark:bg-red-955/20 p-3.5 rounded-lg border border-red-100 dark:border-red-900/30">
+                <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-red-500" />
+                <span>
+                  This will remove the user's role and title assignments for this project team. They will no longer be listed as a contributor to this team's activities.
+                </span>
+              </div>
+
+              {removeTeamMemberError && (
+                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {removeTeamMemberError}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRemoveTeamMemberModalOpen(false);
+                    setTeamMemberToRemove(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmRemoveTeamMember}
+                  disabled={removeTeamMemberLoading}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {removeTeamMemberLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Removing...
+                    </>
+                  ) : (
+                    "Remove Member"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

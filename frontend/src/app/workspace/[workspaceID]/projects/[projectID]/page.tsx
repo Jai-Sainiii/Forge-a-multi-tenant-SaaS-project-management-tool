@@ -21,7 +21,8 @@ import {
     ChevronDown,
     X,
     Loader2,
-    Mail
+    Mail,
+    UserMinus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -221,6 +222,19 @@ export default function ProjectDetailsPage({
     const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
     const [selectedTeamForAdd, setSelectedTeamForAdd] = useState<any>(null);
 
+    // Edit/Remove Project Member States
+    const [isEditProjectMemberModalOpen, setIsEditProjectMemberModalOpen] = useState(false);
+    const [selectedProjectMemberForEdit, setSelectedProjectMemberForEdit] = useState<any>(null);
+    const [editProjectMemberRole, setEditProjectMemberRole] = useState<string>("member");
+    const [editProjectMemberPosition, setEditProjectMemberPosition] = useState<string>("");
+    const [editProjectMemberLoading, setEditProjectMemberLoading] = useState(false);
+    const [editProjectMemberError, setEditProjectMemberError] = useState<string | null>(null);
+
+    const [isRemoveProjectMemberModalOpen, setIsRemoveProjectMemberModalOpen] = useState(false);
+    const [projectMemberToRemove, setProjectMemberToRemove] = useState<any>(null);
+    const [removeProjectMemberLoading, setRemoveProjectMemberLoading] = useState(false);
+    const [removeProjectMemberError, setRemoveProjectMemberError] = useState<string | null>(null);
+
     // Add Project Member Form States
     const [addProjectMemberUserId, setAddProjectMemberUserId] = useState<string>("");
     const [addProjectMemberRole, setAddProjectMemberRole] = useState<string>("member");
@@ -348,6 +362,59 @@ export default function ProjectDetailsPage({
             setAddProjectMemberError(err.response?.data?.message || "Failed to add member to project.");
         } finally {
             setAddProjectMemberLoading(false);
+        }
+    };
+
+    const handleUpdateProjectMember = async () => {
+        if (!selectedProjectMemberForEdit) return;
+        setEditProjectMemberLoading(true);
+        setEditProjectMemberError(null);
+        try {
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/project/updateProjectMember/${projectID}/${selectedProjectMemberForEdit.userId}`,
+                {
+                    role: editProjectMemberRole,
+                    position: editProjectMemberPosition
+                },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setIsEditProjectMemberModalOpen(false);
+                setSelectedProjectMemberForEdit(null);
+                setEditProjectMemberRole("member");
+                setEditProjectMemberPosition("");
+                fetchProjectDetails();
+            } else {
+                setEditProjectMemberError(res.data.message || "Failed to update project member.");
+            }
+        } catch (err: any) {
+            setEditProjectMemberError(err.response?.data?.message || "Failed to update project member.");
+        } finally {
+            setEditProjectMemberLoading(false);
+        }
+    };
+
+    const handleRemoveProjectMember = async () => {
+        if (!projectMemberToRemove) return;
+        setRemoveProjectMemberLoading(true);
+        setRemoveProjectMemberError(null);
+        try {
+            const res = await axios.delete(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/project/deleteProjectMember/${projectID}/${projectMemberToRemove.userId}`,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                setIsRemoveProjectMemberModalOpen(false);
+                setProjectMemberToRemove(null);
+                fetchProjectDetails();
+                fetchTeams();
+            } else {
+                setRemoveProjectMemberError(res.data.message || "Failed to remove member.");
+            }
+        } catch (err: any) {
+            setRemoveProjectMemberError(err.response?.data?.message || "Failed to remove project member.");
+        } finally {
+            setRemoveProjectMemberLoading(false);
         }
     };
 
@@ -669,7 +736,7 @@ export default function ProjectDetailsPage({
                             project.projectMembers.map((member) => (
                                 <div key={member.id} className="flex items-center justify-between p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-primary-light/10 text-primary font-medium text-xs border border-primary-light/20 flex items-center justify-center">
+                                        <div className="w-8 h-8 rounded-full bg-primary-light/10 text-primary font-medium text-xs border border-primary-light/20 flex items-center justify-center shrink-0">
                                             {member.user?.name?.charAt(0).toUpperCase() || "?"}
                                         </div>
                                         <div>
@@ -677,12 +744,46 @@ export default function ProjectDetailsPage({
                                             <p className="text-xs text-gray-500 dark:text-gray-400">{member.user?.email}</p>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                            {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-[#3C3489]" />}
-                                            {member.role}
-                                        </span>
-                                        <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 capitalize">{member.position}</p>
+                                    
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                                                {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-[#3C3489]" />}
+                                                {member.role}
+                                            </span>
+                                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 capitalize">{member.position}</p>
+                                        </div>
+
+                                        {canEdit && member.user?.email !== user?.email && (
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedProjectMemberForEdit(member);
+                                                        setEditProjectMemberRole(member.role || "member");
+                                                        setEditProjectMemberPosition(member.position || "");
+                                                        setEditProjectMemberError(null);
+                                                        setIsEditProjectMemberModalOpen(true);
+                                                    }}
+                                                    className="p-1 text-gray-400 hover:text-[#3C3489] hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors cursor-pointer"
+                                                    title="Edit Member Role & Position"
+                                                >
+                                                    <Shield className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setProjectMemberToRemove(member);
+                                                        setRemoveProjectMemberError(null);
+                                                        setIsRemoveProjectMemberModalOpen(true);
+                                                    }}
+                                                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-colors cursor-pointer"
+                                                    title="Remove Member from Project"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))
@@ -1047,6 +1148,194 @@ export default function ProjectDetailsPage({
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Project Member Modal */}
+            {isEditProjectMemberModalOpen && selectedProjectMemberForEdit && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+                    <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
+                            <h3 className="text-xl font-medium text-[#3C3489] flex items-center gap-2">
+                                <Shield className="w-5 h-5" />
+                                Edit Project Member
+                            </h3>
+                            <button 
+                                onClick={() => {
+                                    setIsEditProjectMemberModalOpen(false);
+                                    setSelectedProjectMemberForEdit(null);
+                                }}
+                                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                            >
+                                <X className="w-5 h-5 text-gray-400" />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6 space-y-4">
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-semibold border border-primary-light/20">
+                                    {selectedProjectMemberForEdit.user?.name?.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {selectedProjectMemberForEdit.user?.name}
+                                    </h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        {selectedProjectMemberForEdit.user?.email}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Position / Title
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Lead Developer, QA Lead"
+                                    value={editProjectMemberPosition}
+                                    onChange={(e) => setEditProjectMemberPosition(e.target.value)}
+                                    className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Project Role
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {["member", "admin", "viewer", "tester"].map((role) => (
+                                        <button
+                                            key={role}
+                                            type="button"
+                                            onClick={() => setEditProjectMemberRole(role)}
+                                            className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
+                                                editProjectMemberRole === role
+                                                    ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
+                                                    : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
+                                            }`}
+                                        >
+                                            {role}
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+                                    {editProjectMemberRole === "admin" && "Project Admins can create tasks, assign roles, and manage members."}
+                                    {editProjectMemberRole === "member" && "Members can participate fully and receive task assignments."}
+                                    {editProjectMemberRole === "viewer" && "Viewers have read-only access to this project."}
+                                    {editProjectMemberRole === "tester" && "Testers can manage submission statuses and logs."}
+                                </p>
+                            </div>
+
+                            {editProjectMemberError && (
+                                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
+                                    <AlertCircle className="w-4 h-4 shrink-0" />
+                                    {editProjectMemberError}
+                                </div>
+                            )}
+
+                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsEditProjectMemberModalOpen(false);
+                                        setSelectedProjectMemberForEdit(null);
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleUpdateProjectMember}
+                                    disabled={editProjectMemberLoading}
+                                    className="bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                                >
+                                    {editProjectMemberLoading ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        "Save Changes"
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Remove Project Member Confirmation Modal */}
+            {isRemoveProjectMemberModalOpen && projectMemberToRemove && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+                    <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
+                            <h3 className="text-xl font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
+                                <UserMinus className="w-5 h-5" />
+                                Remove from Project
+                            </h3>
+                            <button 
+                                onClick={() => {
+                                    setIsRemoveProjectMemberModalOpen(false);
+                                    setProjectMemberToRemove(null);
+                                }}
+                                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                            >
+                                <X className="w-5 h-5 text-gray-400" />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6 space-y-4">
+                            <p className="text-sm text-gray-700 dark:text-gray-300">
+                                Are you sure you want to remove <strong>{projectMemberToRemove.user?.name}</strong> (<em>{projectMemberToRemove.user?.email}</em>) from this project?
+                            </p>
+
+                            <div className="flex items-start gap-3 text-red-650 dark:text-red-400 text-xs bg-red-50 dark:bg-red-955/20 p-3.5 rounded-lg border border-red-100 dark:border-red-900/30">
+                                <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-red-500" />
+                                <span>
+                                    This action is permanent. The user will be automatically removed from all sub-teams and task assignments within this project.
+                                </span>
+                            </div>
+
+                            {removeProjectMemberError && (
+                                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
+                                    <AlertCircle className="w-4 h-4 shrink-0" />
+                                    {removeProjectMemberError}
+                                </div>
+                            )}
+
+                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsRemoveProjectMemberModalOpen(false);
+                                        setProjectMemberToRemove(null);
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleRemoveProjectMember}
+                                    disabled={removeProjectMemberLoading}
+                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                                >
+                                    {removeProjectMemberLoading ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Removing...
+                                        </>
+                                    ) : (
+                                        "Remove Member"
+                                    )}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

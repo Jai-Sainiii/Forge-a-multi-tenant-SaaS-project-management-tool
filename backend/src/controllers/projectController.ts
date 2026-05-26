@@ -363,3 +363,182 @@ export const addProjectMember = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateProjectMember = async (req: Request, res: Response) => {
+  try {
+    const projectID = Number(req.params.projectID);
+    const targetUserId = Number(req.params.userId);
+    const user = req.body.user;
+    const { role, position } = req.body;
+
+    if (isNaN(projectID) || isNaN(targetUserId)) {
+      return res.status(400).json({ message: "Invalid project ID or user ID" });
+    }
+
+    if (targetUserId === user.id) {
+      return res.status(400).json({ message: "You cannot update your own project membership." });
+    }
+
+    const project = await prisma.projects.findUnique({
+      where: { id: projectID },
+      include: { workspace: true }
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Verify caller permissions (workspace admin/owner OR project admin)
+    const workspaceMember = await prisma.member.findFirst({
+      where: {
+        workspaceId: project.workspaceId,
+        userId: user.id,
+        role: { in: ["admin", "owner"] },
+        isActive: true,
+      },
+    });
+
+    const projectMember = await prisma.projectMember.findFirst({
+      where: {
+        projectId: project.id,
+        userId: user.id,
+        role: "admin",
+      },
+    });
+
+    const isWorkspaceOwner = project.workspace.userId === user.id;
+
+    if (!workspaceMember && !projectMember && !isWorkspaceOwner) {
+      return res.status(403).json({ message: "Unauthorized. Only project admins or workspace admins/owners can update project members." });
+    }
+
+    const targetProjectMember = await prisma.projectMember.findFirst({
+      where: {
+        projectId: projectID,
+        userId: targetUserId
+      }
+    });
+
+    if (!targetProjectMember) {
+      return res.status(404).json({ message: "Project member not found" });
+    }
+
+    const updatedMember = await prisma.projectMember.update({
+      where: { id: targetProjectMember.id },
+      data: {
+        role: role !== undefined ? role : targetProjectMember.role,
+        position: position !== undefined ? position : targetProjectMember.position,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          }
+        }
+      }
+    });
+
+    await redis.del(`workspace:${project.workspaceId} user:${targetUserId}`);
+    await redis.del(`workspace:${project.workspaceId}`);
+
+    return res.status(200).json({ success: true, member: updatedMember });
+  } catch (error) {
+    console.error("Update project member error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteProjectMember = async (req: Request, res: Response) => {
+  try {
+    const projectID = Number(req.params.projectID);
+    const targetUserId = Number(req.params.userId);
+    const user = req.body.user;
+
+    if (isNaN(projectID) || isNaN(targetUserId)) {
+      return res.status(400).json({ message: "Invalid project ID or user ID" });
+    }
+
+    if (targetUserId === user.id) {
+      return res.status(400).json({ message: "You cannot remove yourself from the project." });
+    }
+
+    const project = await prisma.projects.findUnique({
+      where: { id: projectID },
+      include: { workspace: true }
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    
+    const workspaceMember = await prisma.member.findFirst({
+      where: {
+        workspaceId: project.workspaceId,
+        userId: user.id,
+        role: { in: ["admin", "owner"] },
+        isActive: true,
+      },
+    });
+
+    const projectMember = await prisma.projectMember.findFirst({
+      where: {
+        projectId: project.id,
+        userId: user.id,
+        role: "admin",
+      },
+    });
+
+    const isWorkspaceOwner = project.workspace.userId === user.id;
+
+    if (!workspaceMember && !projectMember && !isWorkspaceOwner) {
+      return res.status(403).json({ message: "Unauthorized. Only project admins or workspace admins/owners can remove members from this project." });
+    }
+
+    const targetProjectMember = await prisma.projectMember.findFirst({
+      where: {
+        projectId: projectID,
+        userId: targetUserId
+      }
+    });
+
+    if (!targetProjectMember) {
+      return res.status(404).json({ message: "Project member not found" });
+    }
+
+    
+    await prisma.taskMember.deleteMany({
+      where: {
+        userId: targetUserId,
+        task: {
+          projectId: projectID
+        }
+      }
+    });
+
+    
+    await prisma.teamMember.deleteMany({
+      where: {
+        userId: targetUserId,
+        team: {
+          projectId: projectID
+        }
+      }
+    });
+
+   
+    await prisma.projectMember.delete({
+      where: { id: targetProjectMember.id }
+    });
+
+    await redis.del(`workspace:${project.workspaceId} user:${targetUserId}`);
+    await redis.del(`workspace:${project.workspaceId}`);
+
+    return res.status(200).json({ success: true, message: "Member removed successfully from project" });
+  } catch (error) {
+    console.error("Delete project member error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

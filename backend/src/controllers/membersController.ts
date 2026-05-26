@@ -104,3 +104,105 @@ export const updateMemberRole = async (req: Request, res: Response) => {
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
+
+export const removeMember = async (req: Request, res: Response) => {
+    try {
+        const user = req.body.user;
+        const workspaceId = Number(req.params.workspaceID || req.params.workspaceId);
+        const targetUserId = Number(req.params.userId);
+
+        if (isNaN(workspaceId) || isNaN(targetUserId)) {
+            return res.status(400).json({ success: false, message: "Invalid workspace ID or user ID" });
+        }
+
+        if (targetUserId === user.id) {
+            return res.status(400).json({ success: false, message: "Owners cannot remove themselves from the workspace." });
+        }
+
+        const workspace = await prisma.workspace.findUnique({
+            where: { id: workspaceId }
+        });
+
+        if (!workspace) {
+            return res.status(404).json({ success: false, message: "Workspace not found" });
+        }
+
+        const callerMember = await prisma.member.findFirst({
+            where: {
+                workspaceId: workspaceId,
+                userId: user.id,
+                isActive: true
+            }
+        });
+
+        const isWorkspaceOwner = workspace.userId === user.id;
+
+        if (!isWorkspaceOwner && (!callerMember || callerMember.role !== "owner")) {
+            return res.status(403).json({ 
+                success: false, 
+                message: "Forbidden: Only workspace owners can remove members." 
+            });
+        }
+
+        const targetMember = await prisma.member.findFirst({
+            where: {
+                workspaceId: workspaceId,
+                userId: targetUserId,
+                isActive: true
+            }
+        });
+
+        if (!targetMember) {
+            return res.status(404).json({ success: false, message: "Target member not found in this workspace" });
+        }
+
+    
+        await prisma.projectMember.deleteMany({
+            where: {
+                userId: targetUserId,
+                project: {
+                    workspaceId: workspaceId
+                }
+            }
+        });
+
+       
+        await prisma.taskMember.deleteMany({
+            where: {
+                userId: targetUserId,
+                task: {
+                    workspaceId: workspaceId
+                }
+            }
+        });
+
+        
+        await prisma.teamMember.deleteMany({
+            where: {
+                userId: targetUserId,
+                team: {
+                    project: {
+                        workspaceId: workspaceId
+                    }
+                }
+            }
+        });
+
+       
+        await prisma.member.delete({
+            where: {
+                id: targetMember.id
+            }
+        });
+
+        
+        await redis.del(`workspace:${workspaceId} user:${targetUserId}`);
+        await redis.del(`workspace:${workspaceId}`);
+
+        return res.status(200).json({ success: true, message: "Member removed successfully from workspace" });
+
+    } catch (error) {
+        console.error("Error in removeMember:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+}
