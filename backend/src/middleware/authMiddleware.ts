@@ -32,7 +32,7 @@ export const signup = async (req: Request, res: Response) => {
         const token: string = jwt.sign(
             { id: newUser.id, email: newUser.email }, 
             JWT_SECRET, 
-            { expiresIn: "1h" }
+            { expiresIn: "8h" }
         );
 
         res.cookie("token", token, {
@@ -84,7 +84,7 @@ export const login = async (req: Request, res: Response) => {
         const token: string = jwt.sign(
             { id: user.id, email: user.email },
             JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "8h" }
         );
 
         res.cookie("token", token, {
@@ -275,7 +275,7 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
         const token: string = jwt.sign(
             { id: user.id, email: user.email },
             JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "8h" }
         );
 
         res.cookie("token", token, {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Plus, UserPlus } from "lucide-react";
+import { Bell, Plus, UserPlus, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/authContext/AuthContext";
 import { useWorkspaceModal } from "@/context/WorkspaceModalContext";
@@ -24,9 +24,10 @@ interface Workspace{
 interface TopbarProps{
   workspaces: Workspace[];
   getworkspaces: () => Promise<void>;
+  onMenuClick?: () => void;
 }
 
-export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
+export default function TopBar({ workspaces, getworkspaces, onMenuClick }: TopbarProps) {
   const { user } = useAuth()!;
   const pathname = usePathname();
   const homepage = pathname === "/workspace/all";
@@ -62,32 +63,44 @@ export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
           justifyContent: "space-between",
         }}
       >
-        {/* Left: title + breadcrumb */}
-        <div className="flex flex-col">
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 500,
-              color: "#1A1918",
-              lineHeight: 1.3,
-            }}
+        {/* Left: Hamburger + title */}
+        <div className="flex items-center gap-2 min-w-0">
+          <button
+            onClick={onMenuClick}
+            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer shrink-0"
+            style={{ border: "1px solid #E8E6E0" }}
           >
-            Welcome {user?.name || "User"}
-          </span>
-          <span
-            style={{
-              fontSize: 12,
-              color: "#9A9890",
-              lineHeight: 1.4,
-              marginTop: 1,
-            }}
-          >
-            {user?.email || "user@email.com"}
-          </span>
+            <Menu size={16} strokeWidth={2} style={{ color: "#6B6860" }} />
+          </button>
+
+          <div className="flex flex-col min-w-0">
+            <span
+              style={{
+                fontSize: 15,
+                fontWeight: 500,
+                color: "#1A1918",
+                lineHeight: 1.3,
+              }}
+              className="truncate"
+            >
+              Welcome {user?.name || "User"}
+            </span>
+            <span
+              style={{
+                fontSize: 12,
+                color: "#9A9890",
+                lineHeight: 1.4,
+                marginTop: 1,
+              }}
+              className="hidden sm:block truncate"
+            >
+              {user?.email || "user@email.com"}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* New project filled purple button */}
+          {/* New workspace filled purple button */}
           <button
             onClick={() => {openModal(); getworkspaces();}}
             className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 transition-colors hover:bg-[#5a4ed1] cursor-pointer"
@@ -99,7 +112,7 @@ export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
             }}
           >
             <Plus size={13} strokeWidth={2.2} />
-            New Workspace
+            <span className="hidden sm:inline">New Workspace</span>
           </button>
 
           {/* Notification bell */}
@@ -141,28 +154,40 @@ export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
         justifyContent: "space-between",
       }}
     >
-      {/* Left: title + breadcrumb */}
-      <div className="flex flex-col">
-        <span
-          style={{
-            fontSize: 15,
-            fontWeight: 500,
-            color: "#1A1918",
-            lineHeight: 1.3,
-          }}
+      {/* Left: Hamburger + title */}
+      <div className="flex items-center gap-2 min-w-0">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer shrink-0"
+          style={{ border: "1px solid #E8E6E0" }}
         >
-          {meta.title}
-        </span>
-        <span
-          style={{
-            fontSize: 12,
-            color: "#9A9890",
-            lineHeight: 1.4,
-            marginTop: 1,
-          }}
-        >
-          {meta.crumb}
-        </span>
+          <Menu size={16} strokeWidth={2} style={{ color: "#6B6860" }} />
+        </button>
+
+        <div className="flex flex-col min-w-0">
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 500,
+              color: "#1A1918",
+              lineHeight: 1.3,
+            }}
+            className="truncate"
+          >
+            {meta.title}
+          </span>
+          <span
+            style={{
+              fontSize: 12,
+              color: "#9A9890",
+              lineHeight: 1.4,
+              marginTop: 1,
+            }}
+            className="hidden sm:block truncate"
+          >
+            {meta.crumb}
+          </span>
+        </div>
       </div>
 
       {/* Right: Invite, New project, bell */}
@@ -177,7 +202,7 @@ export default function TopBar({ workspaces, getworkspaces }: TopbarProps) {
           }}
         >
           <UserPlus size={13} strokeWidth={1.8} />
-          Invite
+          <span className="hidden sm:inline">Invite</span>
         </button>
 
         {/* Notification bell */}

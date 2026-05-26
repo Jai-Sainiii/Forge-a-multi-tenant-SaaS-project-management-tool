@@ -18,6 +18,7 @@ export default function WorkspaceLayout({
   const { user } = useAuth()!;
   const path = usePathname();
   const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const router = useRouter();
 
   const activeHomepage = () => {
@@ -49,6 +50,11 @@ export default function WorkspaceLayout({
     };
   }, []);
 
+  // Automatically close sidebar drawer when path/navigation changes
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [path]);
+
   return (
     <WorkspaceModalProvider>
       <div
@@ -58,15 +64,40 @@ export default function WorkspaceLayout({
           fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
         }}
       >
-        <HomeStrip workspaces={workspaces} />
+        {/* Desktop Sidebars (hidden on mobile) */}
+        <div className="hidden md:flex shrink-0 h-full">
+          <HomeStrip workspaces={workspaces} />
+          {activeHomepage()}
+        </div>
 
-        {activeHomepage()}
+        {/* Mobile Drawer Backdrop overlay */}
+        {isMobileOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden transition-opacity duration-300"
+            onClick={() => setIsMobileOpen(false)}
+          />
+        )}
+
+        {/* Mobile Drawer (sliding panel) */}
+        <div
+          className="fixed inset-y-0 left-0 z-50 flex h-full transition-transform duration-300 md:hidden shadow-2xl"
+          style={{
+            transform: isMobileOpen ? "translateX(0)" : "translateX(-100%)",
+          }}
+        >
+          <HomeStrip workspaces={workspaces} />
+          {activeHomepage()}
+        </div>
 
         <div
           className="flex flex-col flex-1 overflow-hidden"
           style={{ background: "#F7F6F3" }}
         >
-          <TopBar workspaces={workspaces} getworkspaces={getWorkspaces} />
+          <TopBar 
+            workspaces={workspaces} 
+            getworkspaces={getWorkspaces} 
+            onMenuClick={() => setIsMobileOpen(true)}
+          />
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>

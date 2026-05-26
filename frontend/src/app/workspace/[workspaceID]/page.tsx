@@ -21,8 +21,8 @@ function StatCard({ label, value, sub, subColor }: StatCardProps) {
         border: "1px solid #E8E6E0",
         borderRadius: 10,
         padding: "16px 20px",
-        flex: 1,
-        minWidth: 0,
+        flex: "1 1 140px",
+        minWidth: 140,
       }}
     >
       <p style={{ fontSize: 11, fontWeight: 500, color: "#9A9890", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 6 }}>
@@ -168,7 +168,7 @@ export default function WorkspaceDashboard({ params }: { params: Promise<{ works
   }, [workspaceID]);
 
   return (
-    <div style={{ padding: "28px 32px", maxWidth: 1100 }}>
+    <div style={{ maxWidth: 1100 }} className="p-4 sm:p-6 md:p-8">
       {/* Greeting */}
       <h1
         style={{
@@ -191,7 +191,7 @@ export default function WorkspaceDashboard({ params }: { params: Promise<{ works
       </div>
 
       
-      <div className="grid grid-cols-1 gap-6" style={{ gridTemplateColumns: "1fr 1fr" }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         
         <div
