@@ -37,8 +37,8 @@ export const signup = async (req: Request, res: Response) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, 
-            sameSite: "strict",
+            secure: true, 
+            sameSite: "none",
             path: "/",
             maxAge: 24 * 60 * 60 * 1000,
         });
@@ -89,8 +89,8 @@ export const login = async (req: Request, res: Response) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             path: "/",
             maxAge: 24 * 60 * 60 * 1000,
         });
@@ -107,8 +107,8 @@ export const logout = async (req: Request, res: Response) => {
     try {
         res.clearCookie("token", {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             path: "/",
             maxAge: 0
         });
@@ -280,8 +280,8 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, 
-            sameSite: "strict",
+            secure: true, 
+            sameSite: "none",
             path: "/",
             maxAge: 24 * 60 * 60 * 1000,
         });
