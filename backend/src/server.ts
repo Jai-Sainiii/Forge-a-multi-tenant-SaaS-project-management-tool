@@ -12,6 +12,7 @@ import membersRoutes from "./routes/membersRoutes.js";
 import taskRoutes from "./routes/tasksRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
+import redis from "./config/redis/client.js";
 
 dotenv.config();
 const app = express();
@@ -37,6 +38,7 @@ app.use("/team", teamRoutes);
 app.use("/invite", inviteRoutes);
 
 prismaConnect();
+redis.on
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

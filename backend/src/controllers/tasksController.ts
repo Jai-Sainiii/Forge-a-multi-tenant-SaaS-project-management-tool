@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma.js";
+import redis from "../config/redis/client.js";
 
 export const getTasks = async (req: Request, res: Response) => {
     try {
@@ -340,6 +341,8 @@ export const updateTask = async(req:Request,res:Response)=>{
             }
         });
 
+        await redis.del(`workspace:${taskObj.workspaceId}`);
+
         return res.status(200).json({ success: true, task });
     } catch (error) {
         console.log(error);
@@ -402,6 +405,10 @@ export const deleteTask = async(req:Request,res:Response)=>{
                 id: taskID
             }
         })
+
+        await redis.del(`workspace:${taskObj.workspaceId}`);
+        await redis.del(`workspace:${taskObj.workspaceId} user:${user.id}`);
+
         return res.status(200).json({success:true,task})
     } catch (error) {
         console.log(error)
@@ -468,6 +475,10 @@ export const TaskSubmitToReview = async(req:Request,res:Response)=>{
                 submittedTextorLink
             }
         })
+
+        await redis.del(`workspace:${taskObj.workspaceId}`);
+        await redis.del(`workspace:${taskObj.workspaceId} user:${user.id}`);
+
         return res.status(200).json({success:true, task})
     } catch (error) {
         console.log(error)
@@ -534,6 +545,9 @@ export const updateTaskStatus = async(req:Request, res:Response)=>{
                 status
             }
         });
+
+        await redis.del(`workspace:${taskObj.workspaceId}`);
+        await redis.del(`workspace:${taskObj.workspaceId} user:${user.id}`);
 
         return res.status(200).json({ success: true, task });
     } catch (error) {

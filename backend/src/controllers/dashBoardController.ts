@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { type Request, type Response } from "express";
+import redis from "../config/redis/client.js";
 
 export const getAllWorkspaces = async (req: Request, res: Response) => {
     try {
@@ -8,7 +9,7 @@ export const getAllWorkspaces = async (req: Request, res: Response) => {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
         
-        // Workspaces where the user is an active member
+        
         const workspaces = await prisma.workspace.findMany({
             where: {
                 members: {
@@ -93,6 +94,11 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
         const { workspaceID } = req.params;
         const workspaceid = Number(workspaceID);
 
+        const cacheData = await redis.get(`workspace:${workspaceid} user:${user.id}`);
+        if(cacheData){
+            return res.json({ success: true, workspaceData: JSON.parse(cacheData)});
+        }
+
         if (isNaN(workspaceid)) {
             return res.status(400).json({ success: false, message: "Invalid workspace ID" });
         }
@@ -108,7 +114,7 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: "Workspace not found" });
         }
 
-        // Check if caller is active member of this workspace
+        
         const callerMember = workspace.members.find(m => m.userId === user.id && m.isActive);
         const isWorkspaceOwner = workspace.userId === user.id;
 
@@ -122,7 +128,6 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
         let tasks;
 
         if (isWorkspaceAdmin) {
-            // Workspace owners and admins get all projects and tasks
             projects = await prisma.projects.findMany({
                 where: { workspaceId: workspaceid },
             });
@@ -131,7 +136,7 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
                 where: { workspaceId: workspaceid },
             });
         } else {
-            // Regular members only see projects they belong to
+            
             projects = await prisma.projects.findMany({
                 where: {
                     workspaceId: workspaceid,
@@ -141,7 +146,7 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
                 },
             });
 
-            // Retrieve projects where user is project admin
+            
             const adminProjects = await prisma.projectMember.findMany({
                 where: {
                     userId: user.id,
@@ -151,7 +156,7 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
             });
             const adminProjectIds = adminProjects.map(ap => ap.projectId);
             
-            // Regular members only see tasks they are assigned to, or tasks in projects they admin
+            
             tasks = await prisma.task.findMany({
                 where: {
                     workspaceId: workspaceid,
@@ -163,7 +168,7 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
             });
         }
 
-        // Return members
+       
         const members = await prisma.member.findMany({
             where: { workspaceId: workspaceid, isActive: true },
             include: {
@@ -172,6 +177,8 @@ export const getSingleWorkspaceData = async (req: Request, res: Response) => {
                 }
             }
         });
+
+        redis.set(`workspace:${workspaceid} user:${user.id}`, JSON.stringify({ workspace, projects, tasks, members }), 'EX', 60 * 60 * 24 * 7);
         
         res.json({ success: true, workspaceData: { workspace, projects, tasks, members }});
     } catch (error) {

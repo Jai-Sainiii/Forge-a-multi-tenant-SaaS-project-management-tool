@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma.js";
+import redis from "../config/redis/client.js";
 
 export const createProject = async (req: Request, res: Response) => {
   try {
@@ -167,12 +168,12 @@ export const singleProject = async (req: Request, res: Response)=>{
     // Determine which tasks the user is authorized to view
     let tasks;
     if (isWorkspaceOwner || isWorkspaceAdmin || isProjectAdmin) {
-      // Owner/Workspace Admins/Project Admins see all tasks in this project
+    
       tasks = await prisma.task.findMany({
         where: { projectId: projectID }
       });
     } else {
-      // Regular project members only see tasks they are explicitly assigned to
+      
       tasks = await prisma.task.findMany({
         where: {
           projectId: projectID,
@@ -183,7 +184,6 @@ export const singleProject = async (req: Request, res: Response)=>{
       });
     }
 
-    // Attach tasks and remove raw workspace from response to keep it clean
     const { workspace, ...projectData } = project;
     const projectResult = {
       ...projectData,
@@ -254,6 +254,8 @@ export const updateProject = async (req: Request, res: Response) => {
         tasks: true,
       },
     });
+
+    await redis.del(`workspace:${project.workspaceId}`);
 
     return res.status(200).json({ success: true, project: updatedProject });
   } catch (error) {
@@ -351,6 +353,9 @@ export const addProjectMember = async (req: Request, res: Response) => {
         },
       },
     });
+
+    await redis.del(`workspace:${project.workspaceId} user:${userId}`);
+    await redis.del(`workspace:${project.workspaceId}`);
 
     return res.status(200).json({ success: true, member: newMember });
   } catch (error) {

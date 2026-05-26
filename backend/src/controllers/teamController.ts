@@ -1,3 +1,4 @@
+import redis from "../config/redis/client.js";
 import { prisma } from "../lib/prisma.js"
 import { type Request, type Response } from "express"
 
@@ -50,6 +51,10 @@ const createTeam = async (req: Request, res: Response) => {
                 teamName
             }
         });
+
+        await redis.del(`workspace:${project.workspaceId}`);
+        await redis.del(`workspace:${project.workspaceId} user:${user.id}`);
+
         res.status(200).json({ success: true, team });
     } catch (error: any) {
         console.error("Create team error:", error);
@@ -156,6 +161,10 @@ const updateTeam = async (req: Request, res: Response) => {
                 teamName
             }
         })
+
+        await redis.del(`workspace:${project.workspaceId}`);
+        await redis.del(`workspace:${project.workspaceId} user:${user.id}`);
+
         res.status(200).json({ success: true, team })
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message })
@@ -209,6 +218,10 @@ const deleteTeam = async (req: Request, res: Response) => {
                 projectId: projectID
             }
         })
+
+        await redis.del(`workspace:${project.workspaceId}`);
+        await redis.del(`workspace:${project.workspaceId} user:${user.id}`);
+
         res.status(200).json({ success: true, team })
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message })
@@ -296,6 +309,10 @@ const addTeamMember = async (req: Request, res: Response) => {
                 role: role
             }
         })
+
+        await redis.del(`workspace:${team.project.workspaceId}`);
+        await redis.del(`workspace:${team.project.workspaceId} user:${user.id}`);
+
         res.status(200).json({ success: true, message: "Added to team", user: newTeamMember })
     } catch (error: any) {
         console.error("Add team member error:", error);
@@ -444,6 +461,10 @@ const updateTeamMember = async (req: Request, res: Response) => {
                 role
             }
         })
+
+        await redis.del(`workspace:${teamMember.team.project.workspaceId}`);
+        await redis.del(`workspace:${teamMember.team.project.workspaceId} user:${user.id}`);
+
         res.status(200).json({ success: true, message: "Team member updated", updatedMember })
     } catch (error: any) {
         console.error("Update team member error:", error);
@@ -506,6 +527,10 @@ const deleteTeamMember = async (req: Request, res: Response) => {
         const deletedMember = await prisma.teamMember.delete({
             where: { id: memberID }
         })
+
+        await redis.del(`workspace:${teamMember.team.project.workspaceId}`);
+        await redis.del(`workspace:${teamMember.team.project.workspaceId} user:${user.id}`);
+
         res.status(200).json({ success: true, message: "Team member removed", deletedMember })
     } catch (error: any) {
         console.error("Delete team member error:", error);

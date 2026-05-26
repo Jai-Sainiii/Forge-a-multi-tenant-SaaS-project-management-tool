@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../lib/prisma.js"
+import redis from "../config/redis/client.js";
 
 
 export const getMembers = async (req: Request, res: Response) => {
@@ -45,7 +46,6 @@ export const updateMemberRole = async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, message: "Owner cannot be changed" });
         }
 
-        // Verify the workspace exists
         const workspace = await prisma.workspace.findUnique({
             where: { id: workspaceId }
         });
@@ -54,7 +54,6 @@ export const updateMemberRole = async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: "Workspace not found" });
         }
 
-        // Verify the caller exists and has 'owner' role in this workspace
         const callerMember = await prisma.member.findFirst({
             where: {
                 workspaceId: workspaceId,
@@ -72,7 +71,7 @@ export const updateMemberRole = async (req: Request, res: Response) => {
             });
         }
 
-        // Find target member to get their unique ID
+        
         const targetMember = await prisma.member.findFirst({
             where: {
                 workspaceId: workspaceId,
@@ -85,7 +84,7 @@ export const updateMemberRole = async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: "Target member not found in this workspace" });
         }
 
-        // Update target member's role using their unique primary key ID
+       
         const updateRole = await prisma.member.update({
             where: {
                 id: targetMember.id
@@ -94,6 +93,9 @@ export const updateMemberRole = async (req: Request, res: Response) => {
                 role: role
             }
         });
+
+        await redis.del(`workspace:${workspaceId} user:${updateUser}`);
+        await redis.del(`workspace:${workspaceId}`);
 
         return res.status(200).json({ success: true, message: "Member role updated successfully", updateRole });
 

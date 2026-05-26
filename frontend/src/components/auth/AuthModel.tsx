@@ -116,7 +116,10 @@ export default function AuthModel({
                     {activeTab === "login" ? (
                       <LoginForm onClose={onClose} />
                     ) : (
-                      <SignupForm onSwitchToLogin={() => setActiveTab("login")} />
+                      <SignupForm 
+                        onSwitchToLogin={() => setActiveTab("login")} 
+                        onClose={onClose}
+                      />
                     )}
                   </motion.div>
                 </AnimatePresence>

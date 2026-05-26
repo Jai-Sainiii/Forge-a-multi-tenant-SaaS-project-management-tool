@@ -1,3 +1,4 @@
+import redis from "../config/redis/client.js";
 import { prisma } from "../lib/prisma.js";
 import { type Request, type Response } from "express";
 
@@ -125,6 +126,9 @@ export const updateWorkSpace = async (req: Request, res: Response) => {
       data: updateData,
     });
 
+    await redis.del(`workspace:${workspaceID}`);
+    await redis.del(`workspace:${workspaceID} user:${user.id}`);
+
     res.json({ success: true, workspace: updatedWorkspace });
   } catch (error) {
     console.error("Update workspace error:", error);
@@ -165,6 +169,9 @@ export const deleteWorkSpace = async (req: Request, res: Response) => {
     await prisma.workspace.delete({
       where: { id: workspaceID },
     });
+
+    await redis.del(`workspace:${workspaceID}`);
+    await redis.del(`workspace:${workspaceID} user:${user.id}`);
 
     res.json({ success: true, message: "Workspace deleted successfully" });
   } catch (error) {
@@ -218,6 +225,9 @@ export const updateWorkspaceAvatarColor = async(req: Request, res: Response) => 
         color: updatedColor
       },
     });
+
+    await redis.del(`workspace:${workspaceID}`);
+    await redis.del(`workspace:${workspaceID} user:${user.id}`);
 
     res.json({ success: true, workspace: updatedWorkspace });
   } catch (error) {

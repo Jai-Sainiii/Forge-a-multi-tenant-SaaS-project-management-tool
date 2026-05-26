@@ -20,9 +20,10 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
     }
     setError(null);
     setIsLoading(true);
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000";
     try {
       const res = await axios.post(
-        "http://localhost:5000/auth/login",
+        `${BACKEND_URL}/auth/login`,
         { email: String(email), password: String(password) },
         { withCredentials: true }
       );
@@ -40,7 +41,44 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
       setIsLoading(false);
     }
   };
+  const handleGoogleLogin = () => {
+    setError(null);
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000";
+    const width = 500;
+    const height = 600;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
 
+    const popup = window.open(
+      `${BACKEND_URL}/auth/google`,
+      "google-oauth",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.origin !== BACKEND_URL) return;
+
+      if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
+        try {
+          const meRes = await axios.post(
+            `${BACKEND_URL}/auth/me`,
+            {},
+            { withCredentials: true }
+          );
+          if (auth) {
+            auth.setUser(meRes.data.user);
+          }
+          onClose();
+        } catch (err) {
+          setError("Failed to fetch user profile after Google authentication.");
+        } finally {
+          window.removeEventListener("message", handleMessage);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+  };
   return (
     <div className="flex flex-col gap-0">
       {/* Heading */}
@@ -118,7 +156,10 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Google SSO */}
-      <button className="w-full h-11 flex items-center justify-center gap-2.5 bg-white dark:bg-slate-900 border border-[#c8c4d3] dark:border-slate-600 hover:bg-[#f0edf0] dark:hover:bg-slate-800 text-[#1c1b1d] dark:text-white text-sm font-medium rounded-[4px] transition-colors cursor-pointer">
+      <button
+        onClick={handleGoogleLogin}
+        className="w-full h-11 flex items-center justify-center gap-2.5 bg-white dark:bg-slate-900 border border-[#c8c4d3] dark:border-slate-600 hover:bg-[#f0edf0] dark:hover:bg-slate-800 text-[#1c1b1d] dark:text-white text-sm font-medium rounded-[4px] transition-colors cursor-pointer"
+      >
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

@@ -195,7 +195,7 @@ export type UserGroupByOutputType = {
   id: number
   email: string
   name: string
-  password: string
+  password: string | null
   googleId: string | null
   createdAt: Date
   updatedAt: Date
@@ -228,7 +228,7 @@ export type UserWhereInput = {
   id?: Prisma.IntFilter<"User"> | number
   email?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
-  password?: Prisma.StringFilter<"User"> | string
+  password?: Prisma.StringNullableFilter<"User"> | string | null
   googleId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -243,7 +243,7 @@ export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  password?: Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -262,7 +262,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   name?: Prisma.StringFilter<"User"> | string
-  password?: Prisma.StringFilter<"User"> | string
+  password?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -276,7 +276,7 @@ export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  password?: Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -294,7 +294,7 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
-  password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -303,7 +303,7 @@ export type UserScalarWhereWithAggregatesInput = {
 export type UserCreateInput = {
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -318,7 +318,7 @@ export type UserUncheckedCreateInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -332,7 +332,7 @@ export type UserUncheckedCreateInput = {
 export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -347,7 +347,7 @@ export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -362,7 +362,7 @@ export type UserCreateManyInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -371,7 +371,7 @@ export type UserCreateManyInput = {
 export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,7 +381,7 @@ export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -523,7 +523,7 @@ export type UserUpdateOneRequiredWithoutTeamMemberNestedInput = {
 export type UserCreateWithoutWorkspacesInput = {
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -537,7 +537,7 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -566,7 +566,7 @@ export type UserUpdateToOneWithWhereWithoutWorkspacesInput = {
 export type UserUpdateWithoutWorkspacesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -580,7 +580,7 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -593,7 +593,7 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
 export type UserCreateWithoutMemberInfoInput = {
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -607,7 +607,7 @@ export type UserUncheckedCreateWithoutMemberInfoInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -636,7 +636,7 @@ export type UserUpdateToOneWithWhereWithoutMemberInfoInput = {
 export type UserUpdateWithoutMemberInfoInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -650,7 +650,7 @@ export type UserUncheckedUpdateWithoutMemberInfoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -663,7 +663,7 @@ export type UserUncheckedUpdateWithoutMemberInfoInput = {
 export type UserCreateWithoutProjectInfoInput = {
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -677,7 +677,7 @@ export type UserUncheckedCreateWithoutProjectInfoInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -706,7 +706,7 @@ export type UserUpdateToOneWithWhereWithoutProjectInfoInput = {
 export type UserUpdateWithoutProjectInfoInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -720,7 +720,7 @@ export type UserUncheckedUpdateWithoutProjectInfoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -733,7 +733,7 @@ export type UserUncheckedUpdateWithoutProjectInfoInput = {
 export type UserCreateWithoutTaskInfoInput = {
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -747,7 +747,7 @@ export type UserUncheckedCreateWithoutTaskInfoInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -776,7 +776,7 @@ export type UserUpdateToOneWithWhereWithoutTaskInfoInput = {
 export type UserUpdateWithoutTaskInfoInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -790,7 +790,7 @@ export type UserUncheckedUpdateWithoutTaskInfoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -803,7 +803,7 @@ export type UserUncheckedUpdateWithoutTaskInfoInput = {
 export type UserCreateWithoutTeamMemberInput = {
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -817,7 +817,7 @@ export type UserUncheckedCreateWithoutTeamMemberInput = {
   id?: number
   email: string
   name: string
-  password: string
+  password?: string | null
   googleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -846,7 +846,7 @@ export type UserUpdateToOneWithWhereWithoutTeamMemberInput = {
 export type UserUpdateWithoutTeamMemberInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -860,7 +860,7 @@ export type UserUncheckedUpdateWithoutTeamMemberInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1008,7 +1008,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: number
     email: string
     name: string
-    password: string
+    password: string | null
     googleId: string | null
     createdAt: Date
     updatedAt: Date
