@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 interface User {
+  id: number;
   name: string;
   email: string;
 }

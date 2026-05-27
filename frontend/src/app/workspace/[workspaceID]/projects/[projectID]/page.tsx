@@ -1,5 +1,5 @@
 "use client";
-import { use, useState, useEffect, useCallback } from "react";
+import { use, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { 
     AlertCircle, 
     ArrowLeft, 
@@ -24,14 +24,20 @@ import {
     Mail,
     UserMinus
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CreateTaskModal from "@/components/forms/CreateTask";
 import { useAuth } from "@/authContext/AuthContext";
 
-interface Task {
+import EditProjectModal from "@/components/forms/EditProjectModal";
+import AddProjectMemberModal from "@/components/forms/AddProjectMemberModal";
+import AddTeamMemberModal from "@/components/forms/AddTeamMemberModal";
+import CreateTeamModal from "@/components/forms/CreateTeamModal";
+import EditProjectMemberModal from "@/components/forms/EditProjectMemberModal";
+import RemoveProjectMemberModal from "@/components/forms/RemoveProjectMemberModal";
+
+export interface Task {
     id: number;
     title: string;
     description: string;
@@ -40,7 +46,7 @@ interface Task {
     createdAt: string;
 }
 
-interface Project {
+export interface Project {
     id: number;
     name: string;
     field: string;
@@ -62,137 +68,210 @@ interface Project {
     createdAt: string;
 }
 
-interface EditProjectModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    project: Project;
-    onSuccess: () => void;
-}
+// --- Memoized sub-components to prevent re-renders ---
 
-function EditProjectModal({ isOpen, onClose, project, onSuccess }: EditProjectModalProps) {
-    const [name, setName] = useState(project.name);
-    const [field, setField] = useState(project.field);
-    const [description, setDescription] = useState(project.description);
-    const [status, setStatus] = useState(project.status || "active");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        setName(project.name);
-        setField(project.field);
-        setDescription(project.description);
-        setStatus(project.status || "active");
-    }, [project]);
-
-    if (!isOpen) return null;
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        try {
-            await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/project/updateProject/${project.id}`, {
-                name,
-                field,
-                description,
-                status
-            }, { withCredentials: true });
-            onSuccess();
-            onClose();
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to update project details");
-        } finally {
-            setLoading(false);
-        }
-    };
+const PriorityBadge = memo(function PriorityBadge({ priority }: { priority: string }) {
+    const p = priority?.toLowerCase();
+    let icon;
+    if (p === 'high') icon = <ArrowUp className="w-4 h-4 text-red-500" />;
+    else if (p === 'low') icon = <ArrowDown className="w-4 h-4 text-blue-500" />;
+    else icon = <Minus className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-white">Edit Project Details</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide capitalize border border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-slate-950/40 text-slate-700 dark:text-slate-300">
+            {icon}
+            {priority || "Medium"}
+        </div>
+    );
+});
+
+const StatusBadge = memo(function StatusBadge({ status }: { status: string }) {
+    const s = status?.toLowerCase();
+    const isCompleted = s === 'completed' || s === 'done';
+    const isActive = s === 'in progress' || s === 'active';
+    const isReview = s === 'review';
+
+    const cls = isCompleted
+        ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20'
+        : isActive
+        ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+        : isReview
+        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+        : 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/10';
+
+    return (
+        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide capitalize ${cls}`}>
+            {isCompleted ? (
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+            ) : (
+                <Circle className="w-3.5 h-3.5 mr-1.5 fill-current opacity-55" />
+            )}
+            {status || "Todo"}
+        </span>
+    );
+});
+
+const TaskRow = memo(function TaskRow({ task, workspaceID }: { task: Task; workspaceID: string }) {
+    const router = useRouter();
+    return (
+        <tr 
+            onClick={() => router.push(`/workspace/${workspaceID}/tasks/${task.id}`)} 
+            className="group hover:bg-slate-50/50 dark:hover:bg-slate-950/30 transition-colors duration-150 cursor-pointer"
+        >
+            <td className="px-6 py-4">
+                <div className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#6C5CE7] transition-colors mb-0.5">
+                    {task.title}
                 </div>
-                
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {error && (
-                        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800 animate-pulse">
-                            {error}
-                        </div>
-                    )}
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Name</label>
-                        <input 
-                            type="text" 
-                            required
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
-                        />
-                    </div>
+                <div className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-md">
+                    {task.description}
+                </div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <PriorityBadge priority={task.priority} />
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <StatusBadge status={task.status} />
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
+                    <MoreHorizontal className="w-4 h-4" />
+                </button>
+            </td>
+        </tr>
+    );
+});
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Field / Category</label>
-                        <input 
-                            type="text" 
-                            required
-                            value={field}
-                            onChange={e => setField(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
-                        />
-                    </div>
+const MemberRow = memo(function MemberRow({ 
+    member, 
+    canEdit, 
+    currentUserEmail,
+    onEdit,
+    onRemove
+}: { 
+    member: any; 
+    canEdit: boolean; 
+    currentUserEmail?: string;
+    onEdit: (m: any) => void;
+    onRemove: (m: any) => void;
+}) {
+    return (
+        <div className="group flex items-center justify-between p-4.5 hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-colors duration-150">
+            <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#6C5CE7] to-[#8b7ff0] text-white font-bold text-sm flex items-center justify-center shadow-md shadow-[#6C5CE7]/15 shrink-0 select-none">
+                    {member.user?.name?.charAt(0).toUpperCase() || "?"}
+                </div>
+                <div>
+                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{member.user?.name || "Unknown User"}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{member.user?.email}</p>
+                </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+                <div className="text-right">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border border-slate-200/10">
+                        {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-[#6C5CE7]" />}
+                        {member.role}
+                    </span>
+                    <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 mt-1 capitalize">{member.position}</p>
+                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                        <select
-                            value={status}
-                            onChange={e => setStatus(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors"
+                {canEdit && member.user?.email !== currentUserEmail && (
+                    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onEdit(member); }}
+                            className="p-1.5 text-slate-400 hover:text-[#6C5CE7] hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                            title="Edit Member Role & Position"
                         >
-                            <option value="planning">Planning</option>
-                            <option value="active">Active</option>
-                            <option value="review">Review</option>
-                            <option value="suspended">Suspended</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                        <textarea 
-                            required
-                            value={description}
-                            onChange={e => setDescription(e.target.value)}
-                            rows={3}
-                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] focus:border-transparent transition-colors resize-none"
-                        />
-                    </div>
-
-                    <div className="pt-4 flex justify-end gap-3">
-                        <button 
-                            type="button" 
-                            onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                        >
-                            Cancel
+                            <Shield className="w-3.5 h-3.5" />
                         </button>
-                        <button 
-                            type="submit" 
-                            disabled={loading}
-                            className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onRemove(member); }}
+                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                            title="Remove Member from Project"
                         >
-                            {loading ? "Saving..." : "Save Changes"}
+                            <X className="w-3.5 h-3.5" />
                         </button>
                     </div>
-                </form>
+                )}
             </div>
         </div>
     );
-}
+});
+
+const TeamAccordion = memo(function TeamAccordion({ 
+    team, 
+    isExpanded, 
+    onToggle, 
+    canEdit,
+    onAddMember 
+}: { 
+    team: any; 
+    isExpanded: boolean; 
+    onToggle: () => void; 
+    canEdit: boolean;
+    onAddMember: (team: any) => void;
+}) {
+    return (
+        <div className="border-b border-black/5 dark:border-white/5 last:border-b-0">
+            <div 
+                className="p-4.5 cursor-pointer flex justify-between items-center hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-colors duration-150"
+                onClick={onToggle}
+            >
+                <div className="space-y-0.5">
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{team.teamName}</h4>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{team.teamMembers?.length || 0} Members</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    {canEdit && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onAddMember(team); }}
+                            className="p-1.5 text-[#6C5CE7] hover:bg-[#6C5CE7]/15 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-[#6C5CE7]/10"
+                            title="Add Member to Team"
+                        >
+                            <UserPlus className="w-4 h-4" />
+                        </button>
+                    )}
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180 text-[#6C5CE7]" : ""}`} />
+                </div>
+            </div>
+            
+            {/* CSS-only accordion — no framer-motion */}
+            <div 
+                className="overflow-hidden transition-[max-height,opacity] duration-200 ease-in-out"
+                style={{ 
+                    maxHeight: isExpanded ? '500px' : '0px',
+                    opacity: isExpanded ? 1 : 0,
+                }}
+            >
+                <div className="bg-slate-50/30 dark:bg-slate-950/10 border-t border-black/5 dark:border-white/5 p-3 space-y-2">
+                    {team.teamMembers && team.teamMembers.length > 0 ? (
+                        team.teamMembers.map((tm: any) => (
+                            <div key={tm.id} className="flex items-center justify-between p-2.5 hover:bg-white dark:hover:bg-slate-900 rounded-xl border border-transparent hover:border-slate-200/50 dark:hover:border-slate-800/50 transition-colors duration-100">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#6C5CE7] to-[#8b7ff0] text-white font-bold text-[10px] flex items-center justify-center shadow-sm select-none shrink-0">
+                                        {tm.user?.name?.charAt(0).toUpperCase() || "?"}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{tm.user?.name}</p>
+                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{tm.user?.email}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right flex flex-col items-end">
+                                    <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-200/10">
+                                        {tm.role}
+                                    </span>
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-400 mt-1 capitalize">{tm.position}</span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-xs text-center text-slate-400 dark:text-slate-500 py-4 font-medium uppercase tracking-wider">No members in this team.</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+});
 
 export default function ProjectDetailsPage({
     params
@@ -205,7 +284,10 @@ export default function ProjectDetailsPage({
     const [error, setError] = useState<string | null>(null);
     const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
     const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
-    const [canEdit, setCanEdit] = useState(false);
+
+    // Refs to track first load
+    const hasLoadedOnce = useRef(false);
+    const hasLoadedTeamsOnce = useRef(false);
 
     // Project Teams States
     const [teams, setTeams] = useState<any[]>([]);
@@ -225,40 +307,16 @@ export default function ProjectDetailsPage({
     // Edit/Remove Project Member States
     const [isEditProjectMemberModalOpen, setIsEditProjectMemberModalOpen] = useState(false);
     const [selectedProjectMemberForEdit, setSelectedProjectMemberForEdit] = useState<any>(null);
-    const [editProjectMemberRole, setEditProjectMemberRole] = useState<string>("member");
-    const [editProjectMemberPosition, setEditProjectMemberPosition] = useState<string>("");
-    const [editProjectMemberLoading, setEditProjectMemberLoading] = useState(false);
-    const [editProjectMemberError, setEditProjectMemberError] = useState<string | null>(null);
 
     const [isRemoveProjectMemberModalOpen, setIsRemoveProjectMemberModalOpen] = useState(false);
     const [projectMemberToRemove, setProjectMemberToRemove] = useState<any>(null);
-    const [removeProjectMemberLoading, setRemoveProjectMemberLoading] = useState(false);
-    const [removeProjectMemberError, setRemoveProjectMemberError] = useState<string | null>(null);
-
-    // Add Project Member Form States
-    const [addProjectMemberUserId, setAddProjectMemberUserId] = useState<string>("");
-    const [addProjectMemberRole, setAddProjectMemberRole] = useState<string>("member");
-    const [addProjectMemberPosition, setAddProjectMemberPosition] = useState<string>("");
-    const [addProjectMemberLoading, setAddProjectMemberLoading] = useState(false);
-    const [addProjectMemberError, setAddProjectMemberError] = useState<string | null>(null);
-
-    // Add Team Member Form States
-    const [addTeamMemberUserId, setAddTeamMemberUserId] = useState<string>("");
-    const [addTeamMemberRole, setAddTeamMemberRole] = useState<string>("member");
-    const [addTeamMemberPosition, setAddTeamMemberPosition] = useState<string>("");
-    const [addTeamMemberLoading, setAddTeamMemberLoading] = useState(false);
-    const [addTeamMemberError, setAddTeamMemberError] = useState<string | null>(null);
-
-    // Create Team Form States
-    const [createTeamName, setCreateTeamName] = useState<string>("");
-    const [createTeamLoading, setCreateTeamLoading] = useState(false);
-    const [createTeamError, setCreateTeamError] = useState<string | null>(null);
 
     const router = useRouter();
     const authContext = useAuth();
     const user = authContext ? authContext.user : null;
 
-    const checkUserRole = useCallback(async (projectData: Project) => {
+    // Fetch workspace members once on initial mount
+    const fetchWorkspaceMembers = useCallback(async () => {
         if (!user) return;
         try {
             const res = await axios.get(
@@ -266,30 +324,32 @@ export default function ProjectDetailsPage({
                 { withCredentials: true }
             );
             if (res.data.success) {
-                const membersList = res.data.members;
-                setWorkspaceMembers(membersList || []);
-                const currentMember = membersList.find((m: any) => m.user?.email === user.email);
-                if (currentMember) {
-                    const isWorkspaceAdmin = ["admin", "owner"].includes(currentMember.role?.toLowerCase());
-                    const projectMembers = projectData.projectMembers || [];
-                    const isProjectAdmin = projectMembers.some(
-                        (pm: any) => pm.userId === currentMember.userId && pm.role?.toLowerCase() === "admin"
-                    );
-
-                    if (isWorkspaceAdmin || isProjectAdmin) {
-                        setCanEdit(true);
-                    } else {
-                        setCanEdit(false);
-                    }
-                }
+                setWorkspaceMembers(res.data.members || []);
             }
         } catch (err) {
-            console.error("Error checking user role:", err);
+            console.error("Error fetching workspace members:", err);
         }
     }, [workspaceID, user]);
 
+    // Synchronously check user permission with zero visual delay or state-update render lag
+    const canEdit = useMemo(() => {
+        if (!user || !project || workspaceMembers.length === 0) return false;
+        const currentMember = workspaceMembers.find((m: any) => m.user?.email === user.email);
+        if (!currentMember) return false;
+
+        const isWorkspaceAdmin = ["admin", "owner"].includes(currentMember.role?.toLowerCase());
+        const projectMembers = project.projectMembers || [];
+        const isProjectAdmin = projectMembers.some(
+            (pm: any) => pm.userId === currentMember.userId && pm.role?.toLowerCase() === "admin"
+        );
+
+        return isWorkspaceAdmin || isProjectAdmin;
+    }, [workspaceMembers, project, user]);
+
     const fetchProjectDetails = useCallback(async () => {
-        setLoading(true);
+        if (!hasLoadedOnce.current) {
+            setLoading(true);
+        }
         setError(null);
         try {
             const res = await axios.get(
@@ -297,9 +357,8 @@ export default function ProjectDetailsPage({
                 { withCredentials: true }
             );
             if (res.data.success || res.data.sucess === "true") {
-                const projectData = res.data.project;
-                setProject(projectData);
-                checkUserRole(projectData);
+                setProject(res.data.project);
+                hasLoadedOnce.current = true;
             } else {
                 setError(res.data.message || "Failed to load project details.");
             }
@@ -308,10 +367,12 @@ export default function ProjectDetailsPage({
         } finally {
             setLoading(false);
         }
-    }, [projectID, checkUserRole]);
+    }, [projectID]);
 
     const fetchTeams = useCallback(async () => {
-        setTeamsLoading(true);
+        if (!hasLoadedTeamsOnce.current) {
+            setTeamsLoading(true);
+        }
         setTeamsError(null);
         try {
             const res = await axios.get(
@@ -320,6 +381,7 @@ export default function ProjectDetailsPage({
             );
             if (res.data.success) {
                 setTeams(res.data.teams || []);
+                hasLoadedTeamsOnce.current = true;
             } else {
                 setTeamsError(res.data.error || "Failed to load project teams.");
             }
@@ -333,169 +395,51 @@ export default function ProjectDetailsPage({
     useEffect(() => {
         fetchProjectDetails();
         fetchTeams();
-    }, [fetchProjectDetails, fetchTeams]);
+        fetchWorkspaceMembers();
+    }, [fetchProjectDetails, fetchTeams, fetchWorkspaceMembers]);
 
-    const handleAddProjectMember = async () => {
-        if (!addProjectMemberUserId) return;
-        setAddProjectMemberLoading(true);
-        setAddProjectMemberError(null);
-        try {
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/project/addProjectMember/${projectID}`,
-                {
-                    userId: Number(addProjectMemberUserId),
-                    role: addProjectMemberRole,
-                    position: addProjectMemberPosition || addProjectMemberRole
-                },
-                { withCredentials: true }
-            );
-            if (res.data.success) {
-                setIsAddProjectMemberModalOpen(false);
-                setAddProjectMemberUserId("");
-                setAddProjectMemberRole("member");
-                setAddProjectMemberPosition("");
-                fetchProjectDetails();
-            } else {
-                setAddProjectMemberError(res.data.message || "Failed to add member to project.");
-            }
-        } catch (err: any) {
-            setAddProjectMemberError(err.response?.data?.message || "Failed to add member to project.");
-        } finally {
-            setAddProjectMemberLoading(false);
-        }
-    };
+    // Memoized derived data
+    const { completedTasksCount, totalTasksCount, progressPercentage } = useMemo(() => {
+        const completed = project?.tasks?.filter(t => t.status?.toLowerCase() === 'completed' || t.status?.toLowerCase() === 'done').length || 0;
+        const total = project?.tasks?.length || 0;
+        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        return { completedTasksCount: completed, totalTasksCount: total, progressPercentage: pct };
+    }, [project?.tasks]);
 
-    const handleUpdateProjectMember = async () => {
-        if (!selectedProjectMemberForEdit) return;
-        setEditProjectMemberLoading(true);
-        setEditProjectMemberError(null);
-        try {
-            const res = await axios.put(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/project/updateProjectMember/${projectID}/${selectedProjectMemberForEdit.userId}`,
-                {
-                    role: editProjectMemberRole,
-                    position: editProjectMemberPosition
-                },
-                { withCredentials: true }
-            );
-            if (res.data.success) {
-                setIsEditProjectMemberModalOpen(false);
-                setSelectedProjectMemberForEdit(null);
-                setEditProjectMemberRole("member");
-                setEditProjectMemberPosition("");
-                fetchProjectDetails();
-            } else {
-                setEditProjectMemberError(res.data.message || "Failed to update project member.");
-            }
-        } catch (err: any) {
-            setEditProjectMemberError(err.response?.data?.message || "Failed to update project member.");
-        } finally {
-            setEditProjectMemberLoading(false);
-        }
-    };
+    const availableWorkspaceMembers = useMemo(() => {
+        const existingIds = project?.projectMembers?.map((pm: any) => pm.userId) || [];
+        return workspaceMembers.filter((wm: any) => wm.isActive && !existingIds.includes(wm.userId));
+    }, [workspaceMembers, project?.projectMembers]);
 
-    const handleRemoveProjectMember = async () => {
-        if (!projectMemberToRemove) return;
-        setRemoveProjectMemberLoading(true);
-        setRemoveProjectMemberError(null);
-        try {
-            const res = await axios.delete(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/project/deleteProjectMember/${projectID}/${projectMemberToRemove.userId}`,
-                { withCredentials: true }
-            );
-            if (res.data.success) {
-                setIsRemoveProjectMemberModalOpen(false);
-                setProjectMemberToRemove(null);
-                fetchProjectDetails();
-                fetchTeams();
-            } else {
-                setRemoveProjectMemberError(res.data.message || "Failed to remove member.");
-            }
-        } catch (err: any) {
-            setRemoveProjectMemberError(err.response?.data?.message || "Failed to remove project member.");
-        } finally {
-            setRemoveProjectMemberLoading(false);
-        }
-    };
+    const availableProjectMembers = useMemo(() => {
+        const teamMemberIds = selectedTeamForAdd?.teamMembers?.map((tm: any) => tm.userId) || [];
+        return project?.projectMembers?.filter((pm: any) => !teamMemberIds.includes(pm.userId)) || [];
+    }, [selectedTeamForAdd, project?.projectMembers]);
 
-    const handleAddTeamMember = async () => {
-        if (!selectedTeamForAdd || !addTeamMemberUserId) return;
-        setAddTeamMemberLoading(true);
-        setAddTeamMemberError(null);
-        try {
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/team/addTeamMember/${selectedTeamForAdd.id}`,
-                {
-                    userId: Number(addTeamMemberUserId),
-                    position: addTeamMemberPosition || addTeamMemberRole,
-                    role: addTeamMemberRole
-                },
-                { withCredentials: true }
-            );
-            if (res.data.success) {
-                setIsAddTeamMemberModalOpen(false);
-                setAddTeamMemberUserId("");
-                setAddTeamMemberRole("member");
-                setAddTeamMemberPosition("");
-                setSelectedTeamForAdd(null);
-                fetchTeams();
-            } else {
-                setAddTeamMemberError(res.data.message || "Failed to add member to team.");
-            }
-        } catch (err: any) {
-            setAddTeamMemberError(err.response?.data?.message || "Failed to add member to team.");
-        } finally {
-            setAddTeamMemberLoading(false);
-        }
-    };
+    // Stable callback refs for memoized children
+    const handleEditMember = useCallback((member: any) => {
+        setSelectedProjectMemberForEdit(member);
+        setIsEditProjectMemberModalOpen(true);
+    }, []);
 
-    const handleCreateTeam = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!createTeamName.trim()) return;
-        setCreateTeamLoading(true);
-        setCreateTeamError(null);
-        try {
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/team/createTeam/${projectID}`,
-                {
-                    teamName: createTeamName.trim()
-                },
-                { withCredentials: true }
-            );
-            if (res.data.team) {
-                setIsCreateTeamModalOpen(false);
-                setCreateTeamName("");
-                fetchTeams();
-            } else {
-                setCreateTeamError("Failed to create team.");
-            }
-        } catch (err: any) {
-            setCreateTeamError(err.response?.data?.message || err.response?.data?.error || "Failed to create team.");
-        } finally {
-            setCreateTeamLoading(false);
-        }
-    };
+    const handleRemoveMember = useCallback((member: any) => {
+        setProjectMemberToRemove(member);
+        setIsRemoveProjectMemberModalOpen(true);
+    }, []);
 
-    const getPriorityIcon = (priority: string) => {
-        switch (priority?.toLowerCase()) {
-            case 'high': return <ArrowUp className="w-4 h-4 text-red-500" />;
-            case 'low': return <ArrowDown className="w-4 h-4 text-blue-500" />;
-            case 'medium': 
-            default: return <Minus className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
-        }
-    };
+    const handleAddTeamMember = useCallback((team: any) => {
+        setSelectedTeamForAdd(team);
+        setIsAddTeamMemberModalOpen(true);
+    }, []);
 
-    const getStatusStyles = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'completed': return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-500 border border-green-200 dark:border-green-800/50';
-            case 'in progress':
-            case 'active': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-500 border border-blue-200 dark:border-blue-800/50';
-            case 'review': return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-800/50';
-            case 'todo':
-            case 'suspended':
-            default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
-        }
-    };
+    // Status dot color (computed once, no animate-pulse)
+    const statusDotColor = useMemo(() => {
+        const s = project?.status?.toLowerCase();
+        if (s === 'active' || s === 'completed') return 'bg-green-500';
+        if (s === 'review') return 'bg-amber-500';
+        if (s === 'suspended') return 'bg-red-500';
+        return 'bg-blue-500';
+    }, [project?.status]);
 
     if (loading) {
         return (
@@ -521,65 +465,53 @@ export default function ProjectDetailsPage({
         );
     }
 
-    const completedTasksCount = project.tasks?.filter(t => t.status?.toLowerCase() === 'completed' || t.status?.toLowerCase() === 'done').length || 0;
-    const totalTasksCount = project.tasks?.length || 0;
-    const progressPercentage = totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
-
-    // Filter workspace members for project inclusion modal
-    const existingProjectUserIds = project.projectMembers?.map((pm: any) => pm.userId) || [];
-    const availableWorkspaceMembers = workspaceMembers.filter(
-        (wm: any) => wm.isActive && !existingProjectUserIds.includes(wm.userId)
-    );
-
-    // Filter project members for team inclusion modal
-    const teamMemberIds = selectedTeamForAdd?.teamMembers?.map((tm: any) => tm.userId) || [];
-    const availableProjectMembers = project.projectMembers?.filter(
-        (pm: any) => !teamMemberIds.includes(pm.userId)
-    ) || [];
-
     return (
-        <main className="max-w-7xl mx-auto px-6 py-6 space-y-8">
-            {/* Header */}
-            <div>
+        <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+            {/* Header / Banner — solid bg, no backdrop-blur */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 p-6 sm:p-8 relative overflow-hidden">
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-[#6C5CE7]/8 to-[#a29bfe]/4 rounded-full blur-3xl pointer-events-none" />
+                
                 <Link 
                     href={`/workspace/${workspaceID}/projects`} 
-                    className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6 transition-colors"
+                    className="group inline-flex items-center text-xs font-bold uppercase tracking-wider text-[#6C5CE7] hover:text-[#5a4ed1] mb-6 transition-colors duration-150"
                 >
-                    <ArrowLeft className="w-4 h-4 mr-1" />
+                    <ArrowLeft className="w-4 h-4 mr-2 transition-transform duration-150 group-hover:-translate-x-1" />
                     Back to Projects
                 </Link>
                 
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-primary-light/10 text-primary-light rounded-lg border border-primary-light/20">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-[#6C5CE7]/10 text-[#6C5CE7] rounded-xl border border-[#6C5CE7]/20 shadow-md shadow-[#6C5CE7]/5">
                                 <FolderKanban className="w-6 h-6" />
                             </div>
-                            <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white">
-                                {project.name}
-                            </h1>
+                            <div>
+                                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    {project.name}
+                                </h1>
+                            </div>
                         </div>
-                        <p className="text-gray-500 dark:text-gray-400 max-w-2xl text-base mt-2">
+                        <p className="text-slate-500 dark:text-slate-400 max-w-2xl text-sm sm:text-base leading-relaxed">
                             {project.description}
                         </p>
                     </div>
                     
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0 self-end md:self-start">
                         {canEdit && (
                             <button 
                                 onClick={() => setIsEditProjectModalOpen(true)}
-                                className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+                                className="flex items-center gap-2 bg-white dark:bg-slate-950/20 hover:bg-slate-50 dark:hover:bg-slate-950/60 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-sm hover:shadow-md cursor-pointer active:scale-97"
                             >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
                                 Edit Project
                             </button>
                         )}
                         {canEdit && (
                             <button 
                                 onClick={() => setIsCreateTaskModalOpen(true)}
-                                className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+                                className="flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg hover:shadow-primary/10 cursor-pointer active:scale-97"
                             >
-                                <Plus className="w-4 h-4" />
+                                <Plus className="w-4 h-4" strokeWidth={2.5} />
                                 Add Task
                             </button>
                         )}
@@ -587,113 +519,92 @@ export default function ProjectDetailsPage({
                 </div>
             </div>
 
-            {/* Info Cards */}
+            {/* Info Cards / Metrics — solid bg, no backdrop-blur, no hover:translate */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-[#1e293b] p-4 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm flex items-start gap-3">
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
-                        <Tag className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                {/* Field Card */}
+                <div className="bg-white dark:bg-slate-900 p-4.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 shadow-lg shadow-slate-900/2 dark:shadow-black/10 flex items-start gap-4">
+                    <div className="p-3.5 bg-slate-100 dark:bg-slate-950/40 text-slate-500 dark:text-slate-400 rounded-xl border border-slate-200/50 dark:border-slate-800 flex items-center justify-center">
+                        <Tag className="w-5 h-5 text-[#6C5CE7]" />
                     </div>
                     <div>
-                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Field / Category</p>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{project.field}</p>
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Field / Category</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{project.field}</p>
                     </div>
                 </div>
                 
-                <div className="bg-white dark:bg-[#1e293b] p-4 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm flex items-start gap-3">
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700">
-                        <Clock className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                {/* Status Card */}
+                <div className="bg-white dark:bg-slate-900 p-4.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 shadow-lg shadow-slate-900/2 dark:shadow-black/10 flex items-start gap-4">
+                    <div className="p-3.5 bg-slate-100 dark:bg-slate-950/40 rounded-xl border border-slate-200/50 dark:border-slate-800 flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-[#6C5CE7]" />
                     </div>
                     <div>
-                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Status</p>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${getStatusStyles(project.status)}`}>
-                            {project.status}
-                        </span>
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">Status</p>
+                        <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full inline-block ${statusDotColor}`} />
+                            <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 capitalize">
+                                {project.status}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#1e293b] p-4 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm sm:col-span-2 flex flex-col justify-center">
-                    <div className="flex justify-between text-sm mb-2">
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Project Progress</span>
-                        <span className="text-gray-500 dark:text-gray-400">{progressPercentage}% ({completedTasksCount}/{totalTasksCount})</span>
+                {/* Progress Card */}
+                <div className="bg-white dark:bg-slate-900 p-4.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 shadow-lg shadow-slate-900/2 dark:shadow-black/10 sm:col-span-2 flex flex-col justify-center">
+                    <div className="flex justify-between text-xs font-bold mb-2">
+                        <span className="text-slate-400 dark:text-slate-500 uppercase tracking-widest">Project Progress</span>
+                        <span className="text-[#6C5CE7] dark:text-[#a29bfe]">{progressPercentage}% ({completedTasksCount}/{totalTasksCount} Tasks)</span>
                     </div>
-                    <div className="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-950/40 h-2.5 rounded-full overflow-hidden border border-slate-200/20 dark:border-slate-800/40">
                         <div 
-                            className="bg-[#0D9488] h-full transition-all duration-500" 
+                            className="bg-gradient-to-r from-[#6C5CE7] to-[#8b7ff0] h-full rounded-full transition-[width] duration-500 shadow-inner" 
                             style={{ width: `${progressPercentage}%` }}
-                        ></div>
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Assigned Tasks */}
-            <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <ListTodo className="w-5 h-5 text-gray-400" />
+            {/* Assigned Tasks — solid bg */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 overflow-hidden">
+                <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/40 dark:bg-slate-900/40">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <ListTodo className="w-5 h-5 text-[#6C5CE7]" />
                         Assigned Tasks
+                        <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md border border-slate-200/10">
+                            {totalTasksCount}
+                        </span>
                     </h2>
                 </div>
                 
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-800/50">
+                    <table className="min-w-full divide-y divide-black/5 dark:divide-white/5">
+                        <thead className="bg-slate-50/50 dark:bg-slate-950/20">
                             <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3.5 text-left text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Task Name
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3.5 text-left text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Priority
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3.5 text-left text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Status
                                 </th>
-                                <th scope="col" className="relative px-6 py-3">
+                                <th scope="col" className="relative px-6 py-3.5">
                                     <span className="sr-only">Actions</span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-[#1e293b] divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody className="bg-transparent divide-y divide-black/5 dark:divide-white/5">
                             {!project.tasks || project.tasks.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                                        <ListTodo className="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-                                        <p className="text-base font-medium text-gray-900 dark:text-white">No tasks assigned</p>
-                                        <p className="text-sm mt-1">Create a task to get started on this project.</p>
+                                    <td colSpan={4} className="px-6 py-16 text-center">
+                                        <ListTodo className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+                                        <p className="text-base font-bold text-slate-900 dark:text-white">No Tasks Assigned Yet</p>
+                                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">Create a task to kickstart project execution and track milestones.</p>
                                     </td>
                                 </tr>
                             ) : (
                                 project.tasks.map((task) => (
-                                    <tr onClick={() => router.push(`/workspace/${workspaceID}/tasks/${task.id}`)} key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                                                {task.title}
-                                            </div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 max-w-md">
-                                                {task.description}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 capitalize">
-                                                {getPriorityIcon(task.priority)}
-                                                {task.priority || "Medium"}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyles(task.status)}`}>
-                                                {task.status?.toLowerCase() === 'completed' ? (
-                                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                                                ) : (
-                                                    <Circle className="w-3.5 h-3.5 mr-1.5 fill-current opacity-50" />
-                                                )}
-                                                {task.status || "Todo"}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                                                <MoreHorizontal className="w-5 h-5" />
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    <TaskRow key={task.id} task={task} workspaceID={workspaceID} />
                                 ))
                             )}
                         </tbody>
@@ -703,23 +614,17 @@ export default function ProjectDetailsPage({
 
             {/* Project Members & Project Teams side-by-side layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Project Members Panel */}
-                <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm flex flex-col">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                        <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                            <Users className="w-5 h-5 text-gray-400" />
+                {/* Project Members Panel — solid bg */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 flex flex-col overflow-hidden">
+                    <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/40 dark:bg-slate-900/40">
+                        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <Users className="w-5 h-5 text-[#6C5CE7]" />
                             Project Members
                         </h2>
                         {canEdit && (
                             <button 
-                                onClick={() => {
-                                    setAddProjectMemberUserId("");
-                                    setAddProjectMemberRole("member");
-                                    setAddProjectMemberPosition("");
-                                    setAddProjectMemberError(null);
-                                    setIsAddProjectMemberModalOpen(true);
-                                }}
-                                className="inline-flex items-center gap-1.5 bg-[#3C3489] hover:bg-[#251b72] text-white px-3 py-1.5 rounded-md font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+                                onClick={() => setIsAddProjectMemberModalOpen(true)}
+                                className="inline-flex items-center gap-1.5 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg hover:shadow-primary/10 cursor-pointer active:scale-97"
                             >
                                 <UserPlus className="w-3.5 h-3.5" />
                                 Add Member
@@ -727,85 +632,37 @@ export default function ProjectDetailsPage({
                         )}
                     </div>
                     
-                    <div className="flex-1 divide-y divide-gray-100 dark:divide-gray-700 max-h-[400px] overflow-y-auto">
+                    <div className="flex-1 divide-y divide-black/5 dark:divide-white/5 max-h-[400px] overflow-y-auto">
                         {!project.projectMembers || project.projectMembers.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs font-semibold uppercase tracking-wider">
                                 No project members found.
                             </div>
                         ) : (
                             project.projectMembers.map((member) => (
-                                <div key={member.id} className="flex items-center justify-between p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-primary-light/10 text-primary font-medium text-xs border border-primary-light/20 flex items-center justify-center shrink-0">
-                                            {member.user?.name?.charAt(0).toUpperCase() || "?"}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-white">{member.user?.name || "Unknown User"}</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">{member.user?.email}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-right">
-                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                                {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-[#3C3489]" />}
-                                                {member.role}
-                                            </span>
-                                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 capitalize">{member.position}</p>
-                                        </div>
-
-                                        {canEdit && member.user?.email !== user?.email && (
-                                            <div className="flex items-center gap-1 shrink-0">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setSelectedProjectMemberForEdit(member);
-                                                        setEditProjectMemberRole(member.role || "member");
-                                                        setEditProjectMemberPosition(member.position || "");
-                                                        setEditProjectMemberError(null);
-                                                        setIsEditProjectMemberModalOpen(true);
-                                                    }}
-                                                    className="p-1 text-gray-400 hover:text-[#3C3489] hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors cursor-pointer"
-                                                    title="Edit Member Role & Position"
-                                                >
-                                                    <Shield className="w-3.5 h-3.5" />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setProjectMemberToRemove(member);
-                                                        setRemoveProjectMemberError(null);
-                                                        setIsRemoveProjectMemberModalOpen(true);
-                                                    }}
-                                                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-colors cursor-pointer"
-                                                    title="Remove Member from Project"
-                                                >
-                                                    <X className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <MemberRow 
+                                    key={member.id} 
+                                    member={member}
+                                    canEdit={canEdit}
+                                    currentUserEmail={user?.email}
+                                    onEdit={handleEditMember}
+                                    onRemove={handleRemoveMember}
+                                />
                             ))
                         )}
                     </div>
                 </div>
-
-                {/* Project Teams Panel */}
-                <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm flex flex-col">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                        <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                            <Users className="w-5 h-5 text-gray-400" />
+ 
+                {/* Project Teams Panel — solid bg */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 flex flex-col overflow-hidden">
+                    <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/40 dark:bg-slate-900/40">
+                        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <Users className="w-5 h-5 text-[#6C5CE7]" />
                             Project Teams
                         </h2>
                         {canEdit && (
                             <button 
-                                onClick={() => {
-                                    setCreateTeamName("");
-                                    setCreateTeamError(null);
-                                    setIsCreateTeamModalOpen(true);
-                                }}
-                                className="inline-flex items-center gap-1.5 bg-[#3C3489] hover:bg-[#251b72] text-white px-3 py-1.5 rounded-md font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+                                onClick={() => setIsCreateTeamModalOpen(true)}
+                                className="inline-flex items-center gap-1.5 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg hover:shadow-primary/10 cursor-pointer active:scale-97"
                             >
                                 <Plus className="w-3.5 h-3.5" />
                                 Create Team
@@ -815,98 +672,39 @@ export default function ProjectDetailsPage({
                     
                     <div className="flex-1 max-h-[400px] overflow-y-auto">
                         {teamsLoading ? (
-                            <div className="p-8 space-y-3">
-                                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"></div>
-                                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse"></div>
+                            <div className="p-6 space-y-3">
+                                <div className="h-12 bg-slate-100 dark:bg-slate-950/40 rounded-xl animate-pulse"></div>
+                                <div className="h-12 bg-slate-100 dark:bg-slate-950/40 rounded-xl animate-pulse"></div>
                             </div>
                         ) : teamsError ? (
-                            <div className="p-8 text-center text-red-500 bg-red-50 dark:bg-red-900/10 text-xs">
+                            <div className="p-6 text-center text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200/20 text-xs font-semibold rounded-xl">
                                 {teamsError}
                             </div>
                         ) : !teams || teams.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                                <p className="text-sm font-medium">No teams in this project yet.</p>
-                                <p className="text-xs mt-1 text-gray-400">Create a team to organize project members.</p>
+                            <div className="p-8 text-center">
+                                <Users className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+                                <p className="text-sm font-bold text-slate-900 dark:text-white">No Teams in this Project</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[240px] mx-auto">Create sub-teams to organize project tasks and coordinate members.</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                            <div className="divide-y divide-black/5 dark:divide-white/5">
                                 {teams.map((team) => (
-                                    <div key={team.id} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                                        <div 
-                                            className="p-4 cursor-pointer flex justify-between items-center hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
-                                            onClick={() => setExpandedTeamId(expandedTeamId === team.id ? null : team.id)}
-                                        >
-                                            <div>
-                                                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{team.teamName}</h4>
-                                                <span className="text-xs text-gray-500 dark:text-gray-400">{team.teamMembers?.length || 0} members</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                {canEdit && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSelectedTeamForAdd(team);
-                                                            setAddTeamMemberUserId("");
-                                                            setAddTeamMemberPosition("");
-                                                            setAddTeamMemberRole("member");
-                                                            setAddTeamMemberError(null);
-                                                            setIsAddTeamMemberModalOpen(true);
-                                                        }}
-                                                        className="p-1 text-[#3C3489] hover:bg-[#3C3489]/10 rounded-md transition-all cursor-pointer"
-                                                        title="Add Member to Team"
-                                                    >
-                                                        <UserPlus className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedTeamId === team.id ? "rotate-180" : ""}`} />
-                                            </div>
-                                        </div>
-                                        
-                                        <AnimatePresence>
-                                            {expandedTeamId === team.id && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    className="overflow-hidden bg-gray-50/30 dark:bg-gray-900/10 border-t border-gray-100 dark:border-gray-700"
-                                                >
-                                                    <div className="p-3 space-y-2">
-                                                        {team.teamMembers && team.teamMembers.length > 0 ? (
-                                                            team.teamMembers.map((tm: any) => (
-                                                                <div key={tm.id} className="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded-md border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <div className="w-6 h-6 rounded-full bg-primary-light/10 text-primary font-medium text-[10px] flex items-center justify-center">
-                                                                            {tm.user?.name?.charAt(0).toUpperCase() || "?"}
-                                                                        </div>
-                                                                        <div>
-                                                                            <p className="text-xs font-medium text-gray-900 dark:text-white">{tm.user?.name}</p>
-                                                                            <p className="text-[10px] text-gray-500 dark:text-gray-400">{tm.user?.email}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="text-right flex flex-col items-end">
-                                                                        <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                                                                            {tm.role}
-                                                                        </span>
-                                                                        <span className="text-[10px] text-gray-750 dark:text-gray-300 capitalize">{tm.position}</span>
-                                                                    </div>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <p className="text-xs text-center text-gray-500 dark:text-gray-400 py-3">No members in this team.</p>
-                                                        )}
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
+                                    <TeamAccordion 
+                                        key={team.id} 
+                                        team={team} 
+                                        isExpanded={expandedTeamId === team.id}
+                                        onToggle={() => setExpandedTeamId(expandedTeamId === team.id ? null : team.id)}
+                                        canEdit={canEdit}
+                                        onAddMember={handleAddTeamMember}
+                                    />
                                 ))}
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-
-            {/* Task Creation Modal */}
+ 
+            {/* Modals — ONLY mount when open (conditional rendering) */}
             {isCreateTaskModalOpen && (
                 <CreateTaskModal
                     workspaceID={workspaceID}
@@ -915,8 +713,7 @@ export default function ProjectDetailsPage({
                     onSuccess={fetchProjectDetails}
                 />
             )}
-
-            {/* Edit Project Details Modal */}
+ 
             {isEditProjectModalOpen && (
                 <EditProjectModal
                     isOpen={isEditProjectModalOpen}
@@ -925,419 +722,57 @@ export default function ProjectDetailsPage({
                     onSuccess={fetchProjectDetails}
                 />
             )}
-
-            {/* Add Project Member Modal */}
+ 
             {isAddProjectMemberModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
-                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                <UserPlus className="w-5 h-5 text-[#3C3489]" />
-                                Add Project Member
-                            </h3>
-                            <button onClick={() => setIsAddProjectMemberModalOpen(false)} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-6 space-y-4">
-                            {addProjectMemberError && (
-                                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800">
-                                    {addProjectMemberError}
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Workspace Member</label>
-                                <select 
-                                    value={addProjectMemberUserId}
-                                    onChange={e => setAddProjectMemberUserId(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                >
-                                    <option value="">-- Choose a Workspace Member --</option>
-                                    {availableWorkspaceMembers.map((m) => (
-                                        <option key={m.userId} value={m.userId}>
-                                            {m.user?.name} ({m.user?.email})
-                                        </option>
-                                    ))}
-                                </select>
-                                {availableWorkspaceMembers.length === 0 && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">No other active workspace members available to add.</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Role</label>
-                                <select
-                                    value={addProjectMemberRole}
-                                    onChange={e => setAddProjectMemberRole(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                >
-                                    <option value="member">Member</option>
-                                    <option value="tester">Tester</option>
-                                    <option value="viewer">Viewer</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Position / Title</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="e.g. Lead QA, Designer, Developer"
-                                    value={addProjectMemberPosition}
-                                    onChange={e => setAddProjectMemberPosition(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                />
-                            </div>
-
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button 
-                                    onClick={() => setIsAddProjectMemberModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    onClick={handleAddProjectMember}
-                                    disabled={addProjectMemberLoading || !addProjectMemberUserId}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
-                                >
-                                    {addProjectMemberLoading && <Loader2 className="w-3 h-3 animate-spin" />}
-                                    {addProjectMemberLoading ? "Adding..." : "Add Member"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <AddProjectMemberModal
+                    isOpen={isAddProjectMemberModalOpen}
+                    onClose={() => setIsAddProjectMemberModalOpen(false)}
+                    projectID={projectID}
+                    availableWorkspaceMembers={availableWorkspaceMembers}
+                    onSuccess={fetchProjectDetails}
+                />
             )}
 
-            {/* Add Team Member Modal */}
-            {isAddTeamMemberModalOpen && selectedTeamForAdd && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
-                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                <UserPlus className="w-5 h-5 text-[#3C3489]" />
-                                Add Member to {selectedTeamForAdd.teamName}
-                            </h3>
-                            <button onClick={() => setIsAddTeamMemberModalOpen(false)} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-6 space-y-4">
-                            {addTeamMemberError && (
-                                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800">
-                                    {addTeamMemberError}
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Project Member</label>
-                                <select 
-                                    value={addTeamMemberUserId}
-                                    onChange={e => setAddTeamMemberUserId(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                >
-                                    <option value="">-- Choose a Project Member --</option>
-                                    {availableProjectMembers.map((m) => (
-                                        <option key={m.userId} value={m.userId}>
-                                            {m.user?.name} ({m.user?.email})
-                                        </option>
-                                    ))}
-                                </select>
-                                {availableProjectMembers.length === 0 && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">No other project members available to join this team.</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Team Role</label>
-                                <select
-                                    value={addTeamMemberRole}
-                                    onChange={e => setAddTeamMemberRole(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                >
-                                    <option value="member">Member</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="viewer">Viewer</option>
-                                    <option value="tester">Tester</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Position / Title</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="e.g. Lead Developer, QA Lead"
-                                    value={addTeamMemberPosition}
-                                    onChange={e => setAddTeamMemberPosition(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                />
-                            </div>
-
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button 
-                                    onClick={() => setIsAddTeamMemberModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    onClick={handleAddTeamMember}
-                                    disabled={addTeamMemberLoading || !addTeamMemberUserId}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
-                                >
-                                    {addTeamMemberLoading && <Loader2 className="w-3 h-3 animate-spin" />}
-                                    {addTeamMemberLoading ? "Adding..." : "Add to Team"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {isAddTeamMemberModalOpen && (
+                <AddTeamMemberModal
+                    isOpen={isAddTeamMemberModalOpen}
+                    onClose={() => setIsAddTeamMemberModalOpen(false)}
+                    selectedTeamForAdd={selectedTeamForAdd}
+                    availableProjectMembers={availableProjectMembers}
+                    onSuccess={fetchTeams}
+                />
             )}
 
-            {/* Create Project Team Modal */}
             {isCreateTeamModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
-                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                <Plus className="w-5 h-5 text-[#3C3489]" />
-                                Create Project Team
-                            </h3>
-                            <button onClick={() => setIsCreateTeamModalOpen(false)} className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        <form onSubmit={handleCreateTeam} className="p-6 space-y-4">
-                            {createTeamError && (
-                                <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm border border-red-200 dark:border-red-800 animate-pulse">
-                                    {createTeamError}
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Team Name</label>
-                                <input 
-                                    type="text" 
-                                    required
-                                    placeholder="e.g. Design Team, Frontend Core"
-                                    value={createTeamName}
-                                    onChange={e => setCreateTeamName(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] transition-colors"
-                                />
-                            </div>
-
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button 
-                                    type="button"
-                                    onClick={() => setIsCreateTeamModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    disabled={createTeamLoading || !createTeamName.trim()}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
-                                >
-                                    {createTeamLoading && <Loader2 className="w-3 h-3 animate-spin" />}
-                                    {createTeamLoading ? "Creating..." : "Create Team"}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <CreateTeamModal
+                    isOpen={isCreateTeamModalOpen}
+                    onClose={() => setIsCreateTeamModalOpen(false)}
+                    projectID={projectID}
+                    onSuccess={fetchTeams}
+                />
             )}
 
-            {/* Edit Project Member Modal */}
-            {isEditProjectMemberModalOpen && selectedProjectMemberForEdit && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
-                        {/* Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
-                            <h3 className="text-xl font-medium text-[#3C3489] flex items-center gap-2">
-                                <Shield className="w-5 h-5" />
-                                Edit Project Member
-                            </h3>
-                            <button 
-                                onClick={() => {
-                                    setIsEditProjectMemberModalOpen(false);
-                                    setSelectedProjectMemberForEdit(null);
-                                }}
-                                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                            >
-                                <X className="w-5 h-5 text-gray-400" />
-                            </button>
-                        </div>
-
-                        {/* Body */}
-                        <div className="p-6 space-y-4">
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-semibold border border-primary-light/20">
-                                    {selectedProjectMemberForEdit.user?.name?.charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                                        {selectedProjectMemberForEdit.user?.name}
-                                    </h4>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        {selectedProjectMemberForEdit.user?.email}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Position / Title
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Lead Developer, QA Lead"
-                                    value={editProjectMemberPosition}
-                                    onChange={(e) => setEditProjectMemberPosition(e.target.value)}
-                                    className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Project Role
-                                </label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {["member", "admin", "viewer", "tester"].map((role) => (
-                                        <button
-                                            key={role}
-                                            type="button"
-                                            onClick={() => setEditProjectMemberRole(role)}
-                                            className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
-                                                editProjectMemberRole === role
-                                                    ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
-                                                    : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
-                                            }`}
-                                        >
-                                            {role}
-                                        </button>
-                                    ))}
-                                </div>
-                                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
-                                    {editProjectMemberRole === "admin" && "Project Admins can create tasks, assign roles, and manage members."}
-                                    {editProjectMemberRole === "member" && "Members can participate fully and receive task assignments."}
-                                    {editProjectMemberRole === "viewer" && "Viewers have read-only access to this project."}
-                                    {editProjectMemberRole === "tester" && "Testers can manage submission statuses and logs."}
-                                </p>
-                            </div>
-
-                            {editProjectMemberError && (
-                                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
-                                    <AlertCircle className="w-4 h-4 shrink-0" />
-                                    {editProjectMemberError}
-                                </div>
-                            )}
-
-                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsEditProjectMemberModalOpen(false);
-                                        setSelectedProjectMemberForEdit(null);
-                                    }}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleUpdateProjectMember}
-                                    disabled={editProjectMemberLoading}
-                                    className="bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
-                                >
-                                    {editProjectMemberLoading ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            Saving...
-                                        </>
-                                    ) : (
-                                        "Save Changes"
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {isEditProjectMemberModalOpen && (
+                <EditProjectMemberModal
+                    isOpen={isEditProjectMemberModalOpen}
+                    onClose={() => setIsEditProjectMemberModalOpen(false)}
+                    projectID={projectID}
+                    selectedProjectMemberForEdit={selectedProjectMemberForEdit}
+                    onSuccess={fetchProjectDetails}
+                />
             )}
 
-            {/* Remove Project Member Confirmation Modal */}
-            {isRemoveProjectMemberModalOpen && projectMemberToRemove && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
-                        {/* Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
-                            <h3 className="text-xl font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
-                                <UserMinus className="w-5 h-5" />
-                                Remove from Project
-                            </h3>
-                            <button 
-                                onClick={() => {
-                                    setIsRemoveProjectMemberModalOpen(false);
-                                    setProjectMemberToRemove(null);
-                                }}
-                                className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                            >
-                                <X className="w-5 h-5 text-gray-400" />
-                            </button>
-                        </div>
-
-                        {/* Body */}
-                        <div className="p-6 space-y-4">
-                            <p className="text-sm text-gray-700 dark:text-gray-300">
-                                Are you sure you want to remove <strong>{projectMemberToRemove.user?.name}</strong> (<em>{projectMemberToRemove.user?.email}</em>) from this project?
-                            </p>
-
-                            <div className="flex items-start gap-3 text-red-650 dark:text-red-400 text-xs bg-red-50 dark:bg-red-955/20 p-3.5 rounded-lg border border-red-100 dark:border-red-900/30">
-                                <AlertCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-red-500" />
-                                <span>
-                                    This action is permanent. The user will be automatically removed from all sub-teams and task assignments within this project.
-                                </span>
-                            </div>
-
-                            {removeProjectMemberError && (
-                                <div className="flex items-center gap-2 text-red-500 text-xs bg-red-50 dark:bg-red-900/10 p-3 rounded-md border border-red-100 dark:border-red-900/20">
-                                    <AlertCircle className="w-4 h-4 shrink-0" />
-                                    {removeProjectMemberError}
-                                </div>
-                            )}
-
-                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsRemoveProjectMemberModalOpen(false);
-                                        setProjectMemberToRemove(null);
-                                    }}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleRemoveProjectMember}
-                                    disabled={removeProjectMemberLoading}
-                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
-                                >
-                                    {removeProjectMemberLoading ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            Removing...
-                                        </>
-                                    ) : (
-                                        "Remove Member"
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {isRemoveProjectMemberModalOpen && (
+                <RemoveProjectMemberModal
+                    isOpen={isRemoveProjectMemberModalOpen}
+                    onClose={() => setIsRemoveProjectMemberModalOpen(false)}
+                    projectID={projectID}
+                    projectMemberToRemove={projectMemberToRemove}
+                    onSuccess={() => {
+                        fetchProjectDetails();
+                        fetchTeams();
+                    }}
+                />
             )}
         </main>
     );

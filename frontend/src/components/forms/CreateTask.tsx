@@ -42,7 +42,8 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
   const [error, setError] = useState<string | null>(null);
 
   // Assignee states
-  const [workspaceMembers, setWorkspaceMembers] = useState<Member[]>([]);
+  const [projectMembers, setProjectMembers] = useState<any[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
   const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -67,21 +68,33 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
   }, [projectID, workspaceID]);
 
   useEffect(() => {
-    const fetchMembers = async () => {
+    if (!formData.projectId) {
+      setProjectMembers([]);
+      setSelectedAssigneeIds([]);
+      return;
+    }
+
+    const fetchProjectMembers = async () => {
+      setLoadingMembers(true);
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/members/${workspaceID}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/project/singleProject/${formData.projectId}`,
           { withCredentials: true }
         );
-        if (res.data.success) {
-          setWorkspaceMembers(res.data.members || []);
+        if (res.data.project && res.data.project.projectMembers) {
+          setProjectMembers(res.data.project.projectMembers);
+        } else {
+          setProjectMembers([]);
         }
       } catch (err) {
-        console.error("Failed to load workspace members", err);
+        console.error("Failed to load project members", err);
+        setProjectMembers([]);
+      } finally {
+        setLoadingMembers(false);
       }
     };
-    fetchMembers();
-  }, [workspaceID]);
+    fetchProjectMembers();
+  }, [formData.projectId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -514,7 +527,16 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
             >
               Assign Members
             </label>
-            {workspaceMembers.length > 0 ? (
+            {!formData.projectId ? (
+              <p style={{ fontSize: 12, color: "#9A9890", padding: "8px 0" }}>
+                ⚠️ Please select a project first to view and assign its members.
+              </p>
+            ) : loadingMembers ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0" }}>
+                <Loader2 size={13} className="animate-spin text-[#6C5CE7]" />
+                <span style={{ fontSize: 12, color: "#9A9890" }}>Loading project members...</span>
+              </div>
+            ) : projectMembers.length > 0 ? (
               <div
                 style={{
                   maxHeight: 120,
@@ -528,7 +550,7 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                   gap: 8,
                 }}
               >
-                 {workspaceMembers.map((member) => {
+                {projectMembers.map((member) => {
                   const isChecked = selectedAssigneeIds.includes(member.userId);
                   return (
                     <label
@@ -574,16 +596,18 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                           fontWeight: 600,
                         }}
                       >
-                        {member.user.name?.charAt(0).toUpperCase()}
+                        {member.user?.name?.charAt(0).toUpperCase()}
                       </div>
-                      <span style={{ fontWeight: 500 }}>{member.user.name}</span>
-                      <span style={{ fontSize: 11, color: "#9A9890" }}>({member.user.email})</span>
+                      <span style={{ fontWeight: 500 }}>{member.user?.name}</span>
+                      <span style={{ fontSize: 11, color: "#9A9890" }}>({member.user?.email})</span>
                     </label>
                   );
                 })}
               </div>
             ) : (
-              <p style={{ fontSize: 12, color: "#9A9890" }}>No members available in this workspace.</p>
+              <p style={{ fontSize: 12, color: "#9A9890", padding: "8px 0" }}>
+                No active members found inside this project.
+              </p>
             )}
           </div>
 

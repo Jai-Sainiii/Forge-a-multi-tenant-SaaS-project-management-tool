@@ -43,7 +43,7 @@ export const signup = async (req: Request, res: Response) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
 
-        res.json({message: "Signup Successfull", user: {name: newUser.name, email: newUser.email}});
+        res.json({message: "Signup Successfull", user: {id: newUser.id, name: newUser.name, email: newUser.email}});
 
     } catch (error) {
         console.error("Signup error:", error);
@@ -95,7 +95,7 @@ export const login = async (req: Request, res: Response) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
 
-        res.json({ message: "Login Successfull", user: {name: user.name, email: user.email} });
+        res.json({ message: "Login Successfull", user: {id: user.id, name: user.name, email: user.email} });
 
     } catch (error) {
         console.error("Login error:", error);
@@ -172,7 +172,7 @@ export const me = async (req: Request, res: Response) => {
             return res.status(404).json({message: "User not found"});
         }
 
-        res.json({user: {name: user.name, email: user.email}});
+        res.json({user: {id: user.id, name: user.name, email: user.email}});
     } catch (error) {
         res.status(401).json({ success: false, message: "Invalid or expired token" });
     }

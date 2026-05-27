@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
-import { Home, Plus } from "lucide-react";
+import { Home, Plus, LayoutGrid } from "lucide-react";
 
 interface Workspace {
   id: number;
@@ -44,11 +44,20 @@ export default function HomeStrip({ workspaces }: HomeStripProps) {
     >
       {/* Home button */}
       <Link
-        href="/workspace/all"
-        title="All workspaces"
+        href="/"
+        title="Landing Page"
         className="group flex items-center justify-center w-7 h-7 rounded-[7px] text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-150 mt-1"
       >
         <Home size={15} strokeWidth={1.8} />
+      </Link>
+
+      {/* All workspaces button */}
+      <Link
+        href="/workspace/all"
+        title="All workspaces"
+        className="group flex items-center justify-center w-7 h-7 rounded-[7px] text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-150"
+      >
+        <LayoutGrid size={15} strokeWidth={1.8} />
       </Link>
 
       {/* Divider */}
