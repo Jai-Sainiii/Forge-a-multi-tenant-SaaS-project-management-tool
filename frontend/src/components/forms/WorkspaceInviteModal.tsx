@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, UserPlus, AlertCircle, Copy, Check, Loader2, Link as LinkIcon, CheckCircle2, Shield, Users, Eye } from "lucide-react";
-import axios from "axios";
+import { generateInvite } from "@/app/actions/member";
 
 interface WorkspaceInviteModalProps {
   onClose: () => void;
@@ -21,18 +21,14 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
     setInviteError(null);
     setGeneratedLink(null);
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/invite/generate/${workspaceID}`,
-        { role: inviteRole },
-        { withCredentials: true }
-      );
-      if (res.data.success) {
-        setGeneratedLink(res.data.inviteUrl);
+      const result = await generateInvite(String(workspaceID), inviteRole);
+      if (result.success && result.inviteUrl) {
+        setGeneratedLink(result.inviteUrl);
       } else {
-        setInviteError(res.data.message || "Failed to generate invite link.");
+        setInviteError(result.message || "Failed to generate invite link.");
       }
-    } catch (err: any) {
-      setInviteError(err.response?.data?.message || "Failed to generate invite link.");
+    } catch {
+      setInviteError("Failed to generate invite link.");
     } finally {
       setGeneratingLink(false);
     }

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { FolderKanban, X } from "lucide-react";
-import axios from "axios";
-import type { Project } from "@/app/workspace/[workspaceID]/projects/[projectID]/page";
+import { updateProject } from "@/app/actions/project";
+import type { Project } from "@/app/workspace/[workspaceID]/projects/[projectID]/ProjectDetailClient";
 
 interface EditProjectModalProps {
     isOpen: boolean;
@@ -34,16 +34,20 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
         setLoading(true);
         setError(null);
         try {
-            await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/project/updateProject/${project.id}`, {
+            const result = await updateProject(String(project.id), {
                 name,
                 field,
                 description,
                 status
-            }, { withCredentials: true });
-            onSuccess();
-            onClose();
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to update project details");
+            });
+            if (result.success) {
+                onSuccess();
+                onClose();
+            } else {
+                setError(result.message || "Failed to update project details");
+            }
+        } catch {
+            setError("Failed to update project details");
         } finally {
             setLoading(false);
         }

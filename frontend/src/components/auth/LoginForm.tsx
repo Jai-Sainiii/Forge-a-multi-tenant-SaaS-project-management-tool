@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
-import axios from "axios";
 import { useAuth } from "@/authContext/AuthContext";
+import { loginUser, getCurrentUser } from "@/app/actions/auth";
 
 export default function LoginForm({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
@@ -20,53 +20,45 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
     }
     setError(null);
     setIsLoading(true);
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL;
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/auth/login`,
-        { email: String(email), password: String(password) },
-        { withCredentials: true }
-      );
-      if (auth) {
-        auth.setUser(res.data.user);
-      }
-      onClose();
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Invalid email or password.");
+      const res = await loginUser({
+        email: String(email),
+        password: String(password)
+      });
+      if (res.success) {
+        if (auth) {
+          auth.setUser(res.user);
+        }
+        onClose();
       } else {
-        setError("Invalid email or password.");
+        setError(res.message || "Invalid email or password.");
       }
+    } catch (err: unknown) {
+      setError("Invalid email or password.");
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleGoogleLogin = () => {
     setError(null);
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL;
     const width = 500;
     const height = 600;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
 
     const popup = window.open(
-      `${BACKEND_URL}/auth/google`,
+      `/api/auth/google`,
       "google-oauth",
       `width=${width},height=${height},left=${left},top=${top}`
     );
 
     const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== BACKEND_URL) return;
-
       if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
         try {
-          const meRes = await axios.post(
-            `${BACKEND_URL}/auth/me`,
-            {},
-            { withCredentials: true }
-          );
-          if (auth) {
-            auth.setUser(meRes.data.user);
+          const user = await getCurrentUser();
+          if (auth && user) {
+            auth.setUser(user);
           }
           onClose();
         } catch (err) {

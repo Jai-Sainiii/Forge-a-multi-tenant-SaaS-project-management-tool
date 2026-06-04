@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { UserPlus, X, Loader2 } from "lucide-react";
-import axios from "axios";
+import { addTeamMember } from "@/app/actions/team";
 
 interface AddTeamMemberModalProps {
     isOpen: boolean;
@@ -26,23 +26,19 @@ export default function AddTeamMemberModal({ isOpen, onClose, selectedTeamForAdd
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/team/addTeamMember/${selectedTeamForAdd.id}`,
-                {
-                    userId: Number(userId),
-                    position: position || role,
-                    role
-                },
-                { withCredentials: true }
-            );
-            if (res.data.success) {
+            const result = await addTeamMember(selectedTeamForAdd.id, {
+                userId: Number(userId),
+                position: position || role,
+                role
+            });
+            if (result.success) {
                 onSuccess();
                 onClose();
             } else {
-                setError(res.data.message || "Failed to add member to team.");
+                setError(result.message || "Failed to add member to team.");
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to add member to team.");
+        } catch {
+            setError("Failed to add member to team.");
         } finally {
             setLoading(false);
         }

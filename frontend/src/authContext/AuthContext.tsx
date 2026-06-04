@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { getCurrentUser } from "@/app/actions/auth";
 
 interface User {
   id: number;
@@ -20,16 +20,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    axios
-      .post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/me`,
-        {},
-        {
-          withCredentials: true,
-        },
-      )
-      .then((res) => {
-        setUser(res.data.user);
+    getCurrentUser()
+      .then((userData) => {
+        setUser(userData);
       })
       .catch((err) => {
         console.log(err);

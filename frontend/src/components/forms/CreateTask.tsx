@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { X, FileText, Loader2, ListTodo, AlignLeft, AlertCircle, ArrowUp, CheckCircle2, Clock, Users } from "lucide-react";
+import { getProjects, getSingleProject } from "@/app/actions/project";
+import { createTask } from "@/app/actions/task";
 
 interface Project {
   id: number;
@@ -50,12 +51,9 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
     if (!projectID) {
       const fetchProjects = async () => {
         try {
-          const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/project/getProjects/${workspaceID}`,
-            { withCredentials: true }
-          );
-          if (res.data.projects) {
-            setProjects(res.data.projects);
+          const result = await getProjects(workspaceID);
+          if (result.success) {
+            setProjects(result.projects);
           }
         } catch (err) {
           console.error("Failed to load projects", err);
@@ -77,12 +75,9 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
     const fetchProjectMembers = async () => {
       setLoadingMembers(true);
       try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/project/singleProject/${formData.projectId}`,
-          { withCredentials: true }
-        );
-        if (res.data.project && res.data.project.projectMembers) {
-          setProjectMembers(res.data.project.projectMembers);
+        const result = await getSingleProject(formData.projectId);
+        if (result.success && result.project && result.project.projectMembers) {
+          setProjectMembers(result.project.projectMembers);
         } else {
           setProjectMembers([]);
         }
@@ -116,22 +111,18 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/createTask/${workspaceID}`,
-        {
-          ...formData,
-          assigneeIds: selectedAssigneeIds,
-        },
-        { withCredentials: true }
-      );
-      if (res.data.success) {
+      const result = await createTask(workspaceID, {
+        ...formData,
+        assigneeIds: selectedAssigneeIds,
+      });
+      if (result.success) {
         onSuccess?.();
         onClose();
       } else {
-        setError(res.data.message || "Failed to create task.");
+        setError(result.message || "Failed to create task.");
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong. Please try again.");
+    } catch {
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

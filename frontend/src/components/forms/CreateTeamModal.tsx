@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, X, Loader2 } from "lucide-react";
-import axios from "axios";
+import { createTeam } from "@/app/actions/team";
 
 interface CreateTeamModalProps {
     isOpen: boolean;
@@ -24,21 +24,15 @@ export default function CreateTeamModal({ isOpen, onClose, projectID, onSuccess 
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/team/createTeam/${projectID}`,
-                {
-                    teamName: teamName.trim()
-                },
-                { withCredentials: true }
-            );
-            if (res.data.team) {
+            const result = await createTeam(projectID, teamName.trim());
+            if (result.success && result.team) {
                 onSuccess();
                 onClose();
             } else {
-                setError("Failed to create team.");
+                setError(result.message || "Failed to create team.");
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || err.response?.data?.error || "Failed to create team.");
+        } catch {
+            setError("Failed to create team.");
         } finally {
             setLoading(false);
         }

@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import AuthModel from "./auth/AuthModel";
 import { useAuth } from "@/authContext/AuthContext";
-import axios from "axios";
+import { logoutUser } from "@/app/actions/auth";
 
 const NAV_LINKS = [
   { label: "About", href: "/about" },
@@ -32,13 +32,9 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    axios
-      .post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/logout`, {}, { withCredentials: true })
-      .then(() => {
-        window.location.href = "/";
-      })
-      .catch((err) => console.error(err.message));
+  const handleLogout = async () => {
+    await logoutUser();
+    window.location.href = "/";
   };
 
   const closeMobile = () => setIsMobileMenuOpen(false);

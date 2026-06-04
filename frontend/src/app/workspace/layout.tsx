@@ -7,8 +7,7 @@ import TopBar from "@/components/shell/TopBar";
 import { useAuth } from "@/authContext/AuthContext";
 import { WorkspaceModalProvider } from "@/context/WorkspaceModalContext";
 import { usePathname } from "next/navigation";
-import axios from "axios";
-import {useRouter} from "next/navigation";
+import { getAllUserWorkspaces } from "@/app/actions/workspace";
 
 export default function WorkspaceLayout({
   children,
@@ -19,7 +18,6 @@ export default function WorkspaceLayout({
   const path = usePathname();
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const router = useRouter();
 
   const activeHomepage = () => {
     if (path === "/workspace/all") return null;
@@ -27,16 +25,11 @@ export default function WorkspaceLayout({
   };
 
   const getWorkspaces = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/getAllWorkspaces`,
-      { withCredentials: true },
-    );
-    setWorkspaces(response.data.workspaceData.workspaces);
+    const result = await getAllUserWorkspaces();
+    if (result.success) {
+      setWorkspaces(result.workspaces);
+    }
   };
-
-  // if (!user) {
-  //   router.push("/");
-  // }
 
   useEffect(() => {
     getWorkspaces();

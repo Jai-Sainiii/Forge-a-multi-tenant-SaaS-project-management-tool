@@ -172,7 +172,7 @@ export const me = async (req: Request, res: Response) => {
             return res.status(404).json({message: "User not found"});
         }
 
-        res.json({user: {id: user.id, name: user.name, email: user.email}});
+        res.json({user: {name: user.name, email: user.email}});
     } catch (error) {
         res.status(401).json({ success: false, message: "Invalid or expired token" });
     }

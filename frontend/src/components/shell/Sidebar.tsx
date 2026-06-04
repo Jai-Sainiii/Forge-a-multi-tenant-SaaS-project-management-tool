@@ -13,8 +13,7 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { span } from "framer-motion/client";
+import { getWorkspaceDashboard } from "@/app/actions/workspace";
 
 
 
@@ -66,10 +65,10 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
 
   const fetchworkspaces = async()=>{
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/workspace/${workspaceID}`,{
-        withCredentials: true,
-      })
-      setWorkspaceData(res.data.workspaceData)
+      const result = await getWorkspaceDashboard(String(workspaceID));
+      if (result.success) {
+        setWorkspaceData({ workspace: result.workspace, projects: result.projects } as any);
+      }
     } catch (error) {
       console.log("Error while fetching workspaces")
     }

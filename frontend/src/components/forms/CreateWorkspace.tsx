@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import { X, Briefcase, FileText, Globe, Lock, Loader2 } from "lucide-react";
+import { createWorkspace } from "@/app/actions/workspace";
 
 interface CreateWorkspaceModalProps {
   onClose: () => void;
@@ -35,20 +35,16 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
     setLoading(true);
     setError(null);
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/workspace/createWorkSpace`,
-        formData,
-        { withCredentials: true }
-      );
-      onSuccess?.();
-      onClose();
-      getworkspaces();
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Something went wrong. Please try again.");
+      const result = await createWorkspace(formData);
+      if (result.success) {
+        onSuccess?.();
+        onClose();
+        getworkspaces();
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(result.message || "Failed to create workspace.");
       }
+    } catch {
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Shield, X, AlertCircle, Loader2 } from "lucide-react";
-import axios from "axios";
+import { updateProjectMember } from "@/app/actions/project";
 
 interface EditProjectMemberModalProps {
     isOpen: boolean;
@@ -31,22 +31,19 @@ export default function EditProjectMemberModal({ isOpen, onClose, projectID, sel
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.put(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/project/updateProjectMember/${projectID}/${selectedProjectMemberForEdit.userId}`,
-                {
-                    role,
-                    position
-                },
-                { withCredentials: true }
+            const result = await updateProjectMember(
+                projectID,
+                selectedProjectMemberForEdit.userId,
+                { role, position }
             );
-            if (res.data.success) {
+            if (result.success) {
                 onSuccess();
                 onClose();
             } else {
-                setError(res.data.message || "Failed to update project member.");
+                setError(result.message || "Failed to update project member.");
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to update project member.");
+        } catch {
+            setError("Failed to update project member.");
         } finally {
             setLoading(false);
         }

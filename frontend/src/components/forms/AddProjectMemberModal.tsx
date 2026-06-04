@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { UserPlus, X, Loader2 } from "lucide-react";
-import axios from "axios";
+import { addProjectMember } from "@/app/actions/project";
 
 interface AddProjectMemberModalProps {
     isOpen: boolean;
@@ -26,23 +26,19 @@ export default function AddProjectMemberModal({ isOpen, onClose, projectID, avai
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/project/addProjectMember/${projectID}`,
-                {
-                    userId: Number(userId),
-                    role,
-                    position: position || role
-                },
-                { withCredentials: true }
-            );
-            if (res.data.success) {
+            const result = await addProjectMember(projectID, {
+                userId: Number(userId),
+                role,
+                position: position || role
+            });
+            if (result.success) {
                 onSuccess();
                 onClose();
             } else {
-                setError(res.data.message || "Failed to add member to project.");
+                setError(result.message || "Failed to add member to project.");
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to add member to project.");
+        } catch {
+            setError("Failed to add member to project.");
         } finally {
             setLoading(false);
         }

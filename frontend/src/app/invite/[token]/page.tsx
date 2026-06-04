@@ -2,13 +2,12 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { useAuth } from "@/authContext/AuthContext";
+import { acceptInvite } from "@/app/actions/member";
 import { 
     Loader2, 
     CheckCircle2, 
     AlertCircle, 
-    UserPlus,
     ArrowRight,
     LogIn
 } from "lucide-react";
@@ -34,13 +33,8 @@ export default function InviteAcceptPage({
     useEffect(() => {
         if (!auth) return;
 
-        // If auth is still loading (no user and no error yet), we wait
-        // But the current AuthContext doesn't have a loading state. 
-        // It starts with user = null.
-        
-        const acceptInvite = async () => {
+        const handleAcceptInvite = async () => {
             if (!auth.user) {
-                // If not logged in, we stay in 'checking' but show a login required message
                 setStatus('error');
                 setMessage("You need to be logged in to accept an invite.");
                 return;
@@ -48,35 +42,34 @@ export default function InviteAcceptPage({
 
             setStatus('accepting');
             try {
-                const res = await axios.post(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/invite/accept/${token}`,
-                    {},
-                    { withCredentials: true }
-                );
+                const res = await acceptInvite(token);
 
-                if (res.data.success) {
+                if (res.success) {
                     setStatus('success');
-                    setMessage(res.data.message);
-                    setWorkspaceId(res.data.workspaceId);
+                    setMessage(res.message || "Invite accepted successfully!");
+                    setWorkspaceId(res.workspaceId);
                     
                     // Auto redirect after 3 seconds
                     setTimeout(() => {
-                        router.push(`/workspace/${res.data.workspaceId}`);
+                        router.push(`/workspace/${res.workspaceId}`);
                     }, 3000);
+                } else {
+                    setStatus('error');
+                    if (res.status === 409) {
+                        // Already a member
+                        setMessage(res.message || "You are already a member of this workspace.");
+                        setWorkspaceId(res.workspaceId);
+                    } else {
+                        setMessage(res.message || "Failed to accept invite. The link may be expired or invalid.");
+                    }
                 }
             } catch (err: any) {
                 setStatus('error');
-                if (err.response?.status === 409) {
-                    // Already a member
-                    setMessage(err.response.data.message);
-                    setWorkspaceId(err.response.data.workspaceId);
-                } else {
-                    setMessage(err.response?.data?.message || "Failed to accept invite. The link may be expired or invalid.");
-                }
+                setMessage("Failed to accept invite. The link may be expired or invalid.");
             }
         };
 
-        acceptInvite();
+        handleAcceptInvite();
     }, [auth, token, router]);
 
     return (

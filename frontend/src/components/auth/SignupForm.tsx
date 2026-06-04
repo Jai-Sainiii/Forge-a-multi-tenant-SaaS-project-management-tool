@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
-import axios from "axios";
 import { useAuth } from "@/authContext/AuthContext";
+import { signupUser, getCurrentUser } from "@/app/actions/auth";
 
 export default function SignupForm({
   onSwitchToLogin,
@@ -23,30 +23,23 @@ export default function SignupForm({
 
   const handleGoogleLogin = () => {
     setError(null);
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL;
     const width = 500;
     const height = 600;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
 
     const popup = window.open(
-      `${BACKEND_URL}/auth/google`,
+      `/api/auth/google`,
       "google-oauth",
       `width=${width},height=${height},left=${left},top=${top}`
     );
 
     const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== BACKEND_URL) return;
-
       if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
         try {
-          const meRes = await axios.post(
-            `${BACKEND_URL}/auth/me`,
-            {},
-            { withCredentials: true }
-          );
-          if (auth) {
-            auth.setUser(meRes.data.user);
+          const user = await getCurrentUser();
+          if (auth && user) {
+            auth.setUser(user);
           }
           onClose();
         } catch (err) {
@@ -67,22 +60,20 @@ export default function SignupForm({
     }
     setError(null);
     setIsLoading(true);
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL;
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/auth/signup`,
-        { name: String(name), email: String(email), password: String(password) },
-        { withCredentials: true }
-      );
-      console.log(res.data);
-      setSuccess(true);
-      setTimeout(() => onSwitchToLogin(), 1500);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Could not create account. Try again.");
+      const res = await signupUser({
+        name: String(name),
+        email: String(email),
+        password: String(password)
+      });
+      if (res.success) {
+        setSuccess(true);
+        setTimeout(() => onSwitchToLogin(), 1500);
       } else {
-        setError("Could not create account. Try again.");
+        setError(res.message || "Could not create account. Try again.");
       }
+    } catch (err: unknown) {
+      setError("Could not create account. Try again.");
     } finally {
       setIsLoading(false);
     }
