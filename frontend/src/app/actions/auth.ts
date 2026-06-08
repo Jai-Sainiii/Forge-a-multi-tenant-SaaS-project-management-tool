@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-const BACKEND_URL = process.env.BASE_URL_BACKEND || "http://localhost:5000";
+const BACKEND_URL = process.env.BASE_URL_BACKEND;
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -119,4 +119,14 @@ export async function signupUser(formData: any) {
   } catch (err) {
     return { success: false, message: "An error occurred during signup." };
   }
+}
+
+export async function setTokenCookie(token: string) {
+  (await cookies()).set("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+    maxAge: 24 * 60 * 60,
+  });
 }

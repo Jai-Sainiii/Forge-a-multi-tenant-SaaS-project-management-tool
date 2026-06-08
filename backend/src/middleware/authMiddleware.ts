@@ -295,7 +295,7 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
             <body>
                 <script>
                     if (window.opener) {
-                        window.opener.postMessage({ type: "GOOGLE_AUTH_SUCCESS" }, "${FRONTEND_URL}");
+                        window.opener.postMessage({ type: "GOOGLE_AUTH_SUCCESS", token: "${token}" }, "${FRONTEND_URL}");
                     }
                     window.close();
                 </script>

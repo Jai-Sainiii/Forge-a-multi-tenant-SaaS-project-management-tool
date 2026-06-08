@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useAuth } from "@/authContext/AuthContext";
-import { signupUser, getCurrentUser } from "@/app/actions/auth";
+import { signupUser, getCurrentUser, setTokenCookie } from "@/app/actions/auth";
 
 export default function SignupForm({
   onSwitchToLogin,
@@ -37,6 +37,10 @@ export default function SignupForm({
     const handleMessage = async (event: MessageEvent) => {
       if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
         try {
+          const token = event.data?.token;
+          if (token) {
+            await setTokenCookie(token);
+          }
           const user = await getCurrentUser();
           if (auth && user) {
             auth.setUser(user);
