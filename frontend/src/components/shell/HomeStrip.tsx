@@ -24,12 +24,12 @@ interface HomeStripProps {
 }
 
 const AVATAR_GRADIENTS = [
-  "linear-gradient(135deg, #6C5CE7, #a29bfe)", // Purple
-  "linear-gradient(135deg, #00B894, #55efc4)", // Emerald
-  "linear-gradient(135deg, #FF7675, #fab1a0)", // Coral
-  "linear-gradient(135deg, #0984E3, #74b9ff)", // Ocean
-  "linear-gradient(135deg, #E17055, #ffeaa7)", // Sunset
-  "linear-gradient(135deg, #d63031, #fd79a8)", // Rose
+  "linear-gradient(135deg, #18181B, #3F3F46)", // Zinc dark
+  "linear-gradient(135deg, #27272A, #52525B)", // Zinc medium
+  "linear-gradient(135deg, #3F3F46, #71717A)", // Zinc light-medium
+  "linear-gradient(135deg, #52525B, #A1A1AA)", // Zinc light
+  "linear-gradient(135deg, #71717A, #D4D4D8)", // Zinc extra-light
+  "linear-gradient(135deg, #18181B, #71717A)", // Zinc mix
 ];
 
 export default function HomeStrip({ workspaces }: HomeStripProps) {

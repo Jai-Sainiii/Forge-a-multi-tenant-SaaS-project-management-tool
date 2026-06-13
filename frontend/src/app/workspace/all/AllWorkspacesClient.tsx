@@ -47,12 +47,12 @@ function WorkspaceSkeleton() {
 }
 
 const AVATAR_COLORS = [
-  ["#6C5CE7", "#a29bfe"],
-  ["#00B894", "#55efc4"],
-  ["#E17055", "#fab1a0"],
-  ["#0984E3", "#74b9ff"],
-  ["#FDCB6E", "#ffeaa7"],
-  ["#E84393", "#fd79a8"],
+  ["#18181B", "#3F3F46"],
+  ["#27272A", "#52525B"],
+  ["#3F3F46", "#71717A"],
+  ["#52525B", "#A1A1AA"],
+  ["#71717A", "#D4D4D8"],
+  ["#18181B", "#52525B"],
 ];
 
 function getAvatarColors(index: number) {
@@ -80,16 +80,14 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="bg-white dark:bg-zinc-900 border transition-all duration-200 cursor-pointer"
       style={{
-        background: "#FFFFFF",
-        border: hovered ? "1.5px solid #6C5CE7" : "1.5px solid #E8E6E0",
+        borderColor: hovered ? "var(--primary)" : "var(--secondary-light)",
         borderRadius: 12,
         padding: "20px",
-        cursor: "pointer",
-        transition: "all 0.18s ease",
         boxShadow: hovered
-          ? "0 4px 20px rgba(108, 92, 231, 0.12)"
-          : "0 1px 4px rgba(0,0,0,0.04)",
+          ? "0 4px 20px rgba(0, 0, 0, 0.08)"
+          : "0 1px 4px rgba(0,0,0,0.02)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
       }}
     >
@@ -119,7 +117,7 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: hovered ? "#6C5CE7" : "#1A1918",
+                color: hovered ? "var(--primary)" : "var(--primary-light)",
                 lineHeight: 1.3,
                 transition: "color 0.15s",
               }}
@@ -130,7 +128,7 @@ function WorkspaceCard({ workspace, index }: { workspace: Workspace; index: numb
               style={{
                 fontSize: 10,
                 fontWeight: 400,
-                color: hovered ? "#6C5CE7" : "#1A1918",
+                color: hovered ? "var(--primary)" : "var(--primary-light)",
                 lineHeight: 1.3,
                 transition: "color 0.15s",
               }}
@@ -243,7 +241,7 @@ export default function AllWorkspacesClient({ initialWorkspaces, initialError }:
             style={{
               fontSize: 20,
               fontWeight: 700,
-              color: "#1A1918",
+              color: "var(--primary)",
               letterSpacing: "-0.02em",
               lineHeight: 1.3,
               marginBottom: 4,
@@ -251,7 +249,7 @@ export default function AllWorkspacesClient({ initialWorkspaces, initialError }:
           >
             All Workspaces
           </h1>
-          <p style={{ fontSize: 13, color: "#9A9890" }}>
+          <p style={{ fontSize: 13, color: "var(--secondary)" }}>
             Browse and join public workspaces available to your team.
           </p>
         </div>
@@ -322,7 +320,7 @@ export default function AllWorkspacesClient({ initialWorkspaces, initialError }:
                 width: 56,
                 height: 56,
                 borderRadius: 14,
-                background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+                background: "linear-gradient(135deg, #18181B 0%, #52525B 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -331,7 +329,7 @@ export default function AllWorkspacesClient({ initialWorkspaces, initialError }:
             >
               <Briefcase size={24} color="#fff" />
             </div>
-            <h2 style={{ fontSize: 16, fontWeight: 600, color: "#1A1918", marginBottom: 6 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: "var(--primary)", marginBottom: 6 }}>
               No workspaces yet
             </h2>
             <p style={{ fontSize: 13, color: "#9A9890", maxWidth: 280 }}>

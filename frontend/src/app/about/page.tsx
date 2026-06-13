@@ -7,7 +7,7 @@ import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500"] });
 
-const PRIMARY = "#3C3489";
+const PRIMARY = "#09090B";
 const TEAL = "#0D9488";
 const BORDER = "#E4E4E7";
 const TEXT_MAIN = "#09090B";
@@ -398,8 +398,8 @@ export default function AboutPage() {
                     width: 40,
                     height: 40,
                     borderRadius: 4,
-                    background: "#F4F0FF",
-                    color: PRIMARY,
+                    background: "#F4F4F5",
+                    color: "#09090B",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -584,9 +584,9 @@ export default function AboutPage() {
                         width: 12,
                         height: 12,
                         borderRadius: "50%",
-                        background: PRIMARY,
+                        background: "#09090B",
                         border: `2px solid #fff`,
-                        boxShadow: `0 0 0 2px ${PRIMARY}`,
+                        boxShadow: `0 0 0 2px #09090B`,
                         margin: "0 auto",
                         gridColumn: "2",
                         flexShrink: 0,
@@ -631,8 +631,8 @@ export default function AboutPage() {
               borderRadius: 9999,
               fontSize: 12,
               fontWeight: 500,
-              color: "#C5C0FF",
-              border: "1px solid rgba(197,192,255,0.3)",
+              color: "#E4E4E7",
+              border: "1px solid rgba(228,228,231,0.3)",
               marginBottom: 20,
             }}
           >
@@ -681,7 +681,7 @@ export default function AboutPage() {
                 fontSize: 14,
                 fontWeight: 500,
                 background: "#fff",
-                color: PRIMARY,
+                color: "#09090B",
                 textDecoration: "none",
                 border: "1px solid #fff",
                 transition: "opacity .15s",

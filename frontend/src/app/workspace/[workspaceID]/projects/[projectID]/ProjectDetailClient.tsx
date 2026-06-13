@@ -115,7 +115,7 @@ const TaskRow = memo(function TaskRow({ task, workspaceID }: { task: Task; works
             className="group hover:bg-slate-50/50 dark:hover:bg-slate-950/30 transition-colors duration-150 cursor-pointer"
         >
             <td className="px-6 py-4">
-                <div className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#6C5CE7] transition-colors mb-0.5">
+                <div className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-black dark:group-hover:text-white transition-colors mb-0.5">
                     {task.title}
                 </div>
                 <div className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-md">
@@ -153,7 +153,7 @@ const MemberRow = memo(function MemberRow({
     return (
         <div className="group flex items-center justify-between p-4.5 hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-colors duration-150">
             <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#6C5CE7] to-[#8b7ff0] text-white font-bold text-sm flex items-center justify-center shadow-md shadow-[#6C5CE7]/15 shrink-0 select-none">
+                <div className="w-9 h-9 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-950 font-bold text-sm flex items-center justify-center shadow-md shadow-black/10 dark:shadow-white/5 shrink-0 select-none">
                     {member.user?.name?.charAt(0).toUpperCase() || "?"}
                 </div>
                 <div>
@@ -165,7 +165,7 @@ const MemberRow = memo(function MemberRow({
             <div className="flex items-center gap-4">
                 <div className="text-right">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border border-slate-200/10">
-                        {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-[#6C5CE7]" />}
+                        {member.role?.toLowerCase() === "admin" && <Shield className="w-3 h-3 text-black dark:text-white" />}
                         {member.role}
                     </span>
                     <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-400 mt-1 capitalize">{member.position}</p>
@@ -175,7 +175,7 @@ const MemberRow = memo(function MemberRow({
                     <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                         <button
                             onClick={(e) => { e.stopPropagation(); onEdit(member); }}
-                            className="p-1.5 text-slate-400 hover:text-[#6C5CE7] hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-slate-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
                             title="Edit Member Role & Position"
                         >
                             <Shield className="w-3.5 h-3.5" />
@@ -221,13 +221,13 @@ const TeamAccordion = memo(function TeamAccordion({
                     {canEdit && (
                         <button
                             onClick={(e) => { e.stopPropagation(); onAddMember(team); }}
-                            className="p-1.5 text-[#6C5CE7] hover:bg-[#6C5CE7]/15 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-[#6C5CE7]/10"
+                            className="p-1.5 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-black/10 dark:hover:border-white/10"
                             title="Add Member to Team"
                         >
                             <UserPlus className="w-4 h-4" />
                         </button>
                     )}
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180 text-[#6C5CE7]" : ""}`} />
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180 text-black dark:text-white" : ""}`} />
                 </div>
             </div>
             
@@ -243,7 +243,7 @@ const TeamAccordion = memo(function TeamAccordion({
                         team.teamMembers.map((tm: any) => (
                             <div key={tm.id} className="flex items-center justify-between p-2.5 hover:bg-white dark:hover:bg-slate-900 rounded-xl border border-transparent hover:border-slate-200/50 dark:hover:border-slate-800/50 transition-colors duration-100">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#6C5CE7] to-[#8b7ff0] text-white font-bold text-[10px] flex items-center justify-center shadow-sm select-none shrink-0">
+                                    <div className="w-7 h-7 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-950 font-bold text-[10px] flex items-center justify-center shadow-sm select-none shrink-0">
                                         {tm.user?.name?.charAt(0).toUpperCase() || "?"}
                                     </div>
                                     <div>
@@ -384,11 +384,11 @@ export default function ProjectDetailClient({
     return (
         <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
             <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 p-6 sm:p-8 relative overflow-hidden">
-                <div className="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-[#6C5CE7]/8 to-[#a29bfe]/4 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-zinc-500/5 to-zinc-500/2 rounded-full blur-3xl pointer-events-none" />
                 
                 <Link 
                     href={`/workspace/${workspaceID}/projects`} 
-                    className="group inline-flex items-center text-xs font-bold uppercase tracking-wider text-[#6C5CE7] hover:text-[#5a4ed1] mb-6 transition-colors duration-150"
+                    className="group inline-flex items-center text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:opacity-80 mb-6 transition-colors duration-150"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2 transition-transform duration-150 group-hover:-translate-x-1" />
                     Back to Projects
@@ -397,7 +397,7 @@ export default function ProjectDetailClient({
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
                     <div className="space-y-3">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 bg-[#6C5CE7]/10 text-[#6C5CE7] rounded-xl border border-[#6C5CE7]/20 shadow-md shadow-[#6C5CE7]/5">
+                            <div className="p-3 bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-md">
                                 <FolderKanban className="w-6 h-6" />
                             </div>
                             <div>
@@ -424,7 +424,7 @@ export default function ProjectDetailClient({
                         {canEdit && (
                             <button 
                                 onClick={() => setIsCreateTaskModalOpen(true)}
-                                className="flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg hover:shadow-primary/10 cursor-pointer active:scale-97"
+                                className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg cursor-pointer active:scale-97"
                             >
                                 <Plus className="w-4 h-4" strokeWidth={2.5} />
                                 Add Task
@@ -437,7 +437,7 @@ export default function ProjectDetailClient({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white dark:bg-slate-900 p-4.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 shadow-lg shadow-slate-900/2 dark:shadow-black/10 flex items-start gap-4">
                     <div className="p-3.5 bg-slate-100 dark:bg-slate-950/40 text-slate-500 dark:text-slate-400 rounded-xl border border-slate-200/50 dark:border-slate-800 flex items-center justify-center">
-                        <Tag className="w-5 h-5 text-[#6C5CE7]" />
+                        <Tag className="w-5 h-5 text-black dark:text-white" />
                     </div>
                     <div>
                         <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Field / Category</p>
@@ -447,7 +447,7 @@ export default function ProjectDetailClient({
                 
                 <div className="bg-white dark:bg-slate-900 p-4.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 shadow-lg shadow-slate-900/2 dark:shadow-black/10 flex items-start gap-4">
                     <div className="p-3.5 bg-slate-100 dark:bg-slate-950/40 rounded-xl border border-slate-200/50 dark:border-slate-800 flex items-center justify-center">
-                        <Clock className="w-5 h-5 text-[#6C5CE7]" />
+                        <Clock className="w-5 h-5 text-black dark:text-white" />
                     </div>
                     <div>
                         <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5">Status</p>
@@ -463,11 +463,11 @@ export default function ProjectDetailClient({
                 <div className="bg-white dark:bg-slate-900 p-4.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/60 shadow-lg shadow-slate-900/2 dark:shadow-black/10 sm:col-span-2 flex flex-col justify-center">
                     <div className="flex justify-between text-xs font-bold mb-2">
                         <span className="text-slate-400 dark:text-slate-500 uppercase tracking-widest">Project Progress</span>
-                        <span className="text-[#6C5CE7] dark:text-[#a29bfe]">{progressPercentage}% ({completedTasksCount}/{totalTasksCount} Tasks)</span>
+                        <span className="text-black dark:text-white font-bold">{progressPercentage}% ({completedTasksCount}/{totalTasksCount} Tasks)</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-950/40 h-2.5 rounded-full overflow-hidden border border-slate-200/20 dark:border-slate-800/40">
                         <div 
-                            className="bg-gradient-to-r from-[#6C5CE7] to-[#8b7ff0] h-full rounded-full transition-[width] duration-500 shadow-inner" 
+                            className="bg-black dark:bg-white h-full rounded-full transition-[width] duration-500 shadow-inner" 
                             style={{ width: `${progressPercentage}%` }}
                         />
                     </div>
@@ -477,7 +477,7 @@ export default function ProjectDetailClient({
             <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 overflow-hidden">
                 <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/40 dark:bg-slate-900/40">
                     <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <ListTodo className="w-5 h-5 text-[#6C5CE7]" />
+                        <ListTodo className="w-5 h-5 text-black dark:text-white" />
                         Assigned Tasks
                         <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-950 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md border border-slate-200/10">
                             {totalTasksCount}
@@ -526,13 +526,13 @@ export default function ProjectDetailClient({
                 <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 flex flex-col overflow-hidden">
                     <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/40 dark:bg-slate-900/40">
                         <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Users className="w-5 h-5 text-[#6C5CE7]" />
+                            <Users className="w-5 h-5 text-black dark:text-white" />
                             Project Members
                         </h2>
                         {canEdit && (
                             <button 
                                 onClick={() => setIsAddProjectMemberModalOpen(true)}
-                                className="inline-flex items-center gap-1.5 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg hover:shadow-primary/10 cursor-pointer active:scale-97"
+                                className="inline-flex items-center gap-1.5 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg cursor-pointer active:scale-97"
                             >
                                 <UserPlus className="w-3.5 h-3.5" />
                                 Add Member
@@ -563,13 +563,13 @@ export default function ProjectDetailClient({
                 <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl shadow-lg shadow-slate-900/5 dark:shadow-black/20 flex flex-col overflow-hidden">
                     <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/40 dark:bg-slate-900/40">
                         <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Users className="w-5 h-5 text-[#6C5CE7]" />
+                            <Users className="w-5 h-5 text-black dark:text-white" />
                             Project Teams
                         </h2>
                         {canEdit && (
                             <button 
                                 onClick={() => setIsCreateTeamModalOpen(true)}
-                                className="inline-flex items-center gap-1.5 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg hover:shadow-primary/10 cursor-pointer active:scale-97"
+                                className="inline-flex items-center gap-1.5 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-md hover:shadow-lg cursor-pointer active:scale-97"
                             >
                                 <Plus className="w-3.5 h-3.5" />
                                 Create Team

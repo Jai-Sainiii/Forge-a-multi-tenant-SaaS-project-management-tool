@@ -1,28 +1,151 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @import "tailwindcss";
 
+:root {
+  --primary: #000000;
+  --primary-light: #27272a;
+  --secondary: #71717a;
+  --secondary-light: #e4e4e7;
+  --surface: #f9f8f6;
+}
+
+.dark {
+  --primary: #ffffff;
+  --primary-light: #e4e4e7;
+  --secondary: #a1a1aa;
+  --secondary-light: #27272a;
+  --surface: #0a0a0b;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  
-  --color-primary: #251b72;
-  --color-primary-light: #3c3489;
-  --color-secondary: #006a61;
-  --color-secondary-light: #86f2e4;
-  --color-surface: #fcf8fb;
+
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-surface: var(--surface);
   --color-outline: #787582;
   --color-outline-variant: #c8c4d3;
 }
 
+/* ─── Marquee (logo ticker) ─── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* ─── Aurora / glow pulse ─── */
+@keyframes aurora-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(1.15); }
+}
+
+.animate-aurora {
+  animation: aurora-pulse 6s ease-in-out infinite;
+}
+
+/* ─── Shimmer sweep on buttons ─── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Gradient border card ─── */
+.gradient-border {
+  position: relative;
+  background: rgba(15, 15, 25, 0.6);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+:where(:not(.dark)) .gradient-border {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.0) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  transition: background 0.4s ease;
+  pointer-events: none;
+}
+
+.gradient-border:hover::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(161, 161, 170, 0.25) 50%,
+    rgba(63, 63, 70, 0.15) 100%
+  );
+}
+
+:where(:not(.dark)) .gradient-border:hover::before {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(113, 113, 122, 0.15) 50%,
+    rgba(228, 228, 231, 0.1) 100%
+  );
+}
+
+/* ─── Grid background pattern ─── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+:where(.dark) .grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
 @layer base {
   body {
-    @apply font-sans bg-surface text-[#1c1b1d] dark:bg-[#0f172a] dark:text-white antialiased transition-colors duration-300;
-    background-image: radial-gradient(#787582 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: 0 0;
+    @apply font-sans bg-surface text-[#1c1b1d] dark:bg-[#0a0a0f] dark:text-white antialiased transition-colors duration-300;
     position: relative;
   }
 
@@ -35,12 +158,25 @@
     height: 100%;
     background-image: radial-gradient(#787582 1px, transparent 1px);
     background-size: 24px 24px;
-    opacity: 0.05;
+    opacity: 0.025;
     z-index: -1;
     pointer-events: none;
+  }
+
+  :where(.dark) body::before {
+    opacity: 0.02;
   }
 }
 
 .markdown-body {
   @apply text-sm leading-relaxed;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-aurora,
+  .btn-shimmer::after {
+    animation: none !important;
+  }
 }

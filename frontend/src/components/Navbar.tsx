@@ -108,8 +108,8 @@ export default function Navbar() {
             {user ? (
               <div className="hidden sm:flex items-center gap-3">
                 <div className="flex items-center gap-2 border border-outline-variant dark:border-slate-700 rounded-full pl-1 pr-3 py-1">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-white">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-950 dark:from-zinc-200 dark:to-zinc-400 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-white dark:text-black">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -141,7 +141,7 @@ export default function Navbar() {
                     setOpen(true);
                     setActiveTab("signup");
                   }}
-                  className="bg-primary-light hover:bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                  className="bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer"
                 >
                   Start for free
                 </button>
@@ -227,7 +227,7 @@ export default function Navbar() {
                       closeMobile();
                       setActiveTab("signup");
                     }}
-                    className="bg-primary-light text-white text-sm font-medium px-4 py-2.5 rounded-lg w-fit cursor-pointer"
+                    className="bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black text-sm font-medium px-4 py-2.5 rounded-lg w-fit cursor-pointer"
                   >
                     Start for free
                   </button>

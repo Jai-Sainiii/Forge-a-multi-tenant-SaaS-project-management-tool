@@ -80,25 +80,13 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
       `}</style>
 
       <div
-        className="invite-modal-card"
-        style={{
-          background: "rgba(255, 255, 255, 0.85)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
-          borderRadius: 20,
-          width: "100%",
-          maxWidth: 440,
-          margin: "0 16px",
-          boxShadow: "0 30px 70px rgba(10, 10, 11, 0.15), 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
-          overflow: "hidden",
-        }}
+        className="invite-modal-card bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/60 dark:border-zinc-800 rounded-[20px] w-full max-w-[440px] mx-4 shadow-2xl overflow-hidden"
       >
         {/* Header */}
         <div
+          className="border-b border-black/5 dark:border-white/5"
           style={{
             padding: "24px 28px 20px",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -110,48 +98,39 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
                 width: 38,
                 height: 38,
                 borderRadius: 12,
-                background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+                background: "linear-gradient(135deg, #18181B 0%, #3F3F46 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(108, 92, 231, 0.25)",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
               }}
             >
               <UserPlus size={18} color="#fff" strokeWidth={2.2} />
             </div>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#1A1918", lineHeight: 1.2 }}>
+              <p className="text-[#1A1918] dark:text-white" style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2 }}>
                 Invite to Workspace
               </p>
-              <p style={{ fontSize: 12, color: "#7A7870", marginTop: 2 }}>
+              <p className="text-[#7A7870] dark:text-zinc-400" style={{ fontSize: 12, marginTop: 2 }}>
                 Only visible and usable by Workspace Owners
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            className="border border-black/10 dark:border-white/10 bg-white/50 dark:bg-zinc-800 text-[#4A4845] dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-zinc-700 hover:border-black/20 dark:hover:border-white/20"
             style={{
               width: 32,
               height: 32,
               borderRadius: 8,
-              border: "1px solid rgba(0, 0, 0, 0.08)",
-              background: "rgba(255, 255, 255, 0.5)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
               transition: "all 0.2s",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(0, 0, 0, 0.04)";
-              e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.15)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255, 255, 255, 0.5)";
-              e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.08)";
-            }}
           >
-            <X size={15} color="#4A4845" strokeWidth={2} />
+            <X size={15} strokeWidth={2} className="currentColor" />
           </button>
         </div>
 
@@ -161,11 +140,11 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               <div>
                 <label
+                  className="text-zinc-800 dark:text-zinc-200"
                   style={{
                     display: "block",
                     fontSize: 13,
                     fontWeight: 600,
-                    color: "#2C2A29",
                     marginBottom: 10,
                   }}
                 >
@@ -183,37 +162,11 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
                       <button
                         key={item.role}
                         onClick={() => setInviteRole(item.role)}
-                        style={{
-                          padding: "12px 10px",
-                          borderRadius: 12,
-                          border: isSelected
-                            ? "2px solid #6C5CE7"
-                            : "1.5px solid rgba(0, 0, 0, 0.08)",
-                          background: isSelected
-                            ? "rgba(108, 92, 231, 0.08)"
-                            : "rgba(255, 255, 255, 0.6)",
-                          color: isSelected ? "#5a4ed1" : "#4A4845",
-                          fontWeight: isSelected ? 700 : 500,
-                          fontSize: 13,
-                          cursor: "pointer",
-                          transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: 6,
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isSelected) {
-                            e.currentTarget.style.background = "rgba(0, 0, 0, 0.02)";
-                            e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.15)";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isSelected) {
-                            e.currentTarget.style.background = "rgba(255, 255, 255, 0.6)";
-                            e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.08)";
-                          }
-                        }}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-semibold cursor-pointer transition-all duration-200 ${
+                          isSelected
+                            ? "border-black dark:border-white bg-black/5 dark:bg-white/5 text-black dark:text-white font-bold"
+                            : "border-black/10 dark:border-white/10 bg-white/60 dark:bg-zinc-800/60 text-zinc-650 dark:text-zinc-350 hover:bg-black/5 dark:hover:bg-zinc-700/60"
+                        }`}
                       >
                         <IconComp size={16} strokeWidth={isSelected ? 2.5 : 1.8} />
                         {item.label}
@@ -222,14 +175,12 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
                   })}
                 </div>
                 <div
+                  className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300"
                   style={{
-                    background: "rgba(0, 0, 0, 0.03)",
-                    border: "1px solid rgba(0, 0, 0, 0.04)",
                     borderRadius: 10,
                     padding: "10px 12px",
                     marginTop: 12,
                     fontSize: 11,
-                    color: "#6B6860",
                     lineHeight: 1.4,
                   }}
                 >
@@ -263,14 +214,14 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
                 disabled={generatingLink}
                 style={{
                   width: "100%",
-                  background: generatingLink ? "#a29bfe" : "linear-gradient(135deg, #6C5CE7 0%, #5a4ed1 100%)",
+                  background: generatingLink ? "#71717A" : "linear-gradient(135deg, #18181B 0%, #000000 100%)",
                   color: "#fff",
                   fontWeight: 600,
                   fontSize: 14,
                   padding: "12px",
                   borderRadius: 12,
                   border: "none",
-                  boxShadow: "0 6px 20px rgba(108, 92, 231, 0.3)",
+                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
                   cursor: generatingLink ? "not-allowed" : "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -323,19 +274,17 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#7A7870", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                <label className="text-zinc-550 dark:text-zinc-400" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.03em" }}>
                   Copy & Share Link
                 </label>
                 <div style={{ display: "flex", gap: 8 }}>
                   <div
+                    className="bg-white/60 dark:bg-zinc-800/60 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-zinc-100"
                     style={{
                       flex: 1,
-                      background: "rgba(255, 255, 255, 0.6)",
-                      border: "1.5px solid rgba(0, 0, 0, 0.08)",
                       borderRadius: 10,
                       padding: "10px 12px",
                       fontSize: 13,
-                      color: "#4A4845",
                       fontFamily: "monospace",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -351,14 +300,14 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
                       height: 40,
                       borderRadius: 10,
                       border: "none",
-                      background: copySuccess ? "#10B981" : "#6C5CE7",
+                      background: copySuccess ? "#10B981" : "#18181B",
                       color: "#fff",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       cursor: "pointer",
                       transition: "all 0.2s",
-                      boxShadow: copySuccess ? "0 4px 12px rgba(16, 185, 129, 0.25)" : "0 4px 12px rgba(108, 92, 231, 0.25)",
+                      boxShadow: copySuccess ? "0 4px 12px rgba(16, 185, 129, 0.25)" : "0 4px 12px rgba(0, 0, 0, 0.15)",
                     }}
                   >
                     {copySuccess ? <Check size={18} /> : <Copy size={16} />}
@@ -368,11 +317,9 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
 
               <button
                 onClick={() => setGeneratedLink(null)}
+                className="text-black dark:text-white border border-black dark:border-white hover:bg-black/5 dark:hover:bg-white/5"
                 style={{
                   width: "100%",
-                  background: "transparent",
-                  color: "#6C5CE7",
-                  border: "1.5px solid #6C5CE7",
                   fontWeight: 600,
                   fontSize: 13,
                   padding: "10px",
@@ -381,8 +328,6 @@ export default function WorkspaceInviteModal({ onClose, workspaceID }: Workspace
                   transition: "all 0.2s",
                   marginTop: 8,
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(108, 92, 231, 0.05)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               >
                 Create Another Link
               </button>

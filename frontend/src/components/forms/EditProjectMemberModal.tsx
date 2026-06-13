@@ -51,9 +51,9 @@ export default function EditProjectMemberModal({ isOpen, onClose, projectID, sel
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 ease-out">
+            <div className="bg-white/85 dark:bg-zinc-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 ease-out">
                 <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-white/50 dark:bg-slate-900/50">
-                    <h3 className="text-base font-bold text-[#6C5CE7] flex items-center gap-2">
+                    <h3 className="text-base font-bold text-black dark:text-white flex items-center gap-2">
                         <Shield className="w-5 h-5" />
                         Edit Project Member
                     </h3>
@@ -67,7 +67,7 @@ export default function EditProjectMemberModal({ isOpen, onClose, projectID, sel
 
                 <div className="p-6 space-y-4">
                     <div className="flex items-center gap-3 p-3 bg-slate-50/50 dark:bg-slate-950/40 border border-slate-200/40 dark:border-slate-800/45 rounded-xl">
-                        <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-gradient-to-br from-[#6C5CE7] to-[#8b7ff0] text-white font-bold text-sm flex items-center justify-center shadow-md shrink-0 select-none">
+                        <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-950 font-bold text-sm flex items-center justify-center shadow-md shrink-0 select-none">
                             {selectedProjectMemberForEdit.user?.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -89,7 +89,7 @@ export default function EditProjectMemberModal({ isOpen, onClose, projectID, sel
                             placeholder="e.g. Lead Developer, QA Lead"
                             value={position}
                             onChange={(e) => setPosition(e.target.value)}
-                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-955/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] transition-all text-sm font-medium"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-955/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all text-sm font-medium"
                         />
                     </div>
 
@@ -105,8 +105,8 @@ export default function EditProjectMemberModal({ isOpen, onClose, projectID, sel
                                     onClick={() => setRole(r)}
                                     className={`px-3 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer capitalize ${
                                         role === r
-                                            ? "bg-[#6C5CE7] text-white border-transparent shadow-md"
-                                            : "bg-slate-50/50 dark:bg-slate-950/40 text-slate-650 dark:text-slate-400 border-slate-200 dark:border-slate-805 hover:bg-slate-100 dark:hover:bg-slate-900"
+                                            ? "bg-black dark:bg-white text-white dark:text-black border-transparent shadow-md"
+                                            : "bg-slate-50/50 dark:bg-slate-955/40 text-slate-650 dark:text-slate-400 border-slate-200 dark:border-slate-805 hover:bg-slate-105 dark:hover:bg-slate-900"
                                     }`}
                                 >
                                     {r}
@@ -139,7 +139,7 @@ export default function EditProjectMemberModal({ isOpen, onClose, projectID, sel
                         <button
                             onClick={handleUpdate}
                             disabled={loading}
-                            className="bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-97"
+                            className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer active:scale-97"
                         >
                             {loading ? (
                                 <>

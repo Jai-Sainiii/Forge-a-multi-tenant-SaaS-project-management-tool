@@ -85,24 +85,31 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
         }
         .ws-input:focus {
           outline: none;
-          border-color: #6C5CE7 !important;
-          box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+          border-color: #000000 !important;
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+        .dark .ws-input:focus {
+          border-color: #ffffff !important;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
         }
         .vis-option {
           cursor: pointer;
           transition: all 0.15s ease;
         }
         .vis-option:hover {
-          border-color: #6C5CE7 !important;
-          background: rgba(108, 92, 231, 0.04) !important;
+          border-color: #000000 !important;
+          background: rgba(0, 0, 0, 0.02) !important;
+        }
+        .dark .vis-option:hover {
+          border-color: #ffffff !important;
+          background: rgba(255, 255, 255, 0.02) !important;
         }
       `}</style>
 
       {/* Modal card */}
       <div
-        className="ws-modal-card"
+        className="ws-modal-card bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/10"
         style={{
-          background: "#FFFFFF",
           borderRadius: 16,
           width: "100%",
           maxWidth: 480,
@@ -113,9 +120,9 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
       >
         {/* Header */}
         <div
+          className="border-b border-black/5 dark:border-white/5"
           style={{
             padding: "20px 24px 18px",
-            borderBottom: "1px solid #F0EEE8",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -127,7 +134,7 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
                 width: 32,
                 height: 32,
                 borderRadius: 8,
-                background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+                background: "linear-gradient(135deg, #18181B 0%, #3F3F46 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -136,21 +143,21 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
               <Briefcase size={15} color="#fff" strokeWidth={2} />
             </div>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1918", lineHeight: 1.3 }}>
+              <p className="text-zinc-900 dark:text-zinc-100 font-semibold" style={{ fontSize: 14, lineHeight: 1.3 }}>
                 New Workspace
               </p>
-              <p style={{ fontSize: 12, color: "#9A9890", marginTop: 1 }}>
+              <p className="text-zinc-400 dark:text-zinc-500" style={{ fontSize: 12, marginTop: 1 }}>
                 Set up a shared space for your team
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            className="border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5"
             style={{
               width: 28,
               height: 28,
               borderRadius: 6,
-              border: "1px solid #E8E6E0",
               background: "transparent",
               display: "flex",
               alignItems: "center",
@@ -158,10 +165,8 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
               cursor: "pointer",
               transition: "background 0.15s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#F4F4F2")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
-            <X size={14} color="#6B6860" strokeWidth={2} />
+            <X size={14} className="currentColor" strokeWidth={2} />
           </button>
         </div>
 
@@ -187,11 +192,11 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
           {/* Workspace name */}
           <div style={{ marginBottom: 16 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 6,
                 letterSpacing: "0.01em",
               }}
@@ -199,36 +204,24 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
               Workspace Name <span style={{ color: "#E53E3E" }}>*</span>
             </label>
             <input
-              className="ws-input"
+              className="ws-input w-full px-3 py-2.5 text-sm text-zinc-950 dark:text-zinc-50 placeholder-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-all"
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
               placeholder="e.g. Acme Engineering"
               autoFocus
-              style={{
-                width: "100%",
-                padding: "10px 12px",
-                fontSize: 14,
-                color: "#1A1918",
-                background: "#FAFAF8",
-                border: "1.5px solid #E8E6E0",
-                borderRadius: 8,
-                boxSizing: "border-box",
-                fontFamily: "inherit",
-                transition: "border-color 0.15s, box-shadow 0.15s",
-              }}
             />
           </div>
 
 
           <div style={{ marginBottom: 16 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 6,
                 letterSpacing: "0.01em",
               }}
@@ -236,74 +229,49 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
               Company Name <span style={{ color: "#E53E3E" }}>*</span>
             </label>
             <input
-              className="ws-input"
+              className="ws-input w-full px-3 py-2.5 text-sm text-zinc-950 dark:text-zinc-50 placeholder-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-all"
               type="text"
               name="companyname"
               value={formData.companyname}
               onChange={handleChange}
               placeholder="e.g. Acme Engineering"
-              autoFocus
-              style={{
-                width: "100%",
-                padding: "10px 12px",
-                fontSize: 14,
-                color: "#1A1918",
-                background: "#FAFAF8",
-                border: "1.5px solid #E8E6E0",
-                borderRadius: 8,
-                boxSizing: "border-box",
-                fontFamily: "inherit",
-                transition: "border-color 0.15s, box-shadow 0.15s",
-              }}
             />
           </div>
 
           {/* Description */}
           <div style={{ marginBottom: 20 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 6,
                 letterSpacing: "0.01em",
               }}
             >
               Description
-              <span style={{ fontWeight: 400, color: "#9A9890", marginLeft: 4 }}>(optional)</span>
+              <span className="text-zinc-400 dark:text-zinc-500" style={{ fontWeight: 400, marginLeft: 4 }}>(optional)</span>
             </label>
             <div style={{ position: "relative" }}>
               <FileText
                 size={14}
                 style={{
                   position: "absolute",
-                  top: 11,
+                  top: 13,
                   left: 11,
                   color: "#9A9890",
                   pointerEvents: "none",
                 }}
               />
               <textarea
-                className="ws-input"
+                className="ws-input w-full px-3 py-2.5 pl-9 text-sm text-zinc-950 dark:text-zinc-50 placeholder-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-all"
                 name="describtion"
                 value={formData.describtion}
                 onChange={handleChange}
                 placeholder="What is this workspace for?"
                 rows={3}
-                style={{
-                  width: "100%",
-                  padding: "10px 12px 10px 32px",
-                  fontSize: 14,
-                  color: "#1A1918",
-                  background: "#FAFAF8",
-                  border: "1.5px solid #E8E6E0",
-                  borderRadius: 8,
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                  resize: "none",
-                  transition: "border-color 0.15s, box-shadow 0.15s",
-                }}
+                style={{ resize: "none" }}
               />
             </div>
           </div>
@@ -311,11 +279,11 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
           {/* Visibility toggle */}
           <div style={{ marginBottom: 24 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 8,
                 letterSpacing: "0.01em",
               }}
@@ -341,39 +309,27 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
                 return (
                   <div
                     key={opt.value}
-                    className="vis-option"
+                    className={`vis-option p-2.5 rounded-lg border flex items-start gap-2 transition-all duration-150 ${
+                      selected
+                        ? "border-black dark:border-white bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white"
+                        : "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 text-zinc-600 dark:text-zinc-300"
+                    }`}
                     onClick={() => setFormData({ ...formData, visibility: opt.value })}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: 8,
-                      border: selected ? "1.5px solid #6C5CE7" : "1.5px solid #E8E6E0",
-                      background: selected ? "rgba(108, 92, 231, 0.06)" : "#FAFAF8",
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: 8,
-                    }}
                   >
                     <span
-                      style={{
-                        marginTop: 1,
-                        color: selected ? "#6C5CE7" : "#9A9890",
-                        flexShrink: 0,
-                      }}
+                      className={selected ? "text-black dark:text-white" : "text-zinc-400 dark:text-zinc-500"}
+                      style={{ marginTop: 1, flexShrink: 0 }}
                     >
                       {opt.icon}
                     </span>
                     <div>
                       <p
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 500,
-                          color: selected ? "#6C5CE7" : "#1A1918",
-                          lineHeight: 1.3,
-                        }}
+                        className={`text-xs font-semibold ${selected ? "text-black dark:text-white" : "text-zinc-900 dark:text-zinc-100"}`}
+                        style={{ lineHeight: 1.3 }}
                       >
                         {opt.label}
                       </p>
-                      <p style={{ fontSize: 11, color: "#9A9890", marginTop: 1 }}>
+                      <p className="text-[10px] text-zinc-400 dark:text-zinc-550 mt-0.5">
                         {opt.desc}
                       </p>
                     </div>
@@ -384,51 +340,18 @@ export default function CreateWorkspaceModal({ onClose, onSuccess, getworkspaces
           </div>
 
           {/* Actions */}
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <div className="flex gap-2.5 justify-end">
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: "9px 16px",
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#4A4845",
-                background: "transparent",
-                border: "1.5px solid #E8E6E0",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontFamily: "inherit",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#F4F4F2")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              className="px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              style={{
-                padding: "9px 20px",
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#FFFFFF",
-                background: loading ? "#a29bfe" : "#6C5CE7",
-                border: "none",
-                borderRadius: 8,
-                cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: "inherit",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                if (!loading) e.currentTarget.style.background = "#5a4ed1";
-              }}
-              onMouseLeave={(e) => {
-                if (!loading) e.currentTarget.style.background = "#6C5CE7";
-              }}
+              className="px-4 py-2 text-xs font-semibold text-white dark:text-black bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg shadow-sm disabled:opacity-50 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               {loading && <Loader2 size={13} className="animate-spin" />}
               {loading ? "Creating…" : "Create Workspace"}

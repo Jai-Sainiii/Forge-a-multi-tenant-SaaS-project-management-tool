@@ -127,8 +127,8 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
   const navItemClass = (href: string) =>
     `flex items-center gap-2.5 px-[10px] py-[7px] rounded-lg text-[13px] font-medium transition-all duration-100 cursor-pointer ` +
     (isActive(href)
-      ? "bg-[rgba(108,92,231,0.15)] text-[#C8C4FF]"
-      : "text-[#7A7885] hover:bg-[rgba(255,255,255,0.055)] hover:text-[#C8C4E8]");
+      ? "bg-[rgba(255,255,255,0.08)] text-white"
+      : "text-[#7A7885] hover:bg-[rgba(255,255,255,0.055)] hover:text-white");
 
   return (
     <aside
@@ -156,7 +156,7 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
               width: 28,
               height: 28,
               borderRadius: 7,
-              backgroundColor: (workspace?.color as any)?.backgroundColor || "#6C5CE7",
+              backgroundColor: (workspace?.color as any)?.backgroundColor || "#27272A",
               color: (workspace?.color as any)?.textColor || "#ffffff",
               display: "flex",
               alignItems: "center",
@@ -235,12 +235,12 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
                     width: 7,
                     height: 7,
                     borderRadius: "50%",
-                    background: "#3030d0ff",
+                    background: "#a1a1aaff",
                     display: "inline-block",
                     flexShrink: 0,
                   }}
                 />
-                <span className="flex-1 truncate text-[#7A7885] hover:text-[#C8C4E8]">
+                <span className="flex-1 truncate text-[#7A7885] hover:text-white">
                   {p.name}
                 </span>
               </Link>
@@ -277,7 +277,7 @@ export default function Sidebar({ user, workspaces }: SidebarProps) {
               width: 26,
               height: 26,
               borderRadius: "50%",
-              background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+              background: "linear-gradient(135deg, #27272A 0%, #52525B 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

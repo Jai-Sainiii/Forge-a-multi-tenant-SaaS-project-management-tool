@@ -158,35 +158,34 @@ export default function ActivityClient({
   }, [projects, tasks, members]);
 
   return (
-    <div className="px-8 py-6 max-w-[1200px] mx-auto min-h-screen">
-      {/* Title Header */}
+    <div className="px-8 py-6 max-w-[1200px] mx-auto min-h-screen">      {/* Title Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-[#1A1918] tracking-tight">Workspace Activity</h1>
-          <p className="text-[13px] text-[#9A9890] mt-1">
+          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-white tracking-tight">Workspace Activity</h1>
+          <p className="text-[13px] text-zinc-500 dark:text-zinc-400 mt-1">
             Chronological updates, logs, and activity events inside your workspace.
           </p>
         </div>
       </div>
-
+ 
       {/* Stats Counter Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total Projects", value: stats.totalProjects, icon: Folder, color: "text-[#6C5CE7]", bg: "bg-[#6C5CE7]/10" },
+          { label: "Total Projects", value: stats.totalProjects, icon: Folder, color: "text-zinc-700 dark:text-zinc-300", bg: "bg-zinc-100 dark:bg-zinc-850" },
           { label: "Active Tasks", value: stats.activeTasks, icon: Clock, color: "text-[#D97706]", bg: "bg-[#D97706]/10" },
           { label: "Completed Tasks", value: stats.completedTasks, icon: CheckCircle2, color: "text-[#16A34A]", bg: "bg-[#16A34A]/10" },
           { label: "Team Size", value: stats.teamSize, icon: Users, color: "text-[#2563EB]", bg: "bg-[#2563EB]/10" },
         ].map((stat, i) => (
           <div
             key={i}
-            className="flex items-center gap-4 bg-white border border-[#E8E6E0] rounded-xl p-4 shadow-sm hover:shadow transition-shadow"
+            className="flex items-center gap-4 bg-white dark:bg-zinc-900 border border-[#E8E6E0] dark:border-zinc-800 rounded-xl p-4 shadow-sm hover:shadow transition-shadow"
           >
             <div className={`p-3 rounded-lg ${stat.bg} ${stat.color}`}>
               <stat.icon size={20} strokeWidth={2} />
             </div>
             <div>
-              <span className="text-[11px] font-medium text-[#9A9890] uppercase tracking-wider block">{stat.label}</span>
-              <span className="text-xl font-semibold text-[#1A1918] mt-0.5 block">{stat.value}</span>
+              <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block">{stat.label}</span>
+              <span className="text-xl font-semibold text-zinc-900 dark:text-white mt-0.5 block">{stat.value}</span>
             </div>
           </div>
         ))}
@@ -194,9 +193,8 @@ export default function ActivityClient({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left Column: Filters and Timeline Feed (2/3 width) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Filters Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-[#E8E6E0] rounded-xl p-3 shadow-sm">
+        <div className="lg:col-span-2 space-y-6">          {/* Filters Bar */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 border border-[#E8E6E0] dark:border-zinc-800 rounded-xl p-3 shadow-sm">
             {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 text-[#9A9890]" size={15} />
@@ -205,18 +203,18 @@ export default function ActivityClient({
                 placeholder="Search activity..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full text-[13px] text-[#1A1918] pl-9 pr-4 py-1.5 bg-[#F7F6F3] border border-[#E8E6E0] rounded-lg focus:outline-none focus:border-[#6C5CE7] placeholder-[#9A9890]"
+                className="w-full text-[13px] text-zinc-900 dark:text-white pl-9 pr-4 py-1.5 bg-[#F7F6F3] dark:bg-zinc-950 border border-[#E8E6E0] dark:border-zinc-800 rounded-lg focus:outline-none focus:border-black dark:focus:border-white placeholder-[#9A9890]"
               />
             </div>
             
             {/* Dropdowns */}
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 bg-[#F7F6F3] border border-[#E8E6E0] rounded-lg px-2 py-1.5">
+              <div className="flex items-center gap-1.5 bg-[#F7F6F3] dark:bg-zinc-950 border border-[#E8E6E0] dark:border-zinc-800 rounded-lg px-2 py-1.5">
                 <Calendar size={13} className="text-[#9A9890]" />
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="bg-transparent text-[12px] text-[#1A1918] focus:outline-none font-medium cursor-pointer"
+                  className="bg-transparent text-[12px] text-zinc-900 dark:text-white focus:outline-none font-medium cursor-pointer"
                 >
                   <option value="all">All Time</option>
                   <option value="today">Today</option>
@@ -224,10 +222,10 @@ export default function ActivityClient({
                   <option value="month">Past Month</option>
                 </select>
               </div>
-
+ 
               <button
                 onClick={() => setSortOrder(prev => prev === "desc" ? "asc" : "desc")}
-                className="flex items-center gap-1.5 bg-[#F7F6F3] border border-[#E8E6E0] rounded-lg px-3 py-1.5 text-[12px] text-[#1A1918] font-medium hover:bg-[#F0EEE9] transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 bg-[#F7F6F3] dark:bg-zinc-950 border border-[#E8E6E0] dark:border-zinc-800 rounded-lg px-3 py-1.5 text-[12px] text-zinc-900 dark:text-white font-medium hover:bg-[#F0EEE9] dark:hover:bg-zinc-900 transition-colors cursor-pointer"
               >
                 <ArrowUpDown size={13} className="text-[#9A9890]" />
                 {sortOrder === "desc" ? "Newest First" : "Oldest First"}
@@ -236,7 +234,7 @@ export default function ActivityClient({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-1.5 border-b border-[#E8E6E0] overflow-x-auto pb-px">
+          <div className="flex items-center gap-1.5 border-b border-[#E8E6E0] dark:border-zinc-800 overflow-x-auto pb-px">
             {[
               { id: "all", label: "All Activities" },
               { id: "project", label: "Projects" },
@@ -249,15 +247,15 @@ export default function ActivityClient({
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 text-[13px] font-medium transition-all duration-150 relative cursor-pointer ${
                   activeTab === tab.id 
-                    ? "text-[#6C5CE7]" 
-                    : "text-[#9A9890] hover:text-[#1A1918]"
+                    ? "text-black dark:text-white" 
+                    : "text-zinc-550 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                 }`}
               >
                 {tab.label}
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="activeTabUnderline"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#6C5CE7]"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-black dark:bg-white"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
@@ -271,7 +269,7 @@ export default function ActivityClient({
               {filteredActivities.length > 0 ? (
                 filteredActivities.map((act) => {
                   const config = {
-                    project: { icon: Folder, color: "text-[#6C5CE7]", bg: "bg-[#6C5CE7]/10", ring: "ring-[#6C5CE7]/20" },
+                    project: { icon: Folder, color: "text-zinc-700 dark:text-zinc-300", bg: "bg-zinc-150 dark:bg-zinc-800", ring: "ring-zinc-200 dark:ring-zinc-750" },
                     task: { icon: CheckSquare, color: "text-[#16A34A]", bg: "bg-[#16A34A]/10", ring: "ring-[#16A34A]/20" },
                     member: { icon: Users, color: "text-[#D97706]", bg: "bg-[#D97706]/10", ring: "ring-[#D97706]/20" },
                     team: { icon: Shield, color: "text-[#2563EB]", bg: "bg-[#2563EB]/10", ring: "ring-[#2563EB]/20" },
@@ -289,18 +287,18 @@ export default function ActivityClient({
                       className="relative group"
                     >
                       {/* Timeline Node Ring */}
-                      <div className={`absolute -left-[35px] top-1.5 w-6 h-6 rounded-full flex items-center justify-center ring-4 bg-[#F7F6F3] ${config.ring} ${config.bg} ${config.color} transition-all duration-200 group-hover:scale-110`}>
+                      <div className={`absolute -left-[35px] top-1.5 w-6 h-6 rounded-full flex items-center justify-center ring-4 bg-[#F7F6F3] dark:bg-zinc-950 ${config.ring} ${config.bg} ${config.color} transition-all duration-200 group-hover:scale-110`}>
                         <Icon size={12} strokeWidth={2.5} />
                       </div>
 
                       {/* Content Card */}
-                      <div className="bg-white border border-[#E8E6E0] hover:border-[#D1CECC] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="bg-white dark:bg-zinc-900 border border-[#E8E6E0] dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <h3 className="text-[13px] font-semibold text-[#1A1918] tracking-tight">
+                            <h3 className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
                               {act.title}
                             </h3>
-                            <p className="text-[12px] text-[#7A7885] mt-1 leading-relaxed">
+                            <p className="text-[12px] text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">
                               {act.details}
                             </p>
                           </div>
@@ -311,7 +309,7 @@ export default function ActivityClient({
                               <Clock size={11} />
                               {act.timestamp.toLocaleDateString()} at {act.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#F4F3F0] text-[#7A7885] border border-[#E8E6E0]">
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#F4F3F0] dark:bg-zinc-800 text-[#7A7885] border border-[#E8E6E0] dark:border-zinc-700">
                               {act.meta}
                             </span>
                           </div>
@@ -324,10 +322,10 @@ export default function ActivityClient({
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex flex-col items-center justify-center p-8 text-center bg-white border border-[#E8E6E0] rounded-xl"
+                  className="flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-zinc-900 border border-[#E8E6E0] dark:border-zinc-800 rounded-xl"
                 >
                   <FileText className="w-8 h-8 text-[#9A9890] mb-2" />
-                  <p className="text-[13px] font-medium text-[#1A1918]">No activity events found</p>
+                  <p className="text-[13px] font-medium text-zinc-900 dark:text-white">No activity events found</p>
                   <p className="text-[12px] text-[#9A9890] mt-0.5">
                     Try adjusting your filters, search term, or date range.
                   </p>
@@ -340,9 +338,9 @@ export default function ActivityClient({
         {/* Right Column: Mini Sidebar / Stats insights */}
         <div className="space-y-6">
           {/* Productivity insight Card */}
-          <div className="bg-white border border-[#E8E6E0] rounded-xl p-5 shadow-sm">
-            <h2 className="text-[13px] font-semibold text-[#1A1918] flex items-center gap-2">
-              <TrendingUp size={15} className="text-[#6C5CE7]" />
+          <div className="bg-white dark:bg-zinc-900 border border-[#E8E6E0] dark:border-zinc-800 rounded-xl p-5 shadow-sm">
+            <h2 className="text-[13px] font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+              <TrendingUp size={15} className="text-black dark:text-white" />
               Workspace Productivity
             </h2>
             <p className="text-[11px] text-[#9A9890] mt-0.5">
@@ -354,13 +352,13 @@ export default function ActivityClient({
               <div>
                 <div className="flex items-center justify-between text-[12px] mb-1.5">
                   <span className="text-[#7A7885] font-medium">Task Completion Rate</span>
-                  <span className="text-[#1A1918] font-bold">
+                  <span className="text-zinc-900 dark:text-white font-bold">
                     {tasks.length > 0 
                       ? `${Math.round((stats.completedTasks / tasks.length) * 100)}%` 
                       : "0%"}
                   </span>
                 </div>
-                <div className="w-full bg-[#F4F3F0] h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-[#F4F3F0] dark:bg-zinc-850 h-2 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ 
@@ -369,7 +367,7 @@ export default function ActivityClient({
                         : "0%" 
                     }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-[#6C5CE7] to-[#a29bfe] rounded-full"
+                    className="h-full bg-black dark:bg-white rounded-full"
                   />
                 </div>
               </div>

@@ -51,9 +51,8 @@ export default function WorkspaceLayout({
   return (
     <WorkspaceModalProvider>
       <div
-        className="flex h-screen overflow-hidden"
+        className="flex h-screen overflow-hidden bg-[#0A0A0B] dark:bg-[#0A0A0B]"
         style={{
-          background: "#0A0A0B",
           fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
         }}
       >
@@ -83,15 +82,14 @@ export default function WorkspaceLayout({
         </div>
 
         <div
-          className="flex flex-col flex-1 overflow-hidden"
-          style={{ background: "#F7F6F3" }}
+          className="flex flex-col flex-1 overflow-hidden bg-[#F7F6F3] dark:bg-[#0f0f12]"
         >
           <TopBar 
             workspaces={workspaces} 
             getworkspaces={getWorkspaces} 
             onMenuClick={() => setIsMobileOpen(true)}
           />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto relative">{children}</main>
         </div>
       </div>
     </WorkspaceModalProvider>

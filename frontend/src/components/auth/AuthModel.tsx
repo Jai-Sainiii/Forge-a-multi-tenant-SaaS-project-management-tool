@@ -74,7 +74,7 @@ export default function AuthModel({
             <div className="p-10">
              
               <div className="mb-8">
-                <span className="text-xl font-bold tracking-tight text-[#251b72] dark:text-white">
+                <span className="text-xl font-bold tracking-tight text-black dark:text-white">
                   Forge
                 </span>
               </div>
@@ -85,7 +85,7 @@ export default function AuthModel({
                   onClick={() => setActiveTab("login")}
                   className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
                     activeTab === "login"
-                      ? "bg-[#251b72] text-white shadow-sm"
+                      ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
                       : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function AuthModel({
                   onClick={() => setActiveTab("signup")}
                   className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
                     activeTab === "signup"
-                      ? "bg-[#251b72] text-white shadow-sm"
+                      ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
                       : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
                   }`}
                 >

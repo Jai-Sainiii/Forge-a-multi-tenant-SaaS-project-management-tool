@@ -40,10 +40,10 @@ export default function CreateTeamModal({ isOpen, onClose, projectID, onSuccess 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 ease-out">
+            <div className="bg-white/85 dark:bg-zinc-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 ease-out">
                 <div className="px-6 py-4.5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-white/50 dark:bg-slate-900/50">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Plus className="w-5 h-5 text-[#6C5CE7]" />
+                        <Plus className="w-5 h-5 text-black dark:text-white" />
                         Create Project Team
                     </h3>
                     <button 
@@ -69,7 +69,7 @@ export default function CreateTeamModal({ isOpen, onClose, projectID, onSuccess 
                             placeholder="e.g. Design Team, Frontend Core"
                             value={teamName}
                             onChange={e => setTeamName(e.target.value)}
-                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-405 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] transition-all text-sm font-medium"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-405 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all text-sm font-medium"
                         />
                     </div>
 
@@ -84,7 +84,7 @@ export default function CreateTeamModal({ isOpen, onClose, projectID, onSuccess 
                         <button 
                             type="submit" 
                             disabled={loading || !teamName.trim()}
-                            className="px-5 py-2.5 text-sm font-semibold text-white bg-[#6C5CE7] hover:bg-[#5a4ed1] rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer active:scale-97"
+                            className="px-5 py-2.5 text-sm font-semibold text-white dark:text-black bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer active:scale-97"
                         >
                             {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                             {loading ? "Creating..." : "Create Team"}

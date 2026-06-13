@@ -118,7 +118,7 @@ export default function TasksPageClient({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant dark:border-gray-700 pb-4">
         <div>
           <h1 className="text-2xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-            <ListTodo className="w-6 h-6 text-primary-light" />
+            <ListTodo className="w-6 h-6 text-black dark:text-white" />
             Tasks
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
@@ -127,7 +127,7 @@ export default function TasksPageClient({
         </div>
         <button 
           onClick={() => setIsCreateTaskModalOpen(true)}
-          className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+          className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Create Task
@@ -144,7 +144,7 @@ export default function TasksPageClient({
             placeholder="Search tasks or projects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm transition-colors"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm transition-colors"
           />
         </div>
         {!loading && !error && (
@@ -155,10 +155,10 @@ export default function TasksPageClient({
         )}
       </div>
 
-      <div className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-800/50">
+            <thead className="bg-gray-50 dark:bg-zinc-800/50">
               <tr>
                 <th
                   scope="col"
@@ -189,7 +189,7 @@ export default function TasksPageClient({
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#1e293b] divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-gray-700">
               {loading ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i} className="animate-pulse">

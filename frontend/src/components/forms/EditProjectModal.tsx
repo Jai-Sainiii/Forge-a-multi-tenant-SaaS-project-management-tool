@@ -59,11 +59,11 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-md animate-in fade-in duration-200"
         >
             <div 
-                className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 ease-out"
+                className="bg-white/85 dark:bg-zinc-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300 ease-out"
             >
                 <div className="px-6 py-4 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-white/50 dark:bg-slate-900/50">
                     <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <FolderKanban className="w-5 h-5 text-[#6C5CE7]" />
+                        <FolderKanban className="w-5 h-5 text-black dark:text-white" />
                         Edit Project Details
                     </h2>
                     <button 
@@ -88,7 +88,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                             required
                             value={name}
                             onChange={e => setName(e.target.value)}
-                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] focus:border-transparent transition-all text-sm font-medium"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all text-sm font-medium"
                             placeholder="e.g. Mobile Application App"
                         />
                     </div>
@@ -100,7 +100,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                             required
                             value={field}
                             onChange={e => setField(e.target.value)}
-                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] focus:border-transparent transition-all text-sm font-medium"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all text-sm font-medium"
                             placeholder="e.g. Engineering, Design"
                         />
                     </div>
@@ -110,7 +110,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                         <select
                             value={status}
                             onChange={e => setStatus(e.target.value)}
-                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] focus:border-transparent transition-all text-sm font-medium cursor-pointer"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all text-sm font-medium cursor-pointer"
                         >
                             <option value="planning">Planning</option>
                             <option value="active">Active</option>
@@ -126,7 +126,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             rows={3}
-                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] focus:border-transparent transition-all resize-none text-sm font-medium"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent transition-all resize-none text-sm font-medium"
                             placeholder="Describe the scope and deliverables..."
                         />
                     </div>
@@ -142,7 +142,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="px-5 py-2.5 text-sm font-semibold text-white bg-[#6C5CE7] hover:bg-[#5a4ed1] rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer active:scale-97"
+                            className="px-5 py-2.5 text-sm font-semibold text-white dark:text-black bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer active:scale-97"
                         >
                             {loading ? "Saving..." : "Save Changes"}
                         </button>

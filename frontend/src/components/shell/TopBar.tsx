@@ -55,26 +55,18 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
   if (homepage) {
     return (
       <header
-      style={{
-        background: "#FFFFFF",
-        borderBottom: "1px solid #E8E6E0",
+        className="bg-white dark:bg-[#0f0f12] border-b border-[#E8E6E0] dark:border-white/[0.06] sticky top-0 z-20 flex items-center justify-between"
+        style={{
           padding: "14px 20px",
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
         }}
       >
         {/* Left: Hamburger + title */}
         <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={onMenuClick}
-            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer shrink-0"
-            style={{ border: "1px solid #E8E6E0" }}
+            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-[#E8E6E0] dark:border-white/10 hover:bg-[#F4F4F2] dark:hover:bg-white/[0.06] transition-colors cursor-pointer shrink-0"
           >
-            <Menu size={16} strokeWidth={2} style={{ color: "#6B6860" }} />
+            <Menu size={16} strokeWidth={2} className="text-[#6B6860] dark:text-slate-400" />
           </button>
 
           <div className="flex flex-col min-w-0">
@@ -82,21 +74,19 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
               style={{
                 fontSize: 15,
                 fontWeight: 500,
-                color: "#1A1918",
                 lineHeight: 1.3,
               }}
-              className="truncate"
+              className="truncate text-[#1A1918] dark:text-white"
             >
               Welcome {user?.name || "User"}
             </span>
             <span
               style={{
                 fontSize: 12,
-                color: "#9A9890",
                 lineHeight: 1.4,
                 marginTop: 1,
               }}
-              className="hidden sm:block truncate"
+              className="hidden sm:block truncate text-[#9A9890] dark:text-slate-500"
             >
               {user?.email || "user@email.com"}
             </span>
@@ -107,13 +97,7 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
           {/* New workspace filled purple button */}
           <button
             onClick={() => {openModal(); getworkspaces();}}
-            className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 transition-colors hover:bg-[#5a4ed1] cursor-pointer"
-            style={{
-              background: "#6C5CE7",
-              color: "#ffffff",
-              borderRadius: 8,
-              border: "none",
-            }}
+            className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors cursor-pointer"
           >
             <Plus size={13} strokeWidth={2.2} />
             <span className="hidden sm:inline">New Workspace</span>
@@ -121,10 +105,9 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
 
           {/* Notification bell */}
           <button
-            className="relative flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer"
-            style={{ border: "1px solid #E8E6E0" }}
+            className="relative flex items-center justify-center w-8 h-8 rounded-lg border border-[#E8E6E0] dark:border-white/10 hover:bg-[#F4F4F2] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
           >
-            <Bell size={15} strokeWidth={1.8} style={{ color: "#6B6860" }} />
+            <Bell size={15} strokeWidth={1.8} className="text-[#6B6860] dark:text-slate-400" />
             {/* Red dot */}
             <span
               className="absolute"
@@ -147,26 +130,18 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
   return (
     <>
       <header
+        className="bg-white dark:bg-[#0f0f12] border-b border-[#E8E6E0] dark:border-white/[0.06] sticky top-0 z-20 flex items-center justify-between"
         style={{
-          background: "#FFFFFF",
-          borderBottom: "1px solid #E8E6E0",
           padding: "14px 20px",
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
         }}
       >
         {/* Left: Hamburger + title */}
         <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={onMenuClick}
-            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer shrink-0"
-            style={{ border: "1px solid #E8E6E0" }}
+            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-[#E8E6E0] dark:border-white/10 hover:bg-[#F4F4F2] dark:hover:bg-white/[0.06] transition-colors cursor-pointer shrink-0"
           >
-            <Menu size={16} strokeWidth={2} style={{ color: "#6B6860" }} />
+            <Menu size={16} strokeWidth={2} className="text-[#6B6860] dark:text-slate-400" />
           </button>
 
           <div className="flex flex-col min-w-0">
@@ -184,11 +159,10 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
             <span
               style={{
                 fontSize: 12,
-                color: "#9A9890",
                 lineHeight: 1.4,
                 marginTop: 1,
               }}
-              className="hidden sm:block truncate"
+              className="hidden sm:block truncate text-[#9A9890] dark:text-slate-500"
             >
               {meta.crumb}
             </span>
@@ -201,12 +175,7 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
           {isOwner && (
             <button
               onClick={() => setIsInviteOpen(true)}
-              className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 rounded-lg transition-colors hover:bg-[#F4F4F2] cursor-pointer"
-              style={{
-                border: "1px solid #E8E6E0",
-                color: "#4A4845",
-                borderRadius: 8,
-              }}
+              className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 rounded-lg border border-[#E8E6E0] dark:border-white/10 text-[#4A4845] dark:text-slate-300 transition-colors hover:bg-[#F4F4F2] dark:hover:bg-white/[0.06] cursor-pointer"
             >
               <UserPlus size={13} strokeWidth={1.8} />
               <span className="hidden sm:inline">Invite</span>

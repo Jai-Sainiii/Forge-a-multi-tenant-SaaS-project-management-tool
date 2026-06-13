@@ -23,7 +23,7 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
   const isPlanning = project.status?.toLowerCase() === 'planning';
   const active = project.status?.toLowerCase() === 'active' || project.status?.toLowerCase() === 'completed';
 
-  let badgeColor = { bg: "rgba(108, 92, 231, 0.1)", text: "#6C5CE7", border: "rgba(108, 92, 231, 0.2)" }; // default purple
+  let badgeColor = { bg: "rgba(0, 0, 0, 0.05)", text: "var(--primary)", border: "var(--secondary-light)" }; // default monochrome
   if (isReview) badgeColor = { bg: "rgba(217, 119, 6, 0.1)", text: "#D97706", border: "rgba(217, 119, 6, 0.2)" }; // amber
   else if (isSuspended) badgeColor = { bg: "rgba(220, 38, 38, 0.1)", text: "#DC2626", border: "rgba(220, 38, 38, 0.2)" }; // red
   else if (isPlanning) badgeColor = { bg: "rgba(9, 132, 227, 0.1)", text: "#0984E3", border: "rgba(9, 132, 227, 0.2)" }; // blue
@@ -34,9 +34,9 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
   const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   const gradientList = [
-    "linear-gradient(135deg, rgba(108, 92, 231, 0.03) 0%, rgba(162, 155, 254, 0.05) 100%)",
-    "linear-gradient(135deg, rgba(0, 184, 148, 0.03) 0%, rgba(85, 239, 196, 0.05) 100%)",
-    "linear-gradient(135deg, rgba(225, 112, 85, 0.03) 0%, rgba(250, 177, 160, 0.05) 100%)",
+    "linear-gradient(135deg, rgba(0, 0, 0, 0.01) 0%, rgba(120, 120, 120, 0.02) 100%)",
+    "linear-gradient(135deg, rgba(120, 120, 120, 0.01) 0%, rgba(60, 60, 60, 0.02) 100%)",
+    "linear-gradient(135deg, rgba(60, 60, 60, 0.01) 0%, rgba(0, 0, 0, 0.02) 100%)",
   ];
   const cardGradient = gradientList[index % gradientList.length];
 
@@ -45,21 +45,16 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        className="bg-white dark:bg-zinc-900 border transition-all duration-300 relative overflow-hidden"
         style={{
-          background: "rgba(255, 255, 255, 0.85)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          border: hovered ? "1.5px solid #6C5CE7" : "1.5px solid #E8E6E0",
+          borderColor: hovered ? "var(--primary)" : "var(--secondary-light)",
           borderRadius: 16,
           padding: "24px",
           display: "flex",
           flexDirection: "column",
           gap: 16,
-          boxShadow: hovered ? "0 15px 30px rgba(108, 92, 231, 0.08)" : "0 1px 3px rgba(0,0,0,0.02)",
+          boxShadow: hovered ? "0 15px 30px rgba(0, 0, 0, 0.05)" : "0 1px 3px rgba(0,0,0,0.01)",
           transform: hovered ? "translateY(-3px)" : "translateY(0)",
-          transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-          position: "relative",
-          overflow: "hidden",
         }}
       >
         <div style={{
@@ -101,7 +96,7 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
             style={{
               fontSize: 16,
               fontWeight: 700,
-              color: hovered ? "#6C5CE7" : "#1A1918",
+              color: hovered ? "var(--primary)" : "var(--primary-light)",
               marginBottom: 6,
               transition: "color 0.2s",
               lineHeight: 1.3,
@@ -109,26 +104,26 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
           >
             {project.name}
           </h3>
-          <p style={{ fontSize: 12, fontWeight: 500, color: "#6B6860", marginBottom: 8, background: "rgba(0,0,0,0.02)", display: "inline-block", padding: "2px 8px", borderRadius: 6 }}>
+          <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 display-inline-block px-2 py-0.5 rounded-md mb-2">
             {project.field}
           </p>
-          <p style={{ fontSize: 13, color: "#9A9890", lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          <p className="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed max-w-full">
             {project.description}
           </p>
         </div>
 
         <div style={{ marginTop: 8 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 650, color: "#7A7870", marginBottom: 6 }}>
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <CheckSquare size={12} />
               Progress ({completedTasks}/{totalTasks})
             </span>
             <span>{progressPercent}%</span>
           </div>
-          <div style={{ width: "100%", background: "#F0EEE8", height: 6, borderRadius: 999, overflow: "hidden" }}>
+          <div className="w-full bg-zinc-100 dark:bg-zinc-850 h-1.5 rounded-full overflow-hidden">
             <div
               style={{
-                background: progressPercent === 100 ? "#16A34A" : "#6C5CE7",
+                background: progressPercent === 100 ? "#16A34A" : "var(--primary)",
                 height: "100%",
                 width: `${progressPercent}%`,
                 borderRadius: 999,
@@ -139,7 +134,7 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
         </div>
 
         {hovered && (
-          <div style={{ display: "flex", alignItems: "center", justifySelf: "flex-end", gap: 4, fontSize: 12, fontWeight: 700, color: "#6C5CE7", alignSelf: "flex-end", marginTop: 4 }} className="animate-in fade-in slide-in-from-left-2 duration-200">
+          <div style={{ display: "flex", alignItems: "center", justifySelf: "flex-end", gap: 4, fontSize: 12, fontWeight: 700, color: "var(--primary)", alignSelf: "flex-end", marginTop: 4 }} className="animate-in fade-in slide-in-from-left-2 duration-200">
             View Details
             <ArrowRight size={13} strokeWidth={2.5} />
           </div>
@@ -151,7 +146,7 @@ function ProjectCard({ project, workspaceID, index }: { project: Project, worksp
 
 function ProjectSkeleton() {
   return (
-    <div style={{ padding: "24px", background: "#FFFFFF", border: "1px solid #E8E6E0", borderRadius: 16, display: "flex", flexDirection: "column", gap: 16, animation: "pulse 1.5s infinite" }}>
+    <div className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col gap-4 animate-pulse">
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div style={{ width: 60, height: 16, background: "#F0EEE8", borderRadius: 6 }} />
         <div style={{ width: 80, height: 16, background: "#F0EEE8", borderRadius: 6 }} />
@@ -233,21 +228,10 @@ function CreateProjectModal({
       }}
     >
       <div
-        style={{
-          background: "rgba(255, 255, 255, 0.85)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
-          borderRadius: 20,
-          width: "100%",
-          maxWidth: 440,
-          boxShadow: "0 30px 70px rgba(10, 10, 11, 0.15)",
-          overflow: "hidden",
-          animation: "slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
+        className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-[440px] shadow-2xl animate-in slide-in-from-bottom-4 duration-300"
       >
-        <div style={{ padding: "24px 28px 18px", borderBottom: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1A1918" }}>New Workspace Project</h2>
+        <div style={{ padding: "20px 24px 18px", borderBottom: "1px solid var(--secondary-light)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 className="text-sm font-bold text-zinc-900 dark:text-white">New Workspace Project</h2>
           <button onClick={onClose} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#9A9890" }}>
             <X size={18} />
           </button>
@@ -261,35 +245,35 @@ function CreateProjectModal({
           )}
 
           <div>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#4A4845", marginBottom: 6 }}>Project Name</label>
+            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">Project Name</label>
             <input
               type="text"
               required
               value={name}
               onChange={e => setName(e.target.value)}
-              style={{ width: "100%", padding: "10px 12px", border: "1.5px solid #E8E6E0", borderRadius: 8, background: "#FAFAF8", fontSize: 13, outline: "none" }}
+              className="w-full px-3 py-2 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-all"
               placeholder="e.g. Mobile Application App"
             />
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#4A4845", marginBottom: 6 }}>Field / Category</label>
+            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">Field / Category</label>
             <input
               type="text"
               required
               value={field}
               onChange={e => setField(e.target.value)}
-              style={{ width: "100%", padding: "10px 12px", border: "1.5px solid #E8E6E0", borderRadius: 8, background: "#FAFAF8", fontSize: 13, outline: "none" }}
+              className="w-full px-3 py-2 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-all"
               placeholder="e.g. Engineering, Marketing"
             />
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#4A4845", marginBottom: 6 }}>Initial Status</label>
+            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">Initial Status</label>
             <select
               value={status}
               onChange={e => setStatus(e.target.value)}
-              style={{ width: "100%", padding: "10px 12px", border: "1.5px solid #E8E6E0", borderRadius: 8, background: "#FAFAF8", fontSize: 13, outline: "none", cursor: "pointer" }}
+              className="w-full px-3 py-2 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-all cursor-pointer"
             >
               <option value="planning">Planning</option>
               <option value="active">Active</option>
@@ -299,29 +283,29 @@ function CreateProjectModal({
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#4A4845", marginBottom: 6 }}>Description</label>
+            <label className="block text-xs font-semibold text-zinc-750 dark:text-zinc-300 mb-1.5">Description</label>
             <textarea
               required
               value={description}
               onChange={e => setDescription(e.target.value)}
               rows={3}
-              style={{ width: "100%", padding: "10px 12px", border: "1.5px solid #E8E6E0", borderRadius: 8, background: "#FAFAF8", fontSize: 13, outline: "none", resize: "none" }}
+              className="w-full px-3 py-2 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white text-sm focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-all resize-none"
               placeholder="Describe the scope and deliverables..."
             />
           </div>
 
-          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 16 }}>
+          <div className="flex gap-2 justify-end pt-4">
             <button
               type="button"
               onClick={onClose}
-              style={{ padding: "10px 16px", background: "transparent", border: "1.5px solid #E8E6E0", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#4A4845" }}
+              className="px-4 py-2 border border-zinc-250 dark:border-zinc-800 rounded-lg text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              style={{ padding: "10px 20px", background: "#6C5CE7", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#fff", display: "flex", alignItems: "center", gap: 6 }}
+              className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg text-sm font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
             >
               {loading ? "Creating..." : "Create Project"}
             </button>
@@ -375,7 +359,7 @@ export default function ProjectsPageClient({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant pb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
-            <LayoutGrid className="w-7 h-7 text-[#6C5CE7]" />
+            <LayoutGrid className="w-7 h-7 text-black dark:text-white" />
             Workspace Projects
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5 font-medium">
@@ -385,7 +369,7 @@ export default function ProjectsPageClient({
         {isAdmin && (
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg hover:shadow-primary/15 cursor-pointer active:scale-97"
+            className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg cursor-pointer active:scale-97"
           >
             <Plus className="w-4 h-4" strokeWidth={2.5} />
             New Project
@@ -415,14 +399,14 @@ export default function ProjectsPageClient({
           {[1, 2, 3].map(i => <ProjectSkeleton key={i} />)}
         </div>
       ) : projects.length === 0 && !error ? (
-        <div style={{ padding: "64px 20px", textAlign: "center", background: "#FFFFFF", border: "1.5px dashed #E8E6E0", borderRadius: 20 }}>
+        <div className="py-16 px-6 text-center bg-white dark:bg-zinc-900 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
           <FolderArchive className="w-14 h-14 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-gray-900 mb-1">No active projects</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">No active projects</h3>
           <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">Create a high-velocity project and assign task lists to get your team building.</p>
           {isAdmin && (
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2 bg-[#6C5CE7] hover:bg-[#5a4ed1] text-white text-sm font-semibold rounded-lg shadow-sm"
+              className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 text-sm font-semibold rounded-lg shadow-sm cursor-pointer"
             >
               Get Started
             </button>
@@ -432,7 +416,7 @@ export default function ProjectsPageClient({
         <div className="space-y-10">
           {activeProjects.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-base font-bold text-[#1A1918] flex items-center gap-2 tracking-wide uppercase text-xs">
+              <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 tracking-wide uppercase text-xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block animate-pulse"></span>
                 Active Projects ({activeProjects.length})
               </h2>
@@ -446,7 +430,7 @@ export default function ProjectsPageClient({
 
           {planningProjects.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-base font-bold text-[#1A1918] flex items-center gap-2 tracking-wide uppercase text-xs">
+              <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 tracking-wide uppercase text-xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
                 Planning / Backlog ({planningProjects.length})
               </h2>
@@ -460,7 +444,7 @@ export default function ProjectsPageClient({
 
           {reviewProjects.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-base font-bold text-[#1A1918] flex items-center gap-2 tracking-wide uppercase text-xs">
+              <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 tracking-wide uppercase text-xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block"></span>
                 In Review ({reviewProjects.length})
               </h2>
@@ -474,7 +458,7 @@ export default function ProjectsPageClient({
 
           {suspendedProjects.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-base font-bold text-[#1A1918] flex items-center gap-2 tracking-wide uppercase text-xs">
+              <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2 tracking-wide uppercase text-xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                 Suspended ({suspendedProjects.length})
               </h2>

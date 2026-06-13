@@ -75,9 +75,9 @@ export default function InviteAcceptPage({
     return (
         <main className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0f172a] p-6">
             <div className="max-w-md w-full bg-white dark:bg-[#1e293b] rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-                <div className="w-16 h-16 bg-[#3C3489]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6">
                     {status === 'checking' || status === 'accepting' ? (
-                        <Loader2 className="w-8 h-8 text-[#3C3489] animate-spin" />
+                        <Loader2 className="w-8 h-8 text-zinc-900 dark:text-zinc-100 animate-spin" />
                     ) : status === 'success' ? (
                         <CheckCircle2 className="w-8 h-8 text-green-500" />
                     ) : (
@@ -102,7 +102,7 @@ export default function InviteAcceptPage({
                     {status === 'success' && workspaceId && (
                         <Link 
                             href={`/workspace/${workspaceId}`}
-                            className="flex items-center justify-center gap-2 w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-3 rounded-lg font-medium transition-all shadow-md"
+                            className="flex items-center justify-center gap-2 w-full bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 py-3 rounded-lg font-medium transition-all shadow-md"
                         >
                             Go to Workspace
                             <ArrowRight className="w-4 h-4" />
@@ -112,7 +112,7 @@ export default function InviteAcceptPage({
                     {status === 'error' && !auth?.user && (
                         <button 
                             onClick={() => setIsAuthModalOpen(true)}
-                            className="flex items-center justify-center gap-2 w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-3 rounded-lg font-medium transition-all shadow-md cursor-pointer"
+                            className="flex items-center justify-center gap-2 w-full bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 py-3 rounded-lg font-medium transition-all shadow-md cursor-pointer"
                         >
                             <LogIn className="w-4 h-4" />
                             Log in to Join

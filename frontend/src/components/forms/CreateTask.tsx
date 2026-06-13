@@ -162,15 +162,19 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
         }
         .ws-input:focus, .ws-select:focus {
           outline: none;
-          border-color: #6C5CE7 !important;
-          box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+          border-color: #000000 !important;
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+        .dark .ws-input:focus, .dark .ws-select:focus {
+          border-color: #ffffff !important;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
         }
       `}</style>
 
+      {/* Modal card */}
       <div
-        className="ws-modal-card"
+        className="ws-modal-card bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/10"
         style={{
-          background: "#FFFFFF",
           borderRadius: 16,
           width: "100%",
           maxWidth: 480,
@@ -181,9 +185,9 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
       >
         {/* Header */}
         <div
+          className="border-b border-black/5 dark:border-white/5"
           style={{
             padding: "20px 24px 18px",
-            borderBottom: "1px solid #F0EEE8",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -195,7 +199,7 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                 width: 32,
                 height: 32,
                 borderRadius: 8,
-                background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+                background: "linear-gradient(135deg, #18181B 0%, #3F3F46 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -204,32 +208,29 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
               <ListTodo size={15} color="#fff" strokeWidth={2} />
             </div>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1918", lineHeight: 1.3 }}>
+              <p className="text-zinc-900 dark:text-zinc-100 font-semibold" style={{ fontSize: 14, lineHeight: 1.3 }}>
                 Create New Task
               </p>
-              <p style={{ fontSize: 12, color: "#9A9890", marginTop: 1 }}>
+              <p className="text-zinc-400 dark:text-zinc-500" style={{ fontSize: 12, marginTop: 1 }}>
                 Add a task to track your work
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            className="border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5"
             style={{
               width: 28,
               height: 28,
               borderRadius: 6,
-              border: "1px solid #E8E6E0",
               background: "transparent",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              transition: "background 0.15s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#F4F4F2")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
-            <X size={14} color="#6B6860" strokeWidth={2} />
+            <X size={14} className="currentColor" strokeWidth={2} />
           </button>
         </div>
 
@@ -258,11 +259,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
           {/* Title */}
           <div style={{ marginBottom: 16 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 6,
                 letterSpacing: "0.01em",
               }}
@@ -274,32 +275,20 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                 size={14}
                 style={{
                   position: "absolute",
-                  top: 11,
+                  top: 13,
                   left: 11,
                   color: "#9A9890",
                   pointerEvents: "none",
                 }}
               />
               <input
-                className="ws-input"
+                className="ws-input w-full px-3 py-2 pl-9 text-sm text-zinc-950 dark:text-zinc-50 placeholder-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-all"
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="e.g. Design landing page"
                 autoFocus
-                style={{
-                  width: "100%",
-                  padding: "10px 12px 10px 32px",
-                  fontSize: 14,
-                  color: "#1A1918",
-                  background: "#FAFAF8",
-                  border: "1.5px solid #E8E6E0",
-                  borderRadius: 8,
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                  transition: "border-color 0.15s, box-shadow 0.15s",
-                }}
               />
             </div>
           </div>
@@ -307,11 +296,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
           {/* Description */}
           <div style={{ marginBottom: 16 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 6,
                 letterSpacing: "0.01em",
               }}
@@ -323,32 +312,20 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                 size={14}
                 style={{
                   position: "absolute",
-                  top: 11,
+                  top: 13,
                   left: 11,
                   color: "#9A9890",
                   pointerEvents: "none",
                 }}
               />
               <textarea
-                className="ws-input"
+                className="ws-input w-full px-3 py-2 pl-9 text-sm text-zinc-950 dark:text-zinc-50 placeholder-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg transition-all"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Add more details about this task..."
                 rows={3}
-                style={{
-                  width: "100%",
-                  padding: "10px 12px 10px 32px",
-                  fontSize: 14,
-                  color: "#1A1918",
-                  background: "#FAFAF8",
-                  border: "1.5px solid #E8E6E0",
-                  borderRadius: 8,
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                  resize: "none",
-                  transition: "border-color 0.15s, box-shadow 0.15s",
-                }}
+                style={{ resize: "none" }}
               />
             </div>
           </div>
@@ -357,11 +334,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
             {/* Status */}
             <div>
               <label
+                className="text-zinc-700 dark:text-zinc-300"
                 style={{
                   display: "block",
                   fontSize: 12,
                   fontWeight: 500,
-                  color: "#4A4845",
                   marginBottom: 6,
                   letterSpacing: "0.01em",
                 }}
@@ -373,30 +350,17 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                   size={14}
                   style={{
                     position: "absolute",
-                    top: 11,
+                    top: 13,
                     left: 11,
                     color: "#9A9890",
                     pointerEvents: "none",
                   }}
                 />
                 <select
-                  className="ws-select"
+                  className="ws-select w-full px-3 py-2 pl-9 text-sm text-zinc-950 dark:text-zinc-50 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px 10px 32px",
-                    fontSize: 14,
-                    color: "#1A1918",
-                    background: "#FAFAF8",
-                    border: "1.5px solid #E8E6E0",
-                    borderRadius: 8,
-                    boxSizing: "border-box",
-                    fontFamily: "inherit",
-                    appearance: "none",
-                    cursor: "pointer",
-                  }}
                 >
                   <option value="todo">To Do</option>
                   <option value="in progress">In Progress</option>
@@ -409,11 +373,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
             {/* Priority */}
             <div>
               <label
+                className="text-zinc-700 dark:text-zinc-300"
                 style={{
                   display: "block",
                   fontSize: 12,
                   fontWeight: 500,
-                  color: "#4A4845",
                   marginBottom: 6,
                   letterSpacing: "0.01em",
                 }}
@@ -425,30 +389,17 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                   size={14}
                   style={{
                     position: "absolute",
-                    top: 11,
+                    top: 13,
                     left: 11,
                     color: "#9A9890",
                     pointerEvents: "none",
                   }}
                 />
                 <select
-                  className="ws-select"
+                  className="ws-select w-full px-3 py-2 pl-9 text-sm text-zinc-950 dark:text-zinc-50 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px 10px 32px",
-                    fontSize: 14,
-                    color: "#1A1918",
-                    background: "#FAFAF8",
-                    border: "1.5px solid #E8E6E0",
-                    borderRadius: 8,
-                    boxSizing: "border-box",
-                    fontFamily: "inherit",
-                    appearance: "none",
-                    cursor: "pointer",
-                  }}
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -462,11 +413,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
           {!projectID && (
             <div style={{ marginBottom: 24 }}>
               <label
+                className="text-zinc-700 dark:text-zinc-300"
                 style={{
                   display: "block",
                   fontSize: 12,
                   fontWeight: 500,
-                  color: "#4A4845",
                   marginBottom: 6,
                   letterSpacing: "0.01em",
                 }}
@@ -474,23 +425,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                 Project <span style={{ color: "#E53E3E" }}>*</span>
               </label>
               <select
-                className="ws-select"
+                className="ws-select w-full px-3 py-2 text-sm text-zinc-955 dark:text-zinc-50 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-lg cursor-pointer"
                 name="projectId"
                 value={formData.projectId}
                 onChange={handleChange}
                 disabled={loadingProjects}
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  fontSize: 14,
-                  color: "#1A1918",
-                  background: "#FAFAF8",
-                  border: "1.5px solid #E8E6E0",
-                  borderRadius: 8,
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                  cursor: loadingProjects ? "wait" : "pointer",
-                }}
               >
                 <option value="" disabled>
                   {loadingProjects ? "Loading projects..." : "Select a project"}
@@ -507,11 +446,11 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
           {/* Assignees Selection */}
           <div style={{ marginBottom: 20 }}>
             <label
+              className="text-zinc-700 dark:text-zinc-300"
               style={{
                 display: "block",
                 fontSize: 12,
                 fontWeight: 500,
-                color: "#4A4845",
                 marginBottom: 8,
                 letterSpacing: "0.01em",
               }}
@@ -519,39 +458,29 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
               Assign Members
             </label>
             {!formData.projectId ? (
-              <p style={{ fontSize: 12, color: "#9A9890", padding: "8px 0" }}>
+              <p className="text-zinc-400 dark:text-zinc-500" style={{ fontSize: 12, padding: "8px 0" }}>
                 ⚠️ Please select a project first to view and assign its members.
               </p>
             ) : loadingMembers ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0" }}>
-                <Loader2 size={13} className="animate-spin text-[#6C5CE7]" />
-                <span style={{ fontSize: 12, color: "#9A9890" }}>Loading project members...</span>
+                <Loader2 size={13} className="animate-spin text-black dark:text-white" />
+                <span className="text-zinc-400 dark:text-zinc-500" style={{ fontSize: 12 }}>Loading project members...</span>
               </div>
             ) : projectMembers.length > 0 ? (
               <div
-                style={{
-                  maxHeight: 120,
-                  overflowY: "auto",
-                  border: "1.5px solid #E8E6E0",
-                  borderRadius: 8,
-                  padding: "8px 12px",
-                  background: "#FAFAF8",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                }}
+                className="max-h-[120px] overflow-y-auto border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 bg-zinc-50 dark:bg-zinc-950/40 flex flex-col gap-2"
               >
                 {projectMembers.map((member) => {
                   const isChecked = selectedAssigneeIds.includes(member.userId);
                   return (
                     <label
                       key={member.id}
+                      className="text-zinc-800 dark:text-zinc-200"
                       style={{
                         display: "flex",
                         alignItems: "center",
                         gap: 8,
                         fontSize: 13,
-                        color: "#1A1918",
                         cursor: "pointer",
                         userSelect: "none",
                       }}
@@ -569,7 +498,7 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                         style={{
                           width: 15,
                           height: 15,
-                          accentColor: "#6C5CE7",
+                          accentColor: "#000000",
                           cursor: "pointer",
                         }}
                       />
@@ -578,7 +507,7 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                           width: 20,
                           height: 20,
                           borderRadius: "50%",
-                          background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+                          background: "linear-gradient(135deg, #18181B 0%, #3F3F46 100%)",
                           color: "#fff",
                           fontSize: 10,
                           display: "flex",
@@ -590,7 +519,7 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
                         {member.user?.name?.charAt(0).toUpperCase()}
                       </div>
                       <span style={{ fontWeight: 500 }}>{member.user?.name}</span>
-                      <span style={{ fontSize: 11, color: "#9A9890" }}>({member.user?.email})</span>
+                      <span className="text-zinc-400 dark:text-zinc-500" style={{ fontSize: 11 }}>({member.user?.email})</span>
                     </label>
                   );
                 })}
@@ -603,51 +532,18 @@ export default function CreateTaskModal({ onClose, onSuccess, workspaceID, proje
           </div>
 
           {/* Actions */}
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 24 }}>
+          <div className="flex gap-2.5 justify-end mt-6">
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: "9px 16px",
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#4A4845",
-                background: "transparent",
-                border: "1.5px solid #E8E6E0",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontFamily: "inherit",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#F4F4F2")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              className="px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-350 bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              style={{
-                padding: "9px 20px",
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#FFFFFF",
-                background: loading ? "#a29bfe" : "#6C5CE7",
-                border: "none",
-                borderRadius: 8,
-                cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: "inherit",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                if (!loading) e.currentTarget.style.background = "#5a4ed1";
-              }}
-              onMouseLeave={(e) => {
-                if (!loading) e.currentTarget.style.background = "#6C5CE7";
-              }}
+              className="px-4 py-2 text-xs font-semibold text-white dark:text-black bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg shadow-sm disabled:opacity-50 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               {loading && <Loader2 size={13} className="animate-spin" />}
               {loading ? "Creating…" : "Create Task"}

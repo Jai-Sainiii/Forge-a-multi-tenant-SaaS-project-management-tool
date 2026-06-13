@@ -100,7 +100,7 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
           placeholder="Work email"
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-          className="w-full h-10 px-3 text-sm text-[#1c1b1d] dark:text-white placeholder:text-[#787582] bg-white dark:bg-slate-900 border border-[#c8c4d3] dark:border-slate-600 rounded-[4px] focus:outline-none focus:border-[#251b72] dark:focus:border-[#c5c0ff] transition-colors"
+          className="w-full h-10 px-3 text-sm text-[#1c1b1d] dark:text-white placeholder:text-[#787582] bg-white dark:bg-slate-900 border border-[#c8c4d3] dark:border-slate-600 rounded-[4px] focus:outline-none focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white transition-colors"
         />
 
         <div className="relative">
@@ -110,7 +110,7 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            className="w-full h-10 px-3 pr-10 text-sm text-[#1c1b1d] dark:text-white placeholder:text-[#787582] bg-white dark:bg-slate-900 border border-[#c8c4d3] dark:border-slate-600 rounded-[4px] focus:outline-none focus:border-[#251b72] dark:focus:border-[#c5c0ff] transition-colors"
+            className="w-full h-10 px-3 pr-10 text-sm text-[#1c1b1d] dark:text-white placeholder:text-[#787582] bg-white dark:bg-slate-900 border border-[#c8c4d3] dark:border-slate-600 rounded-[4px] focus:outline-none focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white transition-colors"
           />
           <button
             type="button"
@@ -124,7 +124,7 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
 
       {/* Forgot password */}
       <div className="flex justify-end mt-2 mb-6">
-        <button className="text-[12px] font-medium text-[#006a61] hover:text-[#251b72] dark:hover:text-[#6bd8cb] transition-colors cursor-pointer">
+        <button className="text-[12px] font-medium text-[#006a61] hover:text-black dark:hover:text-white transition-colors cursor-pointer">
           Forgot password?
         </button>
       </div>
@@ -133,7 +133,7 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
       <button
         onClick={handleLogin}
         disabled={isLoading}
-        className="w-full h-11 flex items-center justify-center gap-2 bg-[#251b72] hover:bg-[#3c3489] text-white text-sm font-medium rounded-[4px] transition-colors active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+        className="w-full h-11 flex items-center justify-center gap-2 bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-850 text-sm font-medium rounded-[4px] transition-colors active:scale-[0.99] disabled:opacity-60 cursor-pointer"
       >
         {isLoading ? (
           <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -20,23 +20,17 @@ function StatCard({ label, value, sub, subColor }: StatCardProps) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="flex-1 min-w-[200px] rounded-xl p-5 md:p-6 bg-white dark:bg-zinc-900 border transition-all duration-250 cursor-default"
       style={{
-        background: "#FFFFFF",
-        border: hovered ? "1.5px solid #6C5CE7" : "1.5px solid #E8E6E0",
-        borderRadius: 12,
-        padding: "20px 24px",
-        flex: "1 1 200px",
-        minWidth: 200,
-        boxShadow: hovered ? "0 10px 25px rgba(108, 92, 231, 0.08)" : "0 1px 3px rgba(0,0,0,0.02)",
+        borderColor: hovered ? "var(--primary)" : "var(--secondary-light)",
+        boxShadow: hovered ? "0 10px 25px rgba(0,0,0,0.04)" : "0 1px 3px rgba(0,0,0,0.01)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        cursor: "default",
       }}
     >
-      <p style={{ fontSize: 11, fontWeight: 600, color: "#9A9890", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 8 }}>
+      <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 tracking-wider uppercase mb-2">
         {label}
       </p>
-      <p style={{ fontSize: 32, fontWeight: 700, color: "#1A1918", lineHeight: 1.1, marginBottom: 4 }}>
+      <p className="text-3xl font-bold text-zinc-900 dark:text-white leading-none mb-1">
         {value}
       </p>
       <p style={{ fontSize: 12, color: subColor, fontWeight: 500 }}>{sub}</p>
@@ -59,10 +53,9 @@ function ActivityRow({ initials, avatarColor, action, time, onClick }: ActivityR
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={onClick}
-      className="flex items-center gap-3 py-3 rounded-xl px-3 -mx-3 transition-all duration-200"
+      className="group flex items-center gap-3 py-3 rounded-xl px-3 -mx-3 transition-all duration-200 hover:bg-black/3 dark:hover:bg-white/4"
       style={{
-        borderBottom: "1px solid #F0EEE9",
-        background: hovered ? "rgba(108, 92, 231, 0.04)" : "transparent",
+        borderBottom: "1px solid var(--secondary-light)",
         cursor: onClick ? "pointer" : "default",
       }}
     >
@@ -84,17 +77,17 @@ function ActivityRow({ initials, avatarColor, action, time, onClick }: ActivityR
       >
         {initials}
       </div>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ fontSize: 13, fontWeight: 500, color: hovered ? "#6C5CE7" : "#1A1918", transition: "color 0.2s" }}>
+      <div className="flex-1 flex flex-col gap-0.5">
+        <span className="text-[13px] font-medium text-zinc-800 dark:text-zinc-200 group-hover:text-black dark:group-hover:text-white transition-colors duration-200">
           {action}
         </span>
-        <span style={{ fontSize: 11, color: "#9A9890", display: "flex", alignItems: "center", gap: 4 }}>
-          <Calendar size={12} />
+        <span className="text-[11px] text-[#9A9890] flex items-center gap-1">
+          <Calendar size={11} />
           {time}
         </span>
       </div>
       {onClick && hovered && (
-        <ChevronRight size={14} className="text-[#6C5CE7] animate-in slide-in-from-left-1 duration-150" />
+        <ChevronRight size={14} className="text-black dark:text-white animate-in slide-in-from-left-1 duration-150" />
       )}
     </div>
   );
@@ -123,10 +116,9 @@ function TaskRow({ title, priority, due, done, onToggle, onClick }: TaskRowProps
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={onClick}
-      className="flex items-center gap-3 py-3 rounded-xl px-3 -mx-3 transition-all duration-200"
+      className="group flex items-center gap-3 py-3 rounded-xl px-3 -mx-3 transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
       style={{
-        borderBottom: "1px solid #F0EEE9",
-        background: hovered ? "rgba(108, 92, 231, 0.04)" : "transparent",
+        borderBottom: "1px solid var(--secondary-light)",
         cursor: onClick ? "pointer" : "default",
       }}
     >
@@ -135,36 +127,21 @@ function TaskRow({ title, priority, due, done, onToggle, onClick }: TaskRowProps
           e.stopPropagation();
           onToggle?.(e);
         }}
-        className="hover:scale-110 active:scale-90 transition-all duration-150"
-        style={{
-          width: 18,
-          height: 18,
-          borderRadius: 6,
-          border: done ? "none" : "1.5px solid #D1CECC",
-          background: done ? "#6C5CE7" : "transparent",
-          flexShrink: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          outline: "none",
-        }}
+        className="hover:scale-110 active:scale-90 transition-all duration-150 flex items-center justify-center shrink-0 w-[18px] h-[18px] rounded-md border-[1.5px] border-zinc-300 dark:border-zinc-700 data-[done=true]:border-none data-[done=true]:bg-black dark:data-[done=true]:bg-white outline-none"
+        data-done={done}
       >
         {done && (
           <svg width="10" height="8" viewBox="0 0 9 7" fill="none">
-            <path d="M1 3.5L3.5 6L8 1" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M1 3.5L3.5 6L8 1" stroke="white" className="dark:stroke-black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         )}
       </button>
 
       <span
+        className="flex-1 text-[13px] font-medium text-zinc-800 dark:text-zinc-200 group-hover:text-black dark:group-hover:text-white transition-colors duration-200"
         style={{
-          flex: 1,
-          fontSize: 13,
-          fontWeight: 500,
-          color: done ? "#9A9890" : (hovered ? "#6C5CE7" : "#1A1918"),
           textDecoration: done ? "line-through" : "none",
-          transition: "color 0.2s",
+          opacity: done ? 0.6 : 1,
         }}
       >
         {title}
@@ -183,9 +160,9 @@ function TaskRow({ title, priority, due, done, onToggle, onClick }: TaskRowProps
       >
         {priority}
       </span>
-      <span style={{ fontSize: 11, color: "#9A9890" }}>{due}</span>
+      <span className="text-[11px] text-[#9A9890]">{due}</span>
       {onClick && hovered && (
-        <ChevronRight size={14} className="text-[#6C5CE7] animate-in slide-in-from-left-1 duration-150" />
+        <ChevronRight size={14} className="text-black dark:text-white animate-in slide-in-from-left-1 duration-150" />
       )}
     </div>
   );
@@ -260,35 +237,14 @@ export default function DashboardClient({
 
   return (
     <div style={{ maxWidth: 1100 }} className="p-4 sm:p-6 md:p-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <h1
-        style={{
-          fontSize: 26,
-          fontWeight: 700,
-          color: "#1A1918",
-          marginBottom: 6,
-          lineHeight: 1.3,
-          letterSpacing: "-0.02em",
-        }}
-      >
+      <h1 className="text-2xl sm:text-[26px] font-bold text-zinc-900 dark:text-white mb-1.5 leading-tight tracking-tight">
         Welcome back, {user?.name || "Builder"} 👋
       </h1>
-      <p style={{ fontSize: 14, color: "#9A9890", marginBottom: 28, fontWeight: 500 }}>
-        Here's what's happening with <strong style={{ color: "#6C5CE7" }}>{workspace?.title || "your workspace"}</strong> today.
+      <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-8">
+        Here's what's happening with <strong className="text-black dark:text-white font-semibold">{workspace?.title || "your workspace"}</strong> today.
       </p>
-
       <div
-        style={{
-          background: "linear-gradient(135deg, rgba(108, 92, 231, 0.04) 0%, rgba(162, 155, 254, 0.04) 100%)",
-          border: "1.5px dashed rgba(108, 92, 231, 0.2)",
-          borderRadius: 16,
-          padding: "20px 24px",
-          marginBottom: "32px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 16,
-        }}
+        className="bg-zinc-50 dark:bg-zinc-900/40 border border-dashed border-zinc-200 dark:border-zinc-800 flex items-center justify-between flex-wrap gap-4 p-5 rounded-2xl mb-8"
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div
@@ -296,41 +252,32 @@ export default function DashboardClient({
               width: 36,
               height: 36,
               borderRadius: 10,
-              background: "linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%)",
+              background: "linear-gradient(135deg, #18181B 0%, #52525B 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 4px 12px rgba(108, 92, 231, 0.25)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.12)",
             }}
           >
             <Sparkles size={16} color="#fff" strokeWidth={2} />
           </div>
           <div>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1A1918", lineHeight: 1.2 }}>Quick Actions</h3>
-            <p style={{ fontSize: 11, color: "#9A9890", marginTop: 2 }}>Accelerate your workflow with interactive shortcuts</p>
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-white leading-normal">Quick Actions</h3>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Accelerate your workflow with interactive shortcuts</p>
           </div>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button
             onClick={() => router.push(`/workspace/${workspaceID}/projects`)}
-            className="flex items-center gap-1.5 text-[13px] font-[600] px-4 py-2.5 bg-white text-[#4A4845] hover:text-[#6C5CE7] hover:bg-[#F4F4F2] cursor-pointer shadow-xs transition-all active:scale-[0.97]"
-            style={{
-              border: "1px solid rgba(0, 0, 0, 0.08)",
-              borderRadius: 10,
-            }}
+            className="flex items-center gap-1.5 text-[13px] font-[600] px-4 py-2.5 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer border border-zinc-200 dark:border-zinc-800 rounded-[10px] shadow-xs transition-all active:scale-[0.97]"
           >
             <FolderKanban size={14} strokeWidth={2} />
             <span>Manage Projects</span>
           </button>
-
+ 
           <button
             onClick={() => setIsCreateTaskOpen(true)}
-            className="flex items-center gap-1.5 text-[13px] font-[600] px-4 py-2.5 text-white bg-[#6C5CE7] hover:bg-[#5a4ed1] cursor-pointer shadow-sm transition-all active:scale-[0.97]"
-            style={{
-              border: "none",
-              borderRadius: 10,
-              boxShadow: "0 4px 12px rgba(108, 92, 231, 0.2)",
-            }}
+            className="flex items-center gap-1.5 text-[13px] font-[600] px-4 py-2.5 bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-100 cursor-pointer shadow-sm rounded-[10px] transition-all active:scale-[0.97]"
           >
             <Plus size={14} strokeWidth={2.5} />
             <span>New Task</span>
@@ -342,31 +289,25 @@ export default function DashboardClient({
         <StatCard label="Active Projects" value={projects?.length?.toString() || "0"} sub="Total workspace projects" subColor="#16A34A" />
         <StatCard label="Open Tasks"      value={openTasksCount.toString()} sub="Pending assignment/review"  subColor="#D97706" />
         <StatCard label="Team Members"    value={members?.length?.toString() || "0"}  sub="Active workspace members" subColor="#9A9890" />
-        <StatCard label="Completion Rate" value={`${completionPercentage}%`} sub="Completed tasks ratio"  subColor="#6C5CE7" />
+        <StatCard label="Completion Rate" value={`${completionPercentage}%`} sub="Completed tasks ratio"  subColor="var(--secondary)" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E8E6E0",
-            borderRadius: 16,
-            padding: "24px 24px 16px",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
-          }}
+          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm"
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: "#1A1918" }}>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
                 Recent Projects
               </h2>
-              <p style={{ fontSize: 11, color: "#9A9890", marginTop: 2 }}>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                 Quickly jump back into your active projects
               </p>
             </div>
             <button
               onClick={() => router.push(`/workspace/${workspaceID}/projects`)}
-              className="text-xs font-semibold text-[#6C5CE7] hover:text-[#5a4ed1] bg-[#6C5CE7]/5 hover:bg-[#6C5CE7]/10 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-800"
             >
               See All
             </button>
@@ -375,7 +316,7 @@ export default function DashboardClient({
           <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {projects && projects.length > 0 ? (
               projects.slice(0, 5).map((project: any, i: number) => {
-                const colors = ["#6C5CE7", "#00B894", "#E17055", "#FDCB6E"];
+                const colors = ["#27272A", "#3F3F46", "#52525B", "#71717A"];
                 const initials = project.name.substring(0, 2).toUpperCase();
                 return (
                   <ActivityRow
@@ -398,26 +339,20 @@ export default function DashboardClient({
         </div>
 
         <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E8E6E0",
-            borderRadius: 16,
-            padding: "24px 24px 16px",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
-          }}
+          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm"
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: "#1A1918" }}>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
                 My Workspace Tasks
               </h2>
-              <p style={{ fontSize: 11, color: "#9A9890", marginTop: 2 }}>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                 Tick off your tasks or view their requirements
               </p>
             </div>
             <button
               onClick={() => router.push(`/workspace/${workspaceID}/tasks`)}
-              className="text-xs font-semibold text-[#6C5CE7] hover:text-[#5a4ed1] bg-[#6C5CE7]/5 hover:bg-[#6C5CE7]/10 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-black dark:text-white hover:bg-zinc-150 dark:hover:bg-zinc-800 bg-zinc-100 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-800"
             >
               See All
             </button>

@@ -36,14 +36,14 @@ interface SettingsClientProps {
 }
 
 const PRESETS = [
-    { bg: "#6C5CE7", text: "#FFFFFF", name: "Classic Purple" },
-    { bg: "#00B894", text: "#FFFFFF", name: "Emerald Mint" },
-    { bg: "#0984E3", text: "#FFFFFF", name: "Ocean Blue" },
-    { bg: "#D63031", text: "#FFFFFF", name: "Crimson Rose" },
-    { bg: "#E17055", text: "#FFFFFF", name: "Amber Sunset" },
-    { bg: "#2D3436", text: "#FFFFFF", name: "Dark Slate" },
-    { bg: "#FFEAA7", text: "#2D3436", name: "Creamy Lemon" },
-    { bg: "#FAB1A0", text: "#2D3436", name: "Peach Puff" },
+    { bg: "#18181B", text: "#FFFFFF", name: "Zinc Dark" },
+    { bg: "#27272A", text: "#FFFFFF", name: "Zinc Medium" },
+    { bg: "#52525B", text: "#FFFFFF", name: "Zinc Gray" },
+    { bg: "#71717A", text: "#FFFFFF", name: "Zinc Light" },
+    { bg: "#E4E4E7", text: "#18181B", name: "Zinc Extra Light" },
+    { bg: "#000000", text: "#FFFFFF", name: "Pure Black" },
+    { bg: "#FFFFFF", text: "#000000", name: "Pure White" },
+    { bg: "#09090B", text: "#FAFAFA", name: "Deep Charcoal" },
 ];
 
 export default function SettingsClient({
@@ -53,12 +53,12 @@ export default function SettingsClient({
     const router = useRouter();
 
     // Parse color object
-    let initialBgColor = "#6C5CE7";
+    let initialBgColor = "#18181B";
     let initialTextColor = "#FFFFFF";
     if (workspace.color) {
         try {
             const parsed = typeof workspace.color === "string" ? JSON.parse(workspace.color) : workspace.color;
-            initialBgColor = parsed.backgroundColor || "#6C5CE7";
+            initialBgColor = parsed.backgroundColor || "#18181B";
             initialTextColor = parsed.textColor || "#FFFFFF";
         } catch {
             // ignore
@@ -176,7 +176,7 @@ export default function SettingsClient({
             {/* Header */}
             <div className="border-b border-gray-200 dark:border-gray-800 pb-5">
                 <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Settings className="w-6 h-6 text-[#6C5CE7]" />
+                    <Settings className="w-6 h-6 text-black dark:text-white" />
                     Workspace Settings
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5">
@@ -222,7 +222,7 @@ export default function SettingsClient({
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-[#6C5CE7] dark:focus:border-[#6C5CE7] outline-none text-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-lg transition-colors"
+                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-black dark:focus:border-white outline-none text-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-lg transition-colors"
                                 required
                             />
                         </div>
@@ -236,7 +236,7 @@ export default function SettingsClient({
                                 type="text"
                                 value={companyName}
                                 onChange={(e) => setCompanyName(e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-[#6C5CE7] dark:focus:border-[#6C5CE7] outline-none text-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-lg transition-colors"
+                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-black dark:focus:border-white outline-none text-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-lg transition-colors"
                                 required
                             />
                         </div>
@@ -250,7 +250,7 @@ export default function SettingsClient({
                                 rows={4}
                                 value={describtion}
                                 onChange={(e) => setDescribtion(e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-[#6C5CE7] dark:focus:border-[#6C5CE7] outline-none text-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-lg transition-colors resize-none"
+                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-black dark:focus:border-white outline-none text-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-lg transition-colors resize-none"
                                 required
                             />
                         </div>
@@ -264,7 +264,7 @@ export default function SettingsClient({
                             <select 
                                 value={visibility}
                                 onChange={(e) => setVisibility(e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-[#6C5CE7] dark:focus:border-[#6C5CE7] outline-none text-sm text-gray-900 dark:text-white px-3 py-2 rounded-lg transition-colors cursor-pointer"
+                                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-850/50 focus:border-black dark:focus:border-white outline-none text-sm text-gray-900 dark:text-white px-3 py-2 rounded-lg transition-colors cursor-pointer"
                             >
                                 <option value="public">Public (Anyone can search and request to join)</option>
                                 <option value="private">Private (Invite-only access)</option>
@@ -276,7 +276,7 @@ export default function SettingsClient({
                         <button
                             type="submit"
                             disabled={updating}
-                            className="inline-flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cd8] disabled:bg-[#6C5CE7]/60 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm cursor-pointer"
+                            className="inline-flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm cursor-pointer"
                         >
                             {updating ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -292,7 +292,7 @@ export default function SettingsClient({
                 <form onSubmit={handleSaveColors} className="bg-white dark:bg-[#111112] border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
                     <div className="p-6 border-b border-gray-200 dark:border-gray-800">
                         <h2 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                            <Palette className="w-4 h-4 text-[#6C5CE7]" />
+                            <Palette className="w-4 h-4 text-black dark:text-white" />
                             Workspace Avatar Appearance
                         </h2>
                         <p className="text-xs text-gray-400 mt-1">
@@ -358,9 +358,9 @@ export default function SettingsClient({
                                                     style={{
                                                         backgroundColor: preset.bg,
                                                         color: preset.text,
-                                                        border: isSelected ? "2px solid #6C5CE7" : "1px solid rgba(0,0,0,0.05)"
+                                                        border: isSelected ? "2px solid var(--primary)" : "1px solid rgba(0,0,0,0.05)"
                                                     }}
-                                                    className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 hover:opacity-90 shadow-sm ${isSelected ? 'ring-2 ring-[#6C5CE7]/30 ring-offset-2 dark:ring-offset-gray-900 scale-[1.02]' : ''}`}
+                                                    className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 hover:opacity-90 shadow-sm ${isSelected ? 'ring-2 ring-zinc-500/30 ring-offset-2 dark:ring-offset-gray-900 scale-[1.02]' : ''}`}
                                                 >
                                                     <span className="truncate">{preset.name}</span>
                                                     {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
@@ -377,7 +377,7 @@ export default function SettingsClient({
                                         <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                             Custom Background
                                         </label>
-                                        <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-1.5 transition-colors focus-within:border-[#6C5CE7] dark:focus-within:border-[#6C5CE7]">
+                                        <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-1.5 transition-colors focus-within:border-black dark:focus-within:border-white">
                                             <input 
                                                 type="color"
                                                 value={bgColor}
@@ -399,7 +399,7 @@ export default function SettingsClient({
                                         <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                             Custom Text
                                         </label>
-                                        <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-1.5 transition-colors focus-within:border-[#6C5CE7] dark:focus-within:border-[#6C5CE7]">
+                                        <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-1.5 transition-colors focus-within:border-black dark:focus-within:border-white">
                                             <input 
                                                 type="color"
                                                 value={textColor}
@@ -424,7 +424,7 @@ export default function SettingsClient({
                         <button
                             type="submit"
                             disabled={updatingColor}
-                            className="inline-flex items-center gap-2 bg-[#6C5CE7] hover:bg-[#5b4cd8] disabled:bg-[#6C5CE7]/60 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm cursor-pointer"
+                            className="inline-flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm cursor-pointer"
                         >
                             {updatingColor ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />

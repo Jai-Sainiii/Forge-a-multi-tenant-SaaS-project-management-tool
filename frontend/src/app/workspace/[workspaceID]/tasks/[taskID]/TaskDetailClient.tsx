@@ -36,7 +36,7 @@ const TASK_STATUSES = [
     value: "in progress",
     label: "In Progress",
     icon: Loader2,
-    color: "text-indigo-500",
+    color: "text-zinc-500 dark:text-zinc-400",
   },
   { value: "review", label: "Review", icon: Eye, color: "text-yellow-500" },
   {
@@ -153,10 +153,10 @@ function EditTaskModal({
       }}
       className="px-4"
     >
-      <div className="bg-white dark:bg-[#1e293b] rounded-lg w-full max-w-lg shadow-xl border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-zinc-900 rounded-lg w-full max-w-lg shadow-xl border border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-            <Edit className="w-5 h-5 text-[#3C3489]" />
+            <Edit className="w-5 h-5 text-black dark:text-white" />
             Edit Task
           </h2>
           <button
@@ -181,7 +181,7 @@ function EditTaskModal({
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] text-sm"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white text-sm"
             />
           </div>
 
@@ -191,7 +191,7 @@ function EditTaskModal({
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] resize-none text-sm"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white resize-none text-sm"
             />
           </div>
 
@@ -208,7 +208,7 @@ function EditTaskModal({
                     onClick={() => setEditStatus(s.value)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-[#3C3489] text-white shadow-sm"
+                        ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
                         : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }`}
                   >
@@ -237,7 +237,7 @@ function EditTaskModal({
                     onClick={() => setEditPriority(p.value)}
                     className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-[#3C3489] text-white shadow-sm"
+                        ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
                         : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }`}
                   >
@@ -270,9 +270,9 @@ function EditTaskModal({
                             setEditAssigneeIds([...editAssigneeIds, member.userId]);
                           }
                         }}
-                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-[#3C3489] focus:ring-[#3C3489] accent-[#3C3489] cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-black dark:text-white focus:ring-black dark:focus:ring-white accent-black dark:accent-white cursor-pointer"
                       />
-                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary-light to-[#3C3489] text-white flex items-center justify-center text-[10px] font-medium shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-950 flex items-center justify-center text-[10px] font-medium shrink-0">
                         {member.user.name?.charAt(0).toUpperCase()}
                       </div>
                       <span className="font-medium text-xs">{member.user.name}</span>
@@ -298,7 +298,7 @@ function EditTaskModal({
           <button
             onClick={handleUpdateTask}
             disabled={saving || !editTitle.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50 cursor-pointer"
+            className="px-4 py-2 text-sm font-medium text-white bg-black dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-md transition-colors disabled:opacity-50 cursor-pointer"
           >
             Save Changes
           </button>
@@ -434,7 +434,7 @@ export default function TaskDetailClient({
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-primary-light/10 text-primary-light rounded-lg border border-primary-light/20">
+              <div className="p-2 bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-700">
                 <ListTodo className="w-6 h-6" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white">
@@ -465,7 +465,7 @@ export default function TaskDetailClient({
               canSubmitTask && (
                 <button
                   onClick={() => setIsSubmitModalOpen(true)}
-                  className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+                  className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   Submit for Review
@@ -474,7 +474,7 @@ export default function TaskDetailClient({
             {canEditTask && (
               <button
                 onClick={() => setIsEditModalOpen(true)}
-                className="flex items-center gap-2 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+                className="flex items-center gap-2 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
               >
                 <Edit className="w-4 h-4" />
                 Edit Task
@@ -486,7 +486,7 @@ export default function TaskDetailClient({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
             <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Tag className="w-4 h-4" />
               Description
@@ -497,7 +497,7 @@ export default function TaskDetailClient({
           </div>
 
           {task.submittedTextorLink && (
-            <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
               <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
                 Submission Details
@@ -515,7 +515,7 @@ export default function TaskDetailClient({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-[#3C3489] hover:underline flex items-center gap-2"
+                    className="text-sm font-medium text-black dark:text-white hover:underline flex items-center gap-2"
                   >
                     <ExternalLink className="w-4 h-4" />
                     {task.submittedTextorLink}
@@ -531,7 +531,7 @@ export default function TaskDetailClient({
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm space-y-6">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm space-y-6">
             <div>
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                 <Briefcase className="w-4 h-4" />
@@ -569,7 +569,7 @@ export default function TaskDetailClient({
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-outline-variant dark:border-gray-700 shadow-sm">
             <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Users className="w-4 h-4" />
               Assignees
@@ -579,7 +579,7 @@ export default function TaskDetailClient({
               <div className="space-y-3">
                 {task.taskMembers.map((member, idx) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-light to-[#3C3489] text-white flex items-center justify-center text-xs font-medium shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-950 flex items-center justify-center text-xs font-medium shrink-0">
                       {member.user.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
@@ -619,7 +619,7 @@ export default function TaskDetailClient({
           }}
           className="px-4"
         >
-          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-lg w-full max-w-md shadow-xl border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg w-full max-w-md shadow-xl border border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
               Submit for Review
             </h2>
@@ -631,7 +631,7 @@ export default function TaskDetailClient({
                 <select
                   value={submissionType}
                   onChange={(e) => setSubmissionType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489]"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                 >
                   <option value="link">Link</option>
                   <option value="text">Text</option>
@@ -649,7 +649,7 @@ export default function TaskDetailClient({
                     value={submittedContent}
                     onChange={(e) => setSubmittedContent(e.target.value)}
                     placeholder="https://..."
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489]"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                   />
                 ) : (
                   <textarea
@@ -657,7 +657,7 @@ export default function TaskDetailClient({
                     onChange={(e) => setSubmittedContent(e.target.value)}
                     placeholder="Enter your submission details..."
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3C3489] resize-none"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white resize-none"
                   />
                 )}
               </div>
@@ -673,7 +673,7 @@ export default function TaskDetailClient({
               <button
                 onClick={handleSubmitTask}
                 disabled={submitting || !submittedContent.trim()}
-                className="px-4 py-2 text-sm font-medium text-white bg-[#3C3489] hover:bg-[#251b72] rounded-md transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white bg-black dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-md transition-colors disabled:opacity-50"
               >
                 {submitting ? "Submitting..." : "Submit Task"}
               </button>

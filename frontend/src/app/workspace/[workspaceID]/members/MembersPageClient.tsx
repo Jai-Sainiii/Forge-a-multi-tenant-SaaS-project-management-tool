@@ -377,7 +377,7 @@ export default function MembersPageClient({
             setGeneratedLink(null);
             setInviteError(null);
           }}
-          className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+          className="flex items-center gap-2 bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
           Invite Member
@@ -394,7 +394,7 @@ export default function MembersPageClient({
             placeholder="Search by name, email, or role..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm transition-colors"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md leading-5 bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm transition-colors"
           />
         </div>
         {!loading && !error && (
@@ -446,7 +446,7 @@ export default function MembersPageClient({
                   <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-medium text-sm border border-primary-light/20">
+                        <div className="flex-shrink-0 h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 font-medium text-sm border border-zinc-200 dark:border-zinc-700">
                           {member.user?.name?.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-4">
@@ -463,7 +463,7 @@ export default function MembersPageClient({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         {member.role?.toLowerCase() === "admin" || member.role?.toLowerCase() === "owner" ? (
-                          <Shield className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 mr-1.5" />
+                          <Shield className="w-3.5 h-3.5 text-zinc-900 dark:text-zinc-100 mr-1.5" />
                         ) : null}
                         <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{member.role}</span>
                       </div>
@@ -489,7 +489,7 @@ export default function MembersPageClient({
                               setEditWorkspaceMemberError(null);
                               setIsEditWorkspaceMemberModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#3C3489] hover:text-white border border-[#3C3489]/20 hover:border-[#3C3489] bg-[#3C3489]/5 hover:bg-[#3C3489] rounded-md transition-all duration-200 cursor-pointer shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:text-white dark:hover:text-black border border-zinc-200 dark:border-zinc-700 hover:bg-black dark:hover:bg-white rounded-md transition-all duration-200 cursor-pointer shadow-sm"
                           >
                             <Shield className="w-3.5 h-3.5" />
                             Change Role
@@ -554,7 +554,7 @@ export default function MembersPageClient({
                 setCreateTeamProjectId("");
                 setCreateTeamError(null);
               }}
-              className="flex items-center gap-2 bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
+              className="flex items-center gap-2 bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Create Team
@@ -590,12 +590,12 @@ export default function MembersPageClient({
             <div className="space-y-10">
               {Object.values(groupedTeams).map((group: any, groupIndex) => (
                 <div key={groupIndex} className="space-y-4">
-                  <h3 className="text-md font-semibold text-gray-900 dark:text-white border-l-4 border-[#3C3489] pl-3 capitalize tracking-wide">
+                  <h3 className="text-md font-semibold text-gray-900 dark:text-white border-l-4 border-black dark:border-white pl-3 capitalize tracking-wide">
                     {group.projectName}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {group.teams.map((team: any) => (
-                      <div key={team.id} className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm transition-all hover:border-primary-light/50">
+                      <div key={team.id} className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm transition-all hover:border-zinc-400 dark:hover:border-zinc-500">
                         <div className="p-5 cursor-pointer flex justify-between items-center" onClick={() => setExpandedTeamId(expandedTeamId === team.id ? null : team.id)}>
                           <div>
                             <h4 className="text-base font-medium text-gray-900 dark:text-white">{team.teamName}</h4>
@@ -614,7 +614,7 @@ export default function MembersPageClient({
                                   setAddMemberError(null);
                                   setIsAddMemberModalOpen(true);
                                 }}
-                                className="flex items-center justify-center p-1 text-[#3C3489] hover:text-white hover:bg-[#3C3489] rounded-md transition-all cursor-pointer"
+                                className="flex items-center justify-center p-1 text-zinc-900 dark:text-zinc-100 hover:text-white dark:hover:text-black hover:bg-black dark:hover:bg-white rounded-md transition-all cursor-pointer"
                                 title="Add Team Member"
                               >
                                 <UserPlus className="w-4 h-4" />
@@ -639,7 +639,7 @@ export default function MembersPageClient({
                                     {team.teamMembers.map((member: any, i: number) => (
                                       <div key={i} className="group flex items-center justify-between p-3 hover:bg-white dark:hover:bg-[#1e293b] rounded-md transition-all border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
                                         <div className="flex items-center gap-3">
-                                          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-medium text-sm border border-primary-light/20">
+                                          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 font-medium text-sm border border-zinc-200 dark:border-zinc-700">
                                             {member.user?.name?.charAt(0).toUpperCase() || "?"}
                                           </div>
                                           <div>
@@ -712,7 +712,7 @@ export default function MembersPageClient({
           <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
               <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-[#3C3489]" />
+                <UserPlus className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                 Invite Member
               </h3>
               <button onClick={() => setIsInviteModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
@@ -732,7 +732,7 @@ export default function MembersPageClient({
                           onClick={() => setInviteRole(role)}
                           className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
                             inviteRole === role
-                              ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
+                              ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm"
                               : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
                           }`}
                         >
@@ -757,7 +757,7 @@ export default function MembersPageClient({
                   <button
                     onClick={handleGenerateInvite}
                     disabled={generatingLink}
-                    className="w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {generatingLink ? (
                       <>
@@ -828,7 +828,7 @@ export default function MembersPageClient({
           <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
               <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-[#3C3489]" />
+                <UserPlus className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                 Add Member
               </h3>
               <button onClick={() => setIsAddMemberModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
@@ -842,7 +842,7 @@ export default function MembersPageClient({
                 <select
                   value={addMemberUserId}
                   onChange={(e) => setAddMemberUserId(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm"
                 >
                   <option value="">-- Choose a Member --</option>
                   {members
@@ -862,7 +862,7 @@ export default function MembersPageClient({
                   placeholder="e.g. Frontend Engineer, Product Designer"
                   value={addMemberPosition}
                   onChange={(e) => setAddMemberPosition(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm"
                 />
               </div>
 
@@ -875,7 +875,7 @@ export default function MembersPageClient({
                       onClick={() => setAddMemberRole(role)}
                       className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
                         addMemberRole === role
-                          ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
+                          ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm"
                           : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
                       }`}
                     >
@@ -895,7 +895,7 @@ export default function MembersPageClient({
               <button
                 onClick={handleAddTeamMember}
                 disabled={addMemberLoading || !addMemberUserId}
-                className="w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
+                className="w-full bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
               >
                 {addMemberLoading ? (
                   <>
@@ -917,7 +917,7 @@ export default function MembersPageClient({
           <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
               <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#3C3489]" />
+                <Shield className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                 Edit Team Member Details
               </h3>
               <button onClick={() => setIsEditMemberModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
@@ -927,7 +927,7 @@ export default function MembersPageClient({
                                                 
             <div className="p-6 space-y-4">
               <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-semibold border border-primary-light/20">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 font-semibold border border-zinc-200 dark:border-zinc-700">
                   {selectedTeamMemberForEdit.user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -943,7 +943,7 @@ export default function MembersPageClient({
                   placeholder="e.g. Lead Designer"
                   value={editMemberPosition}
                   onChange={(e) => setEditMemberPosition(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm"
                 />
               </div>
 
@@ -956,7 +956,7 @@ export default function MembersPageClient({
                       onClick={() => setEditMemberRole(role)}
                       className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
                         editMemberRole === role
-                          ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
+                          ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm"
                           : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
                       }`}
                     >
@@ -976,7 +976,7 @@ export default function MembersPageClient({
               <button
                 onClick={handleEditTeamMember}
                 disabled={editMemberLoading}
-                className="w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
+                className="w-full bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
               >
                 {editMemberLoading ? (
                   <>
@@ -998,7 +998,7 @@ export default function MembersPageClient({
           <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
               <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-[#3C3489]" />
+                <Users className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                 Create New Team
               </h3>
               <button onClick={() => setIsCreateTeamModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
@@ -1013,7 +1013,7 @@ export default function MembersPageClient({
                   required
                   value={createTeamProjectId}
                   onChange={(e) => setCreateTeamProjectId(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm"
                 >
                   <option value="">-- Select a Project --</option>
                   {projects.map((p) => (
@@ -1030,7 +1030,7 @@ export default function MembersPageClient({
                   placeholder="e.g. Design System Team, QA Engineers"
                   value={createTeamName}
                   onChange={(e) => setCreateTeamName(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#3C3489] focus:border-[#3C3489] sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white sm:text-sm"
                 />
               </div>
 
@@ -1052,7 +1052,7 @@ export default function MembersPageClient({
                 <button
                   type="submit"
                   disabled={createTeamLoading || !createTeamProjectId || !createTeamName.trim()}
-                  className="bg-[#3C3489] hover:bg-[#251b72] text-white px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                  className="bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 px-4 py-2 rounded-md font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {createTeamLoading ? (
                     <>
@@ -1075,7 +1075,7 @@ export default function MembersPageClient({
           <div className="bg-white dark:bg-[#1e293b] rounded-xl w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700/50">
               <h3 className="text-xl font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#3C3489]" />
+                <Shield className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                 Change Workspace Member Role
               </h3>
               <button onClick={() => setIsEditWorkspaceMemberModalOpen(false)} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
@@ -1085,7 +1085,7 @@ export default function MembersPageClient({
 
             <div className="p-6 space-y-4">
               <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-light/10 flex items-center justify-center text-primary font-semibold border border-primary-light/20">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 font-semibold border border-zinc-200 dark:border-zinc-700">
                   {selectedWorkspaceMemberForEdit.user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -1103,7 +1103,7 @@ export default function MembersPageClient({
                       onClick={() => setEditWorkspaceMemberRole(role)}
                       className={`px-3 py-2 text-xs font-medium rounded-md border transition-all cursor-pointer capitalize ${
                         editWorkspaceMemberRole === role
-                          ? "bg-[#3C3489] text-white border-[#3C3489] shadow-sm"
+                          ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm"
                           : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750"
                       }`}
                     >
@@ -1129,7 +1129,7 @@ export default function MembersPageClient({
               <button
                 onClick={handleUpdateWorkspaceMemberRole}
                 disabled={editWorkspaceMemberLoading}
-                className="w-full bg-[#3C3489] hover:bg-[#251b72] text-white py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
+                className="w-full bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-100 text-white dark:text-black border border-transparent dark:border-zinc-800 py-2.5 rounded-lg font-medium text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-4"
               >
                 {editWorkspaceMemberLoading ? (
                   <>
