@@ -91,7 +91,7 @@ const FeatureCard = memo(function FeatureCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
-      className="gradient-border group p-7 md:p-8 bg-white dark:bg-[#0f0f1a]/80 backdrop-blur-sm flex flex-col gap-5 cursor-default"
+      className="gradient-border group p-7 md:p-8 backdrop-blur-sm flex flex-col gap-5 cursor-default"
     >
       <div className="w-11 h-11 rounded-xl bg-zinc-500/10 dark:bg-zinc-500/15 flex items-center justify-center group-hover:bg-zinc-500/20 transition-colors duration-300">
         <Icon

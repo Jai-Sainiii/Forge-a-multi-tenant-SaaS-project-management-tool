@@ -81,15 +81,17 @@
 /* ─── Gradient border card ─── */
 .gradient-border {
   position: relative;
-  background: rgba(15, 15, 25, 0.6);
+  background: #ffffff;
   border-radius: 1rem;
   overflow: hidden;
-}
-
-:where(:not(.dark)) .gradient-border {
-  background: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark .gradient-border {
+  background: rgba(15, 15, 25, 0.6);
+  box-shadow: none;
+  border: none;
 }
 
 .gradient-border::before {
@@ -114,18 +116,18 @@
 .gradient-border:hover::before {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(161, 161, 170, 0.25) 50%,
-    rgba(63, 63, 70, 0.15) 100%
-  );
-}
-
-:where(:not(.dark)) .gradient-border:hover::before {
-  background: linear-gradient(
-    135deg,
     rgba(0, 0, 0, 0.2) 0%,
     rgba(113, 113, 122, 0.15) 50%,
     rgba(228, 228, 231, 0.1) 100%
+  );
+}
+
+.dark .gradient-border:hover::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(161, 161, 170, 0.25) 50%,
+    rgba(63, 63, 70, 0.15) 100%
   );
 }
 

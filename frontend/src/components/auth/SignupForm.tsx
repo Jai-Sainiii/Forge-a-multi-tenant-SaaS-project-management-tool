@@ -8,9 +8,11 @@ import { signupUser, getCurrentUser, setTokenCookie } from "@/app/actions/auth";
 export default function SignupForm({
   onSwitchToLogin,
   onClose,
+  onShowOtpVerification,
 }: {
   onSwitchToLogin: () => void;
   onClose: () => void;
+  onShowOtpVerification: (email: string) => void;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -72,7 +74,11 @@ export default function SignupForm({
       });
       if (res.success) {
         setSuccess(true);
-        setTimeout(() => onSwitchToLogin(), 1500);
+        if (res.requiresVerification && res.email) {
+          setTimeout(() => onShowOtpVerification(res.email), 1000);
+        } else {
+          setTimeout(() => onSwitchToLogin(), 1500);
+        }
       } else {
         setError(res.message || "Could not create account. Try again.");
       }

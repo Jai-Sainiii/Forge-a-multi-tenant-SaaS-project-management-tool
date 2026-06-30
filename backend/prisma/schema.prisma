@@ -18,6 +18,11 @@ model User {
   name      String
   password  String?
   googleId  String?  @unique
+  isVerified      Boolean   @default(false)
+  otpCode         String?
+  otpExpires      DateTime?
+  resetOtpCode    String?
+  resetOtpExpires DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -5,6 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
+import OtpVerifyForm from "./OtpVerifyForm";
+import ForgotPasswordForm from "./ForgotPasswordForm";
+import ResetPasswordForm from "./ResetPasswordForm";
 
 export default function AuthModel({
   isOpen,
@@ -17,20 +20,23 @@ export default function AuthModel({
   activeTab: "login" | "signup";
   setActiveTab: (tab: "login" | "signup") => void;
 }) {
+  const [view, setView] = useState<"login" | "signup" | "otp-verify" | "forgot-password" | "reset-password">("login");
+  const [tempEmail, setTempEmail] = useState("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      setView(activeTab);
+      setSuccessMessage(null);
     } else {
       document.body.style.overflow = "";
     }
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, activeTab]);
 
-  
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -50,10 +56,8 @@ export default function AuthModel({
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           onClick={onClose}
         >
-          
           <div className="absolute inset-0 bg-slate-950/70" />
 
-          
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,7 +66,6 @@ export default function AuthModel({
             className="relative w-full max-w-[440px] bg-white dark:bg-[#0f172a] border border-[#c8c4d3] dark:border-slate-700 rounded-xl z-10 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-          
             <button
               onClick={onClose}
               aria-label="Close modal"
@@ -72,53 +75,104 @@ export default function AuthModel({
             </button>
 
             <div className="p-10">
-             
               <div className="mb-8">
                 <span className="text-xl font-bold tracking-tight text-black dark:text-white">
                   Forge
                 </span>
               </div>
 
-              
-              <div className="inline-flex items-center bg-[#f0edf0] dark:bg-slate-800 rounded-full p-1 mb-8">
-                <button
-                  onClick={() => setActiveTab("login")}
-                  className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
-                    activeTab === "login"
-                      ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
-                      : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
-                  }`}
-                >
-                  Log in
-                </button>
-                <button
-                  onClick={() => setActiveTab("signup")}
-                  className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
-                    activeTab === "signup"
-                      ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
-                      : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
-                  }`}
-                >
-                  Create account
-                </button>
-              </div>
+              {/* Tabs selector (only show in login/signup views) */}
+              {["login", "signup"].includes(view) && (
+                <div className="inline-flex items-center bg-[#f0edf0] dark:bg-slate-800 rounded-full p-1 mb-8">
+                  <button
+                    onClick={() => {
+                      setActiveTab("login");
+                      setView("login");
+                      setSuccessMessage(null);
+                    }}
+                    className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
+                      view === "login"
+                        ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
+                        : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
+                    }`}
+                  >
+                    Log in
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab("signup");
+                      setView("signup");
+                      setSuccessMessage(null);
+                    }}
+                    className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all cursor-pointer ${
+                      view === "signup"
+                        ? "bg-black dark:bg-white text-white dark:text-black shadow-sm"
+                        : "text-[#474551] dark:text-slate-400 hover:text-[#1c1b1d] dark:hover:text-white"
+                    }`}
+                  >
+                    Create account
+                  </button>
+                </div>
+              )}
 
-              
               <div className="relative">
                 <AnimatePresence mode="popLayout">
                   <motion.div
-                    key={activeTab}
+                    key={view}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.15, ease: "easeInOut" }}
                   >
-                    {activeTab === "login" ? (
-                      <LoginForm onClose={onClose} />
-                    ) : (
-                      <SignupForm 
-                        onSwitchToLogin={() => setActiveTab("login")} 
+                    {view === "login" && (
+                      <LoginForm 
                         onClose={onClose}
+                        onShowOtpVerification={(email) => {
+                          setTempEmail(email);
+                          setView("otp-verify");
+                        }}
+                        onShowForgotPassword={() => setView("forgot-password")}
+                        successMessage={successMessage}
+                      />
+                    )}
+                    {view === "signup" && (
+                      <SignupForm 
+                        onSwitchToLogin={() => {
+                          setActiveTab("login");
+                          setView("login");
+                        }} 
+                        onClose={onClose}
+                        onShowOtpVerification={(email) => {
+                          setTempEmail(email);
+                          setView("otp-verify");
+                        }}
+                      />
+                    )}
+                    {view === "otp-verify" && (
+                      <OtpVerifyForm 
+                        email={tempEmail} 
+                        onClose={onClose} 
+                        onSuccess={() => {
+                          // On verification success, user is authenticated and modal closes
+                        }}
+                      />
+                    )}
+                    {view === "forgot-password" && (
+                      <ForgotPasswordForm 
+                        onClose={onClose}
+                        onOtpSent={(email) => {
+                          setTempEmail(email);
+                          setView("reset-password");
+                        }}
+                        onBackToLogin={() => setView("login")}
+                      />
+                    )}
+                    {view === "reset-password" && (
+                      <ResetPasswordForm 
+                        email={tempEmail} 
+                        onClose={onClose}
+                        onSuccess={(msg) => setSuccessMessage(msg)}
+                        onBackToLogin={() => setView("login")}
                       />
                     )}
                   </motion.div>

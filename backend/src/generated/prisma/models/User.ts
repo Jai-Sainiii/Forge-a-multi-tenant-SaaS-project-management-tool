@@ -40,6 +40,11 @@ export type UserMinAggregateOutputType = {
   name: string | null
   password: string | null
   googleId: string | null
+  isVerified: boolean | null
+  otpCode: string | null
+  otpExpires: Date | null
+  resetOtpCode: string | null
+  resetOtpExpires: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +55,11 @@ export type UserMaxAggregateOutputType = {
   name: string | null
   password: string | null
   googleId: string | null
+  isVerified: boolean | null
+  otpCode: string | null
+  otpExpires: Date | null
+  resetOtpCode: string | null
+  resetOtpExpires: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +70,11 @@ export type UserCountAggregateOutputType = {
   name: number
   password: number
   googleId: number
+  isVerified: number
+  otpCode: number
+  otpExpires: number
+  resetOtpCode: number
+  resetOtpExpires: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,6 +95,11 @@ export type UserMinAggregateInputType = {
   name?: true
   password?: true
   googleId?: true
+  isVerified?: true
+  otpCode?: true
+  otpExpires?: true
+  resetOtpCode?: true
+  resetOtpExpires?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -90,6 +110,11 @@ export type UserMaxAggregateInputType = {
   name?: true
   password?: true
   googleId?: true
+  isVerified?: true
+  otpCode?: true
+  otpExpires?: true
+  resetOtpCode?: true
+  resetOtpExpires?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +125,11 @@ export type UserCountAggregateInputType = {
   name?: true
   password?: true
   googleId?: true
+  isVerified?: true
+  otpCode?: true
+  otpExpires?: true
+  resetOtpCode?: true
+  resetOtpExpires?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -197,6 +227,11 @@ export type UserGroupByOutputType = {
   name: string
   password: string | null
   googleId: string | null
+  isVerified: boolean
+  otpCode: string | null
+  otpExpires: Date | null
+  resetOtpCode: string | null
+  resetOtpExpires: Date | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -230,6 +265,11 @@ export type UserWhereInput = {
   name?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
   googleId?: Prisma.StringNullableFilter<"User"> | string | null
+  isVerified?: Prisma.BoolFilter<"User"> | boolean
+  otpCode?: Prisma.StringNullableFilter<"User"> | string | null
+  otpExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  resetOtpCode?: Prisma.StringNullableFilter<"User"> | string | null
+  resetOtpExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -245,6 +285,11 @@ export type UserOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
+  otpCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  otpExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetOtpCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetOtpExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workspaces?: Prisma.WorkspaceOrderByRelationAggregateInput
@@ -263,6 +308,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   name?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
+  isVerified?: Prisma.BoolFilter<"User"> | boolean
+  otpCode?: Prisma.StringNullableFilter<"User"> | string | null
+  otpExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  resetOtpCode?: Prisma.StringNullableFilter<"User"> | string | null
+  resetOtpExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -278,6 +328,11 @@ export type UserOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
+  otpCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  otpExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetOtpCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetOtpExpires?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -296,6 +351,11 @@ export type UserScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  isVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  otpCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  otpExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  resetOtpCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  resetOtpExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -305,6 +365,11 @@ export type UserCreateInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -320,6 +385,11 @@ export type UserUncheckedCreateInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -334,6 +404,11 @@ export type UserUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -349,6 +424,11 @@ export type UserUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -364,6 +444,11 @@ export type UserCreateManyInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -373,6 +458,11 @@ export type UserUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -383,6 +473,11 @@ export type UserUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -393,6 +488,11 @@ export type UserCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
+  otpCode?: Prisma.SortOrder
+  otpExpires?: Prisma.SortOrder
+  resetOtpCode?: Prisma.SortOrder
+  resetOtpExpires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -407,6 +507,11 @@ export type UserMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
+  otpCode?: Prisma.SortOrder
+  otpExpires?: Prisma.SortOrder
+  resetOtpCode?: Prisma.SortOrder
+  resetOtpExpires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -417,6 +522,11 @@ export type UserMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   password?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
+  isVerified?: Prisma.SortOrder
+  otpCode?: Prisma.SortOrder
+  otpExpires?: Prisma.SortOrder
+  resetOtpCode?: Prisma.SortOrder
+  resetOtpExpires?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -436,6 +546,14 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -525,6 +643,11 @@ export type UserCreateWithoutWorkspacesInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberInfo?: Prisma.MemberCreateNestedManyWithoutUserInput
@@ -539,6 +662,11 @@ export type UserUncheckedCreateWithoutWorkspacesInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberInfo?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
@@ -568,6 +696,11 @@ export type UserUpdateWithoutWorkspacesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberInfo?: Prisma.MemberUpdateManyWithoutUserNestedInput
@@ -582,6 +715,11 @@ export type UserUncheckedUpdateWithoutWorkspacesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberInfo?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
@@ -595,6 +733,11 @@ export type UserCreateWithoutMemberInfoInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -609,6 +752,11 @@ export type UserUncheckedCreateWithoutMemberInfoInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -638,6 +786,11 @@ export type UserUpdateWithoutMemberInfoInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -652,6 +805,11 @@ export type UserUncheckedUpdateWithoutMemberInfoInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -665,6 +823,11 @@ export type UserCreateWithoutProjectInfoInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -679,6 +842,11 @@ export type UserUncheckedCreateWithoutProjectInfoInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -708,6 +876,11 @@ export type UserUpdateWithoutProjectInfoInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -722,6 +895,11 @@ export type UserUncheckedUpdateWithoutProjectInfoInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -735,6 +913,11 @@ export type UserCreateWithoutTaskInfoInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -749,6 +932,11 @@ export type UserUncheckedCreateWithoutTaskInfoInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -778,6 +966,11 @@ export type UserUpdateWithoutTaskInfoInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -792,6 +985,11 @@ export type UserUncheckedUpdateWithoutTaskInfoInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -805,6 +1003,11 @@ export type UserCreateWithoutTeamMemberInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutUserInput
@@ -819,6 +1022,11 @@ export type UserUncheckedCreateWithoutTeamMemberInput = {
   name: string
   password?: string | null
   googleId?: string | null
+  isVerified?: boolean
+  otpCode?: string | null
+  otpExpires?: Date | string | null
+  resetOtpCode?: string | null
+  resetOtpExpires?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutUserInput
@@ -848,6 +1056,11 @@ export type UserUpdateWithoutTeamMemberInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutUserNestedInput
@@ -862,6 +1075,11 @@ export type UserUncheckedUpdateWithoutTeamMemberInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  otpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetOtpCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetOtpExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutUserNestedInput
@@ -943,6 +1161,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   password?: boolean
   googleId?: boolean
+  isVerified?: boolean
+  otpCode?: boolean
+  otpExpires?: boolean
+  resetOtpCode?: boolean
+  resetOtpExpires?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspaces?: boolean | Prisma.User$workspacesArgs<ExtArgs>
@@ -959,6 +1182,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   password?: boolean
   googleId?: boolean
+  isVerified?: boolean
+  otpCode?: boolean
+  otpExpires?: boolean
+  resetOtpCode?: boolean
+  resetOtpExpires?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -969,6 +1197,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   password?: boolean
   googleId?: boolean
+  isVerified?: boolean
+  otpCode?: boolean
+  otpExpires?: boolean
+  resetOtpCode?: boolean
+  resetOtpExpires?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -979,11 +1212,16 @@ export type UserSelectScalar = {
   name?: boolean
   password?: boolean
   googleId?: boolean
+  isVerified?: boolean
+  otpCode?: boolean
+  otpExpires?: boolean
+  resetOtpCode?: boolean
+  resetOtpExpires?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "googleId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "googleId" | "isVerified" | "otpCode" | "otpExpires" | "resetOtpCode" | "resetOtpExpires" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspaces?: boolean | Prisma.User$workspacesArgs<ExtArgs>
   memberInfo?: boolean | Prisma.User$memberInfoArgs<ExtArgs>
@@ -1010,6 +1248,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     password: string | null
     googleId: string | null
+    isVerified: boolean
+    otpCode: string | null
+    otpExpires: Date | null
+    resetOtpCode: string | null
+    resetOtpExpires: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1445,6 +1688,11 @@ export interface UserFieldRefs {
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly googleId: Prisma.FieldRef<"User", 'String'>
+  readonly isVerified: Prisma.FieldRef<"User", 'Boolean'>
+  readonly otpCode: Prisma.FieldRef<"User", 'String'>
+  readonly otpExpires: Prisma.FieldRef<"User", 'DateTime'>
+  readonly resetOtpCode: Prisma.FieldRef<"User", 'String'>
+  readonly resetOtpExpires: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

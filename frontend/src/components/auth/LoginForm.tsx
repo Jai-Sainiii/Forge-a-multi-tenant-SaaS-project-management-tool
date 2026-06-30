@@ -5,7 +5,17 @@ import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useAuth } from "@/authContext/AuthContext";
 import { loginUser, getCurrentUser, setTokenCookie } from "@/app/actions/auth";
 
-export default function LoginForm({ onClose }: { onClose: () => void }) {
+export default function LoginForm({ 
+  onClose,
+  onShowOtpVerification,
+  onShowForgotPassword,
+  successMessage,
+}: { 
+  onClose: () => void;
+  onShowOtpVerification: (email: string) => void;
+  onShowForgotPassword: () => void;
+  successMessage?: string | null;
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +41,11 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
         }
         onClose();
       } else {
-        setError(res.message || "Invalid email or password.");
+        if (res.requiresVerification && res.email) {
+          onShowOtpVerification(res.email);
+        } else {
+          setError(res.message || "Invalid email or password.");
+        }
       }
     } catch (err: unknown) {
       setError("Invalid email or password.");
@@ -85,6 +99,13 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
         Sign in to your workspace
       </p>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="mb-4 px-3 py-2.5 rounded-md bg-[#86f2e4]/30 border border-[#006a61]/20 text-[#006a61] text-[13px]">
+          {successMessage}
+        </div>
+      )}
+
       {/* Error */}
       {error && (
         <div className="mb-4 px-3 py-2.5 rounded-md bg-[#ffdad6] border border-[#ba1a1a]/20 text-[#93000a] text-[13px]">
@@ -124,7 +145,11 @@ export default function LoginForm({ onClose }: { onClose: () => void }) {
 
       {/* Forgot password */}
       <div className="flex justify-end mt-2 mb-6">
-        <button className="text-[12px] font-medium text-[#006a61] hover:text-black dark:hover:text-white transition-colors cursor-pointer">
+        <button 
+          onClick={onShowForgotPassword}
+          type="button"
+          className="text-[12px] font-medium text-[#006a61] hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+        >
           Forgot password?
         </button>
       </div>

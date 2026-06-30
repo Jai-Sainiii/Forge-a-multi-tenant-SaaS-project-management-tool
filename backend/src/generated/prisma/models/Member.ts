@@ -500,10 +500,6 @@ export type MemberUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   deleteMany?: Prisma.MemberScalarWhereInput | Prisma.MemberScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type MemberCreateWithoutUserInput = {
   isActive?: boolean
   role?: string
