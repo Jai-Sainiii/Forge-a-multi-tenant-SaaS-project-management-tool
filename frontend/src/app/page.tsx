@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, memo, useCallback } from "react";
+import { useRef, memo, useCallback, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -21,6 +21,9 @@ import {
   Star,
 } from "lucide-react";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
+import AuthModel from "@/components/auth/AuthModel";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/authContext/AuthContext";
 
 /* ═══════════════════════════════════════════
    HERO CURSOR ORB (SVG-based follow animation)
@@ -267,6 +270,21 @@ export default function HomePage() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
+  const [authOpen, setAuthOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"login" | "signup">("signup");
+  const router = useRouter();
+  const authContext = useAuth();
+  const user = authContext?.user;
+
+  const openSignup = () => {
+    if (user) {
+      router.push("/workspace/all");
+    } else {
+      setActiveTab("signup");
+      setAuthOpen(true);
+    }
+  };
+
   /* Stagger helpers */
   const headlineWords = "Ship projects faster. Your whole team, one workspace.".split(" ");
 
@@ -352,14 +370,14 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.85 }}
               className="flex flex-wrap justify-center gap-4"
             >
-              <button className="btn-shimmer bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-100 font-semibold px-8 py-4 rounded-xl flex items-center justify-center gap-2.5 group transition-all duration-300 active:scale-[0.97] shadow-lg shadow-black/10 dark:shadow-white/5 cursor-pointer">
+              <button onClick={openSignup} className="btn-shimmer bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-100 font-semibold px-8 py-4 rounded-xl flex items-center justify-center gap-2.5 group transition-all duration-300 active:scale-[0.97] shadow-lg shadow-black/10 dark:shadow-white/5 cursor-pointer">
                 Start for free
                 <ArrowRight
                   size={18}
                   className="group-hover:translate-x-1 transition-transform duration-300"
                 />
               </button>
-              <button className="bg-white dark:bg-white/[0.06] backdrop-blur-sm border border-slate-300 dark:border-white/10 text-slate-800 dark:text-slate-200 font-semibold px-8 py-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.1] transition-all duration-300 active:scale-[0.97] shadow-sm dark:shadow-none cursor-pointer">
+              <button onClick={() => document.getElementById('product')?.scrollIntoView({ behavior: 'smooth' })} className="bg-white dark:bg-white/[0.06] backdrop-blur-sm border border-slate-300 dark:border-white/10 text-slate-800 dark:text-slate-200 font-semibold px-8 py-4 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.1] transition-all duration-300 active:scale-[0.97] shadow-sm dark:shadow-none cursor-pointer">
                 See how it works
               </button>
             </motion.div>
@@ -618,7 +636,7 @@ export default function HomePage() {
               <p className="text-zinc-200/70 text-base md:text-lg max-w-lg">
                 Join 10,000+ teams shipping faster with Forge.
               </p>
-              <button className="btn-shimmer bg-white text-black hover:bg-zinc-100 font-bold px-10 py-4 rounded-xl flex items-center gap-2.5 group transition-all duration-300 active:scale-[0.97] shadow-lg shadow-black/10 cursor-pointer">
+              <button onClick={openSignup} className="btn-shimmer bg-white text-black hover:bg-zinc-100 font-bold px-10 py-4 rounded-xl flex items-center gap-2.5 group transition-all duration-300 active:scale-[0.97] shadow-lg shadow-black/10 cursor-pointer">
                 Create your workspace
                 <ArrowRight
                   size={20}
@@ -629,6 +647,13 @@ export default function HomePage() {
           </motion.div>
         </section>
       </main>
+
+      <AuthModel
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     </div>
   );
 }

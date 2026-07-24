@@ -128,11 +128,6 @@ const TaskRow = memo(function TaskRow({ task, workspaceID }: { task: Task; works
             <td className="px-6 py-4 whitespace-nowrap">
                 <StatusBadge status={task.status} />
             </td>
-            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
-                    <MoreHorizontal className="w-4 h-4" />
-                </button>
-            </td>
         </tr>
     );
 });
@@ -498,15 +493,13 @@ export default function ProjectDetailClient({
                                 <th scope="col" className="px-6 py-3.5 text-left text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Status
                                 </th>
-                                <th scope="col" className="relative px-6 py-3.5">
-                                    <span className="sr-only">Actions</span>
-                                </th>
+
                             </tr>
                         </thead>
                         <tbody className="bg-transparent divide-y divide-black/5 dark:divide-white/5">
                             {!project.tasks || project.tasks.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-16 text-center">
+                                    <td colSpan={3} className="px-6 py-16 text-center">
                                         <ListTodo className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
                                         <p className="text-base font-bold text-slate-900 dark:text-white">No Tasks Assigned Yet</p>
                                         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">Create a task to kickstart project execution and track milestones.</p>

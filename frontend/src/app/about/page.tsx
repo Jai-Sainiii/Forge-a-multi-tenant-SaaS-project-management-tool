@@ -212,7 +212,7 @@ export default function AboutPage() {
             }}
           >
             <Link
-              href="/signup"
+              href="/"
               style={{
                 padding: "10px 24px",
                 borderRadius: 4,
@@ -227,8 +227,8 @@ export default function AboutPage() {
             >
               Get started free
             </Link>
-            <Link
-              href="/careers"
+            <a
+              href="#team"
               style={{
                 padding: "10px 24px",
                 borderRadius: 4,
@@ -241,8 +241,8 @@ export default function AboutPage() {
                 transition: "background .15s",
               }}
             >
-              See open roles →
-            </Link>
+              Meet the team ↓
+            </a>
           </div>
         </motion.div>
       </section>
@@ -428,6 +428,7 @@ export default function AboutPage() {
 
       {/* ── 4. TEAM ────────────────────────────────────────────────────────── */}
       <section
+        id="team"
         style={{
           maxWidth: 1280,
           margin: "0 auto",
@@ -674,7 +675,7 @@ export default function AboutPage() {
             }}
           >
             <Link
-              href="/signup"
+              href="/"
               style={{
                 padding: "11px 28px",
                 borderRadius: 4,
@@ -689,8 +690,8 @@ export default function AboutPage() {
             >
               Get started free
             </Link>
-            <Link
-              href="/contact"
+            <a
+              href="mailto:sales@forge.pm?subject=Enterprise%20Inquiry"
               style={{
                 padding: "11px 28px",
                 borderRadius: 4,
@@ -704,7 +705,7 @@ export default function AboutPage() {
               }}
             >
               Talk to sales
-            </Link>
+            </a>
           </div>
         </motion.div>
       </section>

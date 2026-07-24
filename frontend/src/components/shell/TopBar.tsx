@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, Plus, UserPlus, Menu } from "lucide-react";
+import { Plus, UserPlus, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/authContext/AuthContext";
 import { useWorkspaceModal } from "@/context/WorkspaceModalContext";
@@ -92,35 +92,13 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
             </span>
           </div>
         </div>
-
         <div className="flex items-center gap-2">
-          {/* New workspace filled purple button */}
           <button
             onClick={() => {openModal(); getworkspaces();}}
             className="flex items-center gap-1.5 text-[13px] font-[500] px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors cursor-pointer"
           >
             <Plus size={13} strokeWidth={2.2} />
             <span className="hidden sm:inline">New Workspace</span>
-          </button>
-
-          {/* Notification bell */}
-          <button
-            className="relative flex items-center justify-center w-8 h-8 rounded-lg border border-[#E8E6E0] dark:border-white/10 hover:bg-[#F4F4F2] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
-          >
-            <Bell size={15} strokeWidth={1.8} className="text-[#6B6860] dark:text-slate-400" />
-            {/* Red dot */}
-            <span
-              className="absolute"
-              style={{
-                top: 7,
-                right: 7,
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#E53E3E",
-                border: "1.5px solid #fff",
-              }}
-            />
           </button>
         </div>
       </header>
@@ -168,10 +146,8 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
             </span>
           </div>
         </div>
-
-        {/* Right: Invite, New project, bell */}
+        {/* Right: Invite */}
         <div className="flex items-center gap-2">
-          {/* Invite ghost button - visible to owner only */}
           {isOwner && (
             <button
               onClick={() => setIsInviteOpen(true)}
@@ -181,27 +157,6 @@ export default function TopBar({ workspaces, getworkspaces, onMenuClick }: Topba
               <span className="hidden sm:inline">Invite</span>
             </button>
           )}
-
-          {/* Notification bell */}
-          <button
-            className="relative flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#F4F4F2] transition-colors cursor-pointer"
-            style={{ border: "1px solid #E8E6E0" }}
-          >
-            <Bell size={15} strokeWidth={1.8} style={{ color: "#6B6860" }} />
-            {/* Red dot */}
-            <span
-              className="absolute"
-              style={{
-                top: 7,
-                right: 7,
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#E53E3E",
-                border: "1.5px solid #fff",
-              }}
-            />
-          </button>
         </div>
       </header>
 
